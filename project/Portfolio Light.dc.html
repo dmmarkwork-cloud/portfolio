@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #F7F3ED; -webkit-font-smoothing: antialiased; }
+a { color: #B4491B; text-decoration: none; }
+a:hover { color: #171310; }
+::selection { background: #F0D9C9; color: #171310; }
+</style>
+</helmet>
+<div style="color: #000000; font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; background-color: #FFFFFF">
+
+  <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; padding: 14px clamp(18px, 4vw, 56px); border-bottom: 1px solid #E2DAD0; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7C746C;">
+    <span style="color: #171310;">Mark Lorenz Yamanaka</span>
+    
+    <a href="mailto:dmmark.work@gmail.com" style="letter-spacing: 0.16em;">Get in touch</a>
+  </div>
+
+  <header style="max-width: 1240px; margin: 0 auto; padding: clamp(44px, 7vw, 104px) clamp(18px, 4vw, 56px) clamp(32px, 5vw, 64px);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: clamp(28px, 4vw, 64px); align-items: center;">
+      <div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: #B4491B; margin-bottom: 22px;">Aeronautical engineering portfolio</div>
+        <h1 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(38px, 5.6vw, 76px); line-height: 1.0; letter-spacing: -0.035em; margin: 0 0 26px; text-wrap: balance;">Six things I designed,<br>analysed and built.</h1>
+        <p style="font-size: clamp(16px, 1.3vw, 19px); line-height: 1.62; max-width: 50ch; margin: 0 0 30px; color: #5F5852; text-wrap: pretty;">Nozzles, pressure vessels, airframes, a rotor and a wing rig that moves — each taken far enough that someone could actually build it. The short version is below; the full working is in the repositories.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; padding: 7px 11px; border: 1px solid #E2DAD0; background: #FFFFFF; color: #5F5852;">PRC Professional AE · 2024</span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; padding: 7px 11px; border: 1px solid #E2DAD0; background: #FFFFFF; color: #5F5852;">ASME Y14.5-2018</span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; padding: 7px 11px; border: 1px solid #E2DAD0; background: #FFFFFF; color: #5F5852;">FAR Part 23 / 27 / 29</span>
+        </div>
+      </div>
+      <div style="min-width: 0; background: #FFFFFF; border: 1px solid #E2DAD0;">
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #EFE9E1; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;">
+          <span style="color: #B4491B;">All six, in the round</span>
+          <span style="color: #6E6862;">Hover to identify</span>
+        </div>
+        <div style="padding: clamp(10px, 1.6vw, 18px);">
+          <x-import component-from-global-scope="holo-bay" from="./holo-bay.js" height="400px" line="#A8431A" fill="#E6D3C5" ring="#DCD2C6" hover="#171310" legend-fg="#6E6862" legend-bg="#FFFFFF" legend-border="#E2DAD0" legend-active="#171310" legend-active-border="#B4491B" hint-size="100%,440px"></x-import>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 40; background: rgba(247,243,237,0.92); backdrop-filter: blur(10px); border-top: 1px solid #E2DAD0; border-bottom: 1px solid #E2DAD0; padding: 0 clamp(18px, 4vw, 56px);">
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; gap: clamp(14px, 2.4vw, 32px); flex-wrap: wrap; padding: 13px 0; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em;">
+      <a href="#p-nozzle" data-nav="p-nozzle" style="color: #7C746C;" style-hover="color: #171310;">01 Nozzle</a>
+      <a href="#p-tank" data-nav="p-tank" style="color: #7C746C;" style-hover="color: #171310;">02 Tank</a>
+      <a href="#p-mk10" data-nav="p-mk10" style="color: #7C746C;" style-hover="color: #171310;">03 MK-10</a>
+      <a href="#p-uav" data-nav="p-uav" style="color: #7C746C;" style-hover="color: #171310;">04 PANO-VISTA</a>
+      <a href="#p-rotor" data-nav="p-rotor" style="color: #7C746C;" style-hover="color: #171310;">05 Rotor</a>
+      <a href="#p-wing" data-nav="p-wing" style="color: #7C746C;" style-hover="color: #171310;">06 Wing rig</a>
+      <a href="#hangar" data-nav="hangar" style="color: #7C746C;" style-hover="color: #171310;">Internships</a>
+      <a href="#about" data-nav="about" style="color: #7C746C;" style-hover="color: #171310;">About</a>
+    </div>
+  </nav>
+
+  <main style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(18px, 4vw, 56px) clamp(40px, 6vw, 88px);">
+    <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+      <section id="{{ p.anchor }}" data-section="{{ p.anchor }}" data-screen-label="{{ p.label }}" style="padding: clamp(48px, 7vw, 104px) 0 clamp(40px, 5vw, 72px); border-bottom: 1px solid #E2DAD0;">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(22px, 3.5vw, 56px); align-items: end; margin-bottom: clamp(26px, 3.5vw, 44px);">
+          <div>
+            <div style="display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #6E6862;">
+              <span style="color: #B4491B;">{{ p.num }}</span>
+              <span>{{ p.kicker }}</span>
+            </div>
+            <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(28px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -0.03em; margin: 0 0 18px; max-width: 22ch; text-wrap: balance;">{{ p.title }}</h2>
+            <p style="font-size: clamp(16px, 1.25vw, 18.5px); line-height: 1.62; color: #5F5852; margin: 0 0 22px; max-width: 54ch; text-wrap: pretty;">{{ p.story }}</p>
+            <sc-if value="{{ p.showRepo }}" hint-placeholder-val="{{ true }}">
+              <a href="{{ p.repo }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid #B4491B; padding-bottom: 3px;">Full working on GitHub →</a>
+            </sc-if>
+          </div>
+          <div style="display: grid; gap: 0; align-content: end; justify-items: stretch;">
+            <sc-for list="{{ p.values }}" as="v" hint-placeholder-count="3">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 18px; padding: 13px 0; border-top: 1px solid #E2DAD0;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862;">{{ v.k }}</span>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(19px, 1.8vw, 25px); font-weight: 600; letter-spacing: -0.02em; color: #171310; text-align: right; font-variant-numeric: tabular-nums;">{{ v.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 184px; gap: 14px; align-items: start;">
+          <button type="button" onClick="{{ p.zoom }}" title="Click to enlarge" style="appearance: none; border: 1px solid #E2DAD0; background: #FFFFFF; cursor: zoom-in; display: grid; grid-template-rows: minmax(0, 1fr) auto; width: 100%; min-width: 0; text-align: left; padding: 0; height: 468px;" style-hover="border-color: #CFC4B6;">
+            <div style="padding: clamp(14px, 2.4vw, 30px); display: block; background: #FFFFFF; min-height: 0; overflow: hidden; box-sizing: border-box;">{{ p.leadImg }}</div>
+            <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid #EFE9E1; padding: 12px clamp(14px, 2vw, 22px); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862;">
+              <span>{{ p.leadLabel }}</span>
+              <span style="flex: none;">⤢ Enlarge</span>
+            </div>
+          </button>
+
+          <sc-if value="{{ p.hasThumbs }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; gap: 8px; max-height: 468px; overflow-y: auto; padding-right: 2px;">
+              <sc-for list="{{ p.thumbs }}" as="t" hint-placeholder-count="4">
+                <button type="button" onClick="{{ t.select }}" style="appearance: none; cursor: pointer; padding: 6px; background: #FFFFFF; border: 1px solid {{ t.border }}; display: grid; gap: 5px; width: 100%; min-width: 0; text-align: left;" style-hover="border-color: #B4491B;">
+                  <div style="height: 76px; display: grid; place-items: center; overflow: hidden;">{{ t.img }}</div>
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862; line-height: 1.3;">{{ t.label }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </section>
+    </sc-for>
+
+    <section id="hangar" data-section="hangar" data-screen-label="Internships" style="padding: clamp(56px, 7vw, 100px) 0 clamp(20px, 3vw, 36px); border-bottom: 1px solid #E2DAD0;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: #B4491B; margin-bottom: 20px;">Hangar time</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(27px, 3.4vw, 46px); line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 clamp(32px, 4vw, 54px); max-width: 26ch; text-wrap: balance;">Internships</h2>
+
+      <div style="display: grid; gap: clamp(36px, 5vw, 64px);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: clamp(22px, 3.5vw, 48px); align-items: start;">
+          <div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px;">Dornier Technology Inc.</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862; margin-bottom: 18px;">Aircraft maintenance engineer intern · 2023</div>
+            <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0 0 14px; max-width: 54ch; text-wrap: pretty;">Ten-plus base and line checks under PCAR Part 6 across A320, B737, ATR 72 and BAe 146. Access panels off and back on, fan cowls opened, fasteners removed and refitted, structural damage and corrosion inspected, dye penetrant and borescope runs, findings written up for the responsible engineer.</p>
+            <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0; max-width: 54ch; text-wrap: pretty;">Also where I learned to safety-wire properly — the small, unglamorous detail that tells you whether a job was done by someone paying attention.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;">
+            <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E2DAD0; padding: 8px;">
+              <img src="figures/internship/engine-cowl.jpg" alt="Opening a fan cowl door on an airliner engine with classmates" style="display: block; width: 100%; height: 190px; object-fit: cover;">
+              <figcaption style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862; padding: 9px 2px 2px; line-height: 1.4;">Fan cowl door on a hold-open rod</figcaption>
+            </figure>
+            <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E2DAD0; padding: 8px;">
+              <img src="figures/internship/safety-wire.jpg" alt="Hex plugs safety-wired in pairs on a wooden practice block" style="display: block; width: 100%; height: 190px; object-fit: cover;">
+              <figcaption style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862; padding: 9px 2px 2px; line-height: 1.4;">Safety-wire practice block</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: clamp(22px, 3.5vw, 48px); align-items: start;">
+          <div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 10px;">Alpha Aviation Group Philippines</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862; margin-bottom: 18px;">Flight operations exposure · AAG</div>
+            <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0 0 14px; max-width: 54ch; text-wrap: pretty;">Time in the A320 full-flight simulator and on a light single's flight deck — seeing the aircraft from the crew's side of the bulkhead. Checklists, panel flows, and how a flight crew actually reads the systems an engineer signs off.</p>
+            <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0; max-width: 54ch; text-wrap: pretty;">It changed how I write findings: the person at the other end is flying the thing.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;">
+            <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E2DAD0; padding: 8px;">
+              <img src="figures/internship/a320-sim.jpg" alt="Seated in an A320 full-flight simulator flight deck" style="display: block; width: 100%; height: 190px; object-fit: cover;">
+              <figcaption style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862; padding: 9px 2px 2px; line-height: 1.4;">A320 full-flight simulator</figcaption>
+            </figure>
+            <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E2DAD0; padding: 8px;">
+              
+              <img src="figures/internship/cessna-flight-deck.jpg" alt="Seated at the controls of a light single-engine aircraft" style="display: block; width: 100%; height: 190px; object-fit: contain"><figcaption style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E6862; padding: 9px 2px 2px; line-height: 1.4;">Light single flight deck</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" data-section="about" data-screen-label="About" style="padding: clamp(56px, 7vw, 104px) 0 clamp(20px, 3vw, 40px);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(28px, 4.5vw, 72px); align-items: start;">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: #B4491B; margin-bottom: 20px;">How I got here</div>
+          <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(27px, 3.2vw, 42px); line-height: 1.06; letter-spacing: -0.03em; margin: 0 0 22px; max-width: 24ch; text-wrap: balance;">I like the part where the drawing has to be right.</h2>
+          <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0 0 16px; max-width: 58ch; text-wrap: pretty;">I studied aeronautical engineering at Holy Angel University and licensed as a PRC Professional Aeronautical Engineer in 2024. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
+          <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0 0 16px; max-width: 58ch; text-wrap: pretty;">The hangar came first, though — and it is hard to over-report a factor of safety after you have seen what an aircraft actually looks like at 40,000 cycles.</p>
+          <p style="font-size: 16.5px; line-height: 1.68; color: #5F5852; margin: 0; max-width: 58ch; text-wrap: pretty;">I am based in Tsukuba, Japan, and happy to walk through any of these end to end — including the two that failed.</p>
+        </div>
+        <div style="display: grid; gap: clamp(22px, 3vw, 34px);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: clamp(18px, 2.5vw, 30px);">
+            <div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862; padding-bottom: 10px; border-bottom: 1px solid #E2DAD0; margin-bottom: 14px;">Strengths</div>
+              <div style="display: grid; gap: 10px; font-size: 15.5px; line-height: 1.5; color: #5F5852;">
+                <span>Will re-run a mesh four times to earn one number.</span>
+                <span>Reads standards for fun. Owns the bolt-torque page.</span>
+                <span>Publishes the retraction before anyone asks.</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862; padding-bottom: 10px; border-bottom: 1px solid #E2DAD0; margin-bottom: 14px;">Weaknesses</div>
+              <div style="display: grid; gap: 10px; font-size: 15.5px; line-height: 1.5; color: #5F5852;">
+                <span>Will re-run a mesh four times to earn one number.</span>
+                <span>Cannot leave an unfilleted corner alone.</span>
+                <span>Explains the failed gate first, at parties.</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6862; padding-bottom: 10px; border-bottom: 1px solid #E2DAD0; margin-bottom: 14px;">Software I work in</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">SolidWorks</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">CATIA V6</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">ANSYS</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">Fluent</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">CalculiX / PrePoMax</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">SpaceClaim</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">XFOIL</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">Python</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">OriginLab</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E2DAD0; color: #5F5852;">Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="border-top: 1px solid #E2DAD0; background: #FFFFFF; padding: clamp(44px, 6vw, 88px) clamp(18px, 4vw, 56px);">
+    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(26px, 4vw, 60px); align-items: end;">
+      <div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #B4491B; margin-bottom: 18px;">Open to aerospace / mechanical roles</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 3.2vw, 42px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.08;">Feel free to reach out!</div>
+      </div>
+      <div style="display: grid; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px;">
+        <a href="mailto:dmmark.work@gmail.com" style="color: #171310; border-bottom: 1px solid #E2DAD0; padding-bottom: 8px;" style-hover="color: #B4491B;">dmmark.work@gmail.com</a>
+        <a href="https://www.linkedin.com/in/mark-lorenz-yamanaka-6161a3210/" style="color: #171310; border-bottom: 1px solid #E2DAD0; padding-bottom: 8px;" style-hover="color: #B4491B;">linkedin.com/in/mark-lorenz-yamanaka</a>
+        <a href="https://github.com/dmmarkwork-cloud/aeronautics" style="color: #171310; border-bottom: 1px solid #E2DAD0; padding-bottom: 8px;" style-hover="color: #B4491B;">github.com/dmmarkwork-cloud</a>
+        <div style="color: #6E6862; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 6px;">+81-70-3276-7554 · Tsukuba, Ibaraki, Japan</div>
+      </div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ lightboxOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeLightbox }}" style="position: fixed; inset: 0; z-index: 90; background: rgba(23,19,16,0.86); display: flex; align-items: center; justify-content: center; padding: clamp(16px, 3vw, 52px); cursor: zoom-out;">
+      <div style="max-width: 1440px; width: 100%;">{{ lightboxImg }}
+        <div style="display: flex; justify-content: space-between; gap: 20px; margin-top: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #E6DED5;">
+          <span>{{ lightboxCaption }}</span>
+          <span style="flex: none;">Click anywhere to close</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showRepoLinks&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+class Component extends DCLogic {
+  state = { view: [0, 0, 0, 0, 0, 0], lightbox: null };
+
+  componentDidMount() {
+    const sections = document.querySelectorAll("[data-section]");
+    if (!sections.length) return;
+    this.syncNav = () => {
+      const mid = (window.innerHeight || 0) * 0.42;
+      let best = null, bestScore = -Infinity;
+      document.querySelectorAll("[data-section]").forEach((s) => {
+        const r = s.getBoundingClientRect();
+        const score = (r.top <= mid && r.bottom >= mid) ? Infinity : -Math.abs(r.top - mid);
+        if (score > bestScore) { bestScore = score; best = s.getAttribute("data-section"); }
+      });
+      document.querySelectorAll("[data-nav]").forEach((a) => {
+        const on = a.getAttribute("data-nav") === best;
+        a.style.color = on ? "#171310" : "#7C746C";
+        a.style.borderBottom = on ? "1px solid #B4491B" : "1px solid transparent";
+        a.style.paddingBottom = "3px";
+      });
+    };
+    this.onScroll = () => {
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(() => { this.raf = null; this.syncNav(); });
+    };
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    window.addEventListener("resize", this.onScroll);
+    document.addEventListener("keydown", this.onKey);
+    this.syncNav();
+  }
+
+  componentWillUnmount() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.onScroll) {
+      window.removeEventListener("scroll", this.onScroll);
+      window.removeEventListener("resize", this.onScroll);
+    }
+    document.removeEventListener("keydown", this.onKey);
+  }
+
+  onKey = (e) => { if (e.key === "Escape" && this.state.lightbox) this.setState({ lightbox: null }); };
+
+  img(src, alt, extra) {
+    const style = Object.assign({ display: "block", width: "100%", height: "auto", objectFit: "contain" }, extra || {});
+    return React.createElement("img", { src: src, alt: alt, style: style });
+  }
+
+  // figures are stills unless the view carries a video path
+  media(v, extra) {
+    if (!v.video) return this.img(v.src, v.caption || v.label, extra);
+    const style = Object.assign({ display: "block", width: "100%", height: "auto", objectFit: "contain" }, extra || {});
+    return React.createElement("video", {
+      src: v.video, autoPlay: true, loop: true, muted: true, playsInline: true, style: style
+    });
+  }
+
+  data() {
+    return [
+      {
+        anchor: "p-nozzle", label: "01 Nozzle", num: "01", kicker: "Propulsion · multiphysics · DFM",
+        title: "Uncooled SS316 C-D Nozzle",
+        story: "An uncooled SS316 converging–diverging nozzle running at 2 MPa and 800 K, carried from CFD through thermal-structural analysis into a full GD&T drawing set. The first release reported a safety factor six times too high; the second one corrects it and leaves the retraction published.",
+        repo: "https://github.com/dmmarkwork-cloud/ss316-cd-nozzle-feasibility",
+        values: [
+          { k: "Exit Mach", v: "2.85" },
+          { k: "Factor of safety", v: "7.12" },
+          { k: "Wall temperature", v: "527 °C" }
+        ],
+        views: [
+          { label: "CFD · Mach contour", src: "figures/cfd-figures-mach-contour.png", caption: "Mach contour — converged Fluent solution, 88,800-cell structured mesh" },
+          { label: "FEA · von Mises", src: "fea/mesh3/von-mises-global.png", caption: "von Mises field, mesh J3 — governing stress taken from a linearised path, not the singular peak" },
+          { label: "Exploded assembly", src: "dfm/images/exploded-view.png", caption: "Exploded assembly — body, flange, graphite gasket, 8 × M8 A286 bolts, 4.531 kg" },
+          { label: "Drawing · CDN-001", src: "figures/sheet-cdn-001.png", caption: "CDN-001 Rev C — nozzle body detail, profile 0.2 A|B on the aerodynamic contour" },
+          { label: "Drawing · CDN-002", src: "figures/sheet-cdn-002.png", caption: "CDN-002 Rev C — mounting flange, 8 × Ø9 holes positioned Ø0.9 Ⓜ A B" }
+        ]
+      },
+      {
+        anchor: "p-tank", label: "02 Tank", num: "02", kicker: "Pressure vessel · FEA",
+        title: "Al6061 Gas Vessel Propellant",
+        story: "A 3 mm aluminium tank with hemispherical caps at 32.5 bar. Hand calculation set the baseline, a three-level mesh study proved convergence, and the answer came back short of the safety target at the cylinder-to-cap junction — published as a fail, fixable with about 0.2 mm of extra wall.",
+        repo: "https://github.com/dmmarkwork-cloud/gas-vessel-fea",
+        values: [
+          { k: "Factor of safety", v: "1.91" },
+          { k: "Against a target of", v: "2.00" },
+          { k: "Mesh convergence", v: "0.62 %" }
+        ],
+        views: [
+          { label: "Geometry & load", src: "figures/images-gas-vessel-geometry-image.png", caption: "Tank geometry and pressure load — R 147 mm, 3 mm wall, 700 mm overall" },
+          { label: "Mesh · coarse", src: "images/mesh_coarse.png", caption: "Coarse mesh — 22,131 C3D10 elements, the convergence baseline" },
+          { label: "Mesh · fine", src: "images/mesh_fine.png", caption: "Fine mesh — 132,628 elements, the governing result at 144.5 MPa" }
+        ]
+      },
+      {
+        anchor: "p-mk10", label: "03 MK-10", num: "03", kicker: "Aircraft design · loads · structures",
+        title: "MK-10: Part 23 Light Aircraft",
+        story: "The MK-10: one design baseline held all the way from mission definition through weight and CG, drag buildup and the V-n envelope into front and rear spar sizing. Every weight change had to be carried through to the shear-moment diagrams, which is the whole point.",
+        repo: "https://github.com/dmmarkwork-cloud/mk10-aircraft-design",
+        values: [
+          { k: "Range", v: "459 nmi" },
+          { k: "Endurance", v: "7.63 h" },
+          { k: "Service ceiling", v: "9,536 ft" }
+        ],
+        views: [
+          { label: "Three-view", src: "figures/drawings-3d-view.png", caption: "Final three-view — low straight-tapered wing, fixed tricycle gear, 1,649 lb gross" },
+          { label: "V-n envelope", src: "analysis/plots/vn-diagram.png", caption: "V-n envelope — manoeuvre and gust cases, design limit load 4.936" },
+          { label: "Airfoil selection", src: "analysis/plots/naca-2415-selected.png", caption: "Drag polar across candidate sections — NACA 2415 selected on corrected characteristics" },
+          { label: "Performance", src: "figures/analysis-plots-pa-pr.png", caption: "Power available against power required — sets climb, both ceilings, range and endurance" }
+        ]
+      },
+      {
+        anchor: "p-uav", label: "04 PANO-VISTA", num: "04", kicker: "UAV · systems integration",
+        title: "PANO-VISTA: UAV Fixed-Wing",
+        story: "PANO-VISTA, a tractor-configuration fixed-wing UAV: modelled part by part in one master assembly, then cut from foam board and wired up for real — brushless power, an eight-channel receiver and four micro servos, one per surface. The hardware in the CAD is the hardware on the bench. Team project with four classmates.",
+        repo: "https://github.com/dmmarkwork-cloud/pano-vista-uav",
+        values: [
+          { k: "Configuration", v: "Tractor fixed-wing" },
+          { k: "Control axes", v: "3" },
+          { k: "Actuation", v: "4 micro servos" }
+        ],
+        views: [
+          { label: "Built airframe · side", src: "figures/uav/build-side.jpg", caption: "The finished airframe — foam board over a spar, tricycle gear, pull-pull rudder cable" },
+          { label: "Built airframe · top", src: "figures/uav/build-top.jpg", caption: "Plan view of the completed aircraft — constant-chord wing, taped centre section" },
+          { label: "Built airframe · front", src: "figures/uav/build-front.jpg", caption: "Head-on with the motor and prop fitted, gear down" },
+          { label: "Exploded CAD", src: "figures/docs-exploded-view.png", caption: "Exploded isometric of the master assembly — airframe, propulsion, avionics, linkages" },
+          { label: "Hardware laid out", src: "figures/uav/hardware-layout.jpg", caption: "The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns" },
+          { label: "Servo install", src: "figures/uav/tail-servos.jpg", caption: "Elevator and rudder servos bedded into the rear fuselage, leads run forward" },
+          { label: "Linkage detail", src: "figures/uav/servo-linkage.jpg", caption: "Servo horn and pushrod as built — the linkage that was modelled in CAD" },
+          { label: "Receiver", src: "figures/uav/receiver-r88.jpg", caption: "RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle" },
+          { label: "Landing gear", src: "figures/uav/wheels.jpg", caption: "Main wheels and the sprung tail wheel assembly" },
+          { label: "On the bench", src: "figures/uav/build-bench.jpg", caption: "Build night — servo bays cut and glued by hand" }
+        ]
+      },
+      {
+        anchor: "p-rotor", label: "05 Rotor", num: "05", kicker: "Rotorcraft · drafting · CAD",
+        title: "Wooden Rotor Blade Design",
+        story: "A Ø71.10 in two-blade rotor traced in orthographic projection on tracing paper before it was ever parametric. The twist falls from 78° inboard to 24° at the tip because blade element theory asks for it — holding angle of attack roughly constant as local velocity climbs with radius.",
+        repo: "https://github.com/dmmarkwork-cloud/rotor-blade-helicopter-design",
+        values: [
+          { k: "Rotor diameter", v: "Ø 71.10 in" },
+          { k: "Solidity", v: "0.095" },
+          { k: "Twist, root to tip", v: "78° → 24°" }
+        ],
+        views: [
+          { label: "Rotor assembly", src: "figures/iso.png", caption: "Rotor assembly — blade mated to hub, dimensioned four-view generated from the assembly" }
+        ]
+      },
+      {
+        anchor: "p-wing", label: "06 Wing rig", num: "06", kicker: "Mechatronics · high-lift devices · Arduino",
+        title: "High-Lift Device",
+        story: "A sectioned wing built in cardboard and skinned in aluminium foil, mounted on its own stand so it can be demonstrated at eye level. Servos embedded in the section drive the ailerons and leading-edge slats from an Arduino Uno sketch, with a dedicated control interface on the base — high-lift devices you can watch deploy instead of read about.",
+        values: [
+          { k: "Moving surfaces", v: "Ailerons + slats" },
+          { k: "Controller", v: "Arduino Uno" },
+          { k: "Written in", v: "C++" }
+        ],
+        views: [
+          { label: "Slats & ailerons moving", video: "figures/wing/demo.mp4", caption: "The rig running — slats and ailerons driven from the control interface on the stand" },
+          { label: "Section on its stand", src: "figures/wing/section-profile.jpg", caption: "The finished section in profile, mounted on its presentation stand" },
+          { label: "Servo bay open", src: "figures/wing/servo-bay.jpg", caption: "Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back" },
+          { label: "Servo control bench", src: "figures/wing/arduino-bench.jpg", caption: "Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section" }
+        ]
+      }
+    ];
+  }
+
+  renderVals() {
+    const raw = this.data();
+    const open = (v) => () => this.setState({ lightbox: v });
+
+    const projects = raw.map((p, pi) => {
+      const vi = Math.min(this.state.view[pi] || 0, p.views.length - 1);
+      const lead = p.views[vi];
+      return {
+        anchor: p.anchor, label: p.label, num: p.num, kicker: p.kicker, title: p.title,
+        story: p.story, repo: p.repo, values: p.values,
+        showRepo: !!p.repo && (this.props.showRepoLinks ?? true),
+        leadImg: this.media(lead, { width: "100%", height: "100%", objectFit: "contain" }),
+        leadLabel: lead.caption,
+        zoom: open(lead),
+        hasThumbs: p.views.length > 1,
+        thumbs: p.views.map((v, i) => ({
+          label: v.label,
+          border: i === vi ? "#B4491B" : "#E2DAD0",
+          img: this.media(v, { width: "100%", height: "76px", objectFit: "contain", opacity: i === vi ? 1 : 0.62 }),
+          select: () => this.setState((s) => {
+            const next = s.view.slice();
+            next[pi] = i;
+            return { view: next };
+          })
+        }))
+      };
+    });
+
+    const lb = this.state.lightbox;
+    return {
+      projects,
+      lightboxOpen: !!lb,
+      lightboxImg: lb ? this.media(lb, { maxHeight: "80vh", background: "#FFFFFF", padding: "16px", boxSizing: "border-box" }) : null,
+      lightboxCaption: lb ? lb.caption : "",
+      closeLightbox: () => this.setState({ lightbox: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

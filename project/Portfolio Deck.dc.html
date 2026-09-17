@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+body { margin: 0; background: #15171B; }
+a { color: #E0704F; text-decoration: none; }
+a:hover { color: #FFFFFF; }
+</style>
+</helmet>
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+  <section data-label="Title" data-screen-label="01" data-speaker-notes="Aeronautical engineer, Tsukuba. Five projects: a nozzle multiphysics + DFM study, a propellant tank FEA, a full light-aircraft design, a fixed-wing UAV, and a rotor. The thread through all of them is that every number is tied to a gate." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-rows: auto 1fr auto; padding: 72px 96px;">
+    <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6A64;">
+      <span>Aeronautical Engineering Portfolio</span>
+      <span>2026</span>
+    </div>
+    <div style="display: flex; flex-direction: column; justify-content: center; gap: 40px;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; letter-spacing: 0.18em; text-transform: uppercase; color: #B23A1F;">Mark Lorenz Yamanaka · Tsukuba, Japan</div>
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 128px; line-height: 0.95; letter-spacing: -0.035em; margin: 0; max-width: 24ch;">Analysis that survives being checked.</h1>
+      <p style="font-size: 34px; line-height: 1.45; max-width: 46ch; margin: 0; color: #3A3B3E;">Compressible flow, thermal-structural FSI, pressure vessels, airframes — carried through to a drawing set someone can quote.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+      <div style="background: #F2F0EA; padding: 26px 28px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 600; letter-spacing: -0.02em;">01</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #6B6A64; margin-top: 8px;">SS316 CD nozzle</div></div>
+      <div style="background: #F2F0EA; padding: 26px 28px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 600; letter-spacing: -0.02em;">02</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #6B6A64; margin-top: 8px;">Propellant tank</div></div>
+      <div style="background: #F2F0EA; padding: 26px 28px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 600; letter-spacing: -0.02em;">03</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #6B6A64; margin-top: 8px;">MK-10 aircraft</div></div>
+      <div style="background: #F2F0EA; padding: 26px 28px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 600; letter-spacing: -0.02em;">04</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #6B6A64; margin-top: 8px;">PANO-VISTA UAV</div></div>
+      <div style="background: #F2F0EA; padding: 26px 28px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 600; letter-spacing: -0.02em;">05</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #6B6A64; margin-top: 8px;">Rotor blade</div></div>
+    </div>
+  </section>
+
+  <section data-label="Capability" data-screen-label="02" data-speaker-notes="The spread: hand calculation, CFD, FEA, CAD and DFM. Not five unrelated projects — one method applied at five scales." style="background: #15171B; color: #F2F0EA; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-rows: auto 1fr; padding: 72px 96px; gap: 56px;">
+    <div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #E0704F; margin-bottom: 24px;">What I actually do</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 76px; line-height: 1.02; letter-spacing: -0.03em; margin: 0; max-width: 32ch;">One method, five scales — hand calc to drawing set.</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #33353A; border: 1px solid #33353A;">
+      <div style="background: #15171B; padding: 40px 32px; display: grid; align-content: start; gap: 18px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F;">01 HAND CALC</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.15; font-weight: 500;">Isentropic, area–Mach, thin-wall theory</div>
+        <div style="font-size: 25px; line-height: 1.45; color: #C6C1B6;">Symbolic → numeric traces in Jupyter with handcalcs. The baseline every solver is later judged against.</div>
+      </div>
+      <div style="background: #15171B; padding: 40px 32px; display: grid; align-content: start; gap: 18px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F;">02 CFD</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.15; font-weight: 500;">Fluent, k-ω SST, density-based</div>
+        <div style="font-size: 25px; line-height: 1.45; color: #C6C1B6;">2D axisymmetric structured meshing, near-wall clustering to y+ ≈ 1.7, mass and thrust closure as gates.</div>
+      </div>
+      <div style="background: #15171B; padding: 40px 32px; display: grid; align-content: start; gap: 18px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F;">03 FEA</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.15; font-weight: 500;">Mechanical and CalculiX</div>
+        <div style="font-size: 25px; line-height: 1.45; color: #C6C1B6;">Steady thermal + static structural, one-way FSI, stress linearisation, mesh convergence studies.</div>
+      </div>
+      <div style="background: #15171B; padding: 40px 32px; display: grid; align-content: start; gap: 18px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F;">04 CAD</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.15; font-weight: 500;">SolidWorks, CATIA, SpaceClaim</div>
+        <div style="font-size: 25px; line-height: 1.45; color: #C6C1B6;">Parts, assemblies, exploded BOM views and dimensioned drawing sheets — airframe to nozzle contour.</div>
+      </div>
+      <div style="background: #15171B; padding: 40px 32px; display: grid; align-content: start; gap: 18px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F;">05 DFM</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.15; font-weight: 500;">GD&amp;T, stack-ups, inspection</div>
+        <div style="font-size: 25px; line-height: 1.45; color: #C6C1B6;">ASME Y14.5-2018 sheets, tolerance stacks closing on frozen geometry, machining route, FAIR, RFQ.</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-label="01 Nozzle" data-screen-label="03" data-speaker-notes="Headline project. The question was whether uncooled SS316 survives 2 MPa and 800 K. Answer: yes against yield at FoS 7.12 — but the governing location is the chamber-to-converging junction, not the throat, and the real limit is creep at 527 C." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 720px 1fr; gap: 0;">
+    <div style="padding: 72px 56px 72px 96px; display: grid; grid-template-rows: auto 1fr auto; gap: 36px;">
+      <div>
+        <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 24px;"><span style="color: #B23A1F;">01</span><span>Propulsion · multiphysics · DFM</span></div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 62px; line-height: 1.02; letter-spacing: -0.03em; margin: 0;">SS316 CD nozzle: feasibility and manufacture</h2>
+      </div>
+      <div style="display: grid; gap: 22px; align-content: start;">
+        <div style="font-size: 28px; line-height: 1.45; color: #3A3B3E;">Uncooled conical nozzle, Pc = 2 MPa, Tc = 800 K, ε = 4. One-way FSI from k-ω SST CFD into steady thermal and static structural, then carried into a toleranced drawing set.</div>
+        <div style="border-left: 4px solid #B23A1F; padding: 4px 0 4px 22px; font-size: 27px; line-height: 1.4;"><strong style="font-weight: 600;">Survives yield at FoS 7.12</strong> — but at the chamber-to-converging junction, not the throat, and creep is the binding mode.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">29.611 MPa</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Governing M+B stress</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">7.02–7.12</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">FoS band, J1–J3</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">2.85</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Exit Mach vs 2.94 calc</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">17 gates</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">2 failed, both published</div></div>
+      </div>
+    </div>
+    <div style="background: #0E1013; border-left: 1px solid #0E1013; display: grid; grid-template-rows: 1fr 1fr; gap: 1px;">
+      <div style="background: #0E1013; display: grid; grid-template-rows: 1fr auto; padding: 48px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="figures/cfd-figures-mach-contour.png" alt="Mach contour from the converged Fluent solution" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 20px;">CFD · Mach contour · 88,800 structured quad cells · peak wall y+ 1.74</div>
+      </div>
+      <div style="background: #0E1013; border-top: 1px solid #262A30; display: grid; grid-template-rows: 1fr auto; padding: 32px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="dfm/images/exploded-view.png" alt="Inlet joint exploded assembly" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 24px;">DFM · inlet joint CDN-000 · Ø92.80 H7/g6 pilot · 8 × M8 floating</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-label="01b Correction" data-screen-label="04" data-speaker-notes="This is the slide I care most about. v1.0 reported 42.70 and it was wrong by about 6x, for two independent reasons. I published the correction and kept the old tag rather than overwriting it." style="background: #15171B; color: #F2F0EA; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-rows: auto 1fr; padding: 72px 96px; gap: 48px;">
+    <div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #E0704F; margin-bottom: 24px;">01 · What changed in v2.0</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 76px; line-height: 1.02; letter-spacing: -0.03em; margin: 0; max-width: 30ch;">A converged wrong quantity is still the wrong quantity.</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 72px; align-items: start;">
+      <div style="display: grid; gap: 28px;">
+        <div style="font-size: 30px; line-height: 1.45; color: #C6C1B6;">v1.0 reported a factor of safety of 42.70 at the throat. That figure was wrong by roughly 6× for two independent reasons — and its mesh convergence study was perfectly sound, which is exactly the trap.</div>
+        <div style="display: grid; gap: 1px; background: #33353A; border: 1px solid #33353A;">
+          <div style="background: #1B1E23; padding: 26px 30px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F; margin-bottom: 8px;">ERROR 1 — LOCATION</div><div style="font-size: 27px; line-height: 1.4;">The throat was assessed. The chamber-to-converging junction governs, at 1.72× the throat stress.</div></div>
+          <div style="background: #1B1E23; padding: 26px 30px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F; margin-bottom: 8px;">ERROR 2 — QUANTITY</div><div style="font-size: 27px; line-height: 1.4;">A body-scoped probe maximum is not a classified stress. Replaced with linearised membrane + bending on a through-thickness path.</div></div>
+          <div style="background: #1B1E23; padding: 26px 30px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F; margin-bottom: 8px;">DISPOSITION</div><div style="font-size: 27px; line-height: 1.4;">v1.0 is preserved under its tag, not overwritten. Fourteen changes are itemised in the README.</div></div>
+        </div>
+      </div>
+      <div style="display: grid; gap: 28px;">
+        <div style="display: flex; align-items: center; gap: 36px;">
+          <div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F; margin-bottom: 10px;">v1.0 FoS</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 92px; font-weight: 600; color: #8A887F; text-decoration: line-through; line-height: 1;">42.70</div></div>
+          <div style="font-size: 44px; color: #E0704F;">→</div>
+          <div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #C6C1B6; margin-bottom: 10px;">v2.0 FoS</div><div style="font-family: 'Space Grotesk', sans-serif; font-size: 92px; font-weight: 600; line-height: 1;">7.12</div></div>
+        </div>
+        <div style="display: grid; gap: 1px; background: #33353A; border: 1px solid #33353A;">
+          <div style="background: #1B1E23; padding: 20px 26px; display: flex; justify-content: space-between; gap: 20px; font-size: 25px;"><span style="color: #C6C1B6;">Constraint singularity, end region</span><span style="font-family: 'IBM Plex Mono', monospace;">91.34 → 19.54 MPa</span></div>
+          <div style="background: #1B1E23; padding: 20px 26px; display: flex; justify-content: space-between; gap: 20px; font-size: 25px;"><span style="color: #C6C1B6;">CFD mesh</span><span style="font-family: 'IBM Plex Mono', monospace;">15,757 → 88,800 cells</span></div>
+          <div style="background: #1B1E23; padding: 20px 26px; display: flex; justify-content: space-between; gap: 20px; font-size: 25px;"><span style="color: #C6C1B6;">Peak wall y+</span><span style="font-family: 'IBM Plex Mono', monospace;">18 → 1.74</span></div>
+          <div style="background: #1B1E23; padding: 20px 26px; display: flex; justify-content: space-between; gap: 20px; font-size: 25px;"><span style="color: #C6C1B6;">FEA validation gates</span><span style="font-family: 'IBM Plex Mono', monospace;">3 → 17</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-label="02 Tank" data-screen-label="05" data-speaker-notes="Al 6061-T6 propellant tank. It misses its own FoS 2.0 target at 1.91 — published as a fail with the fix quantified. Also the slide where I corrected a boundary condition that was corrupting the answer." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 720px 1fr;">
+    <div style="padding: 72px 56px 72px 96px; display: grid; grid-template-rows: auto 1fr auto; gap: 36px;">
+      <div>
+        <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 24px;"><span style="color: #B23A1F;">02</span><span>Pressure vessel · FEA · convergence</span></div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 62px; line-height: 1.02; letter-spacing: -0.03em; margin: 0;">Thin-walled Al 6061-T6 propellant tank</h2>
+      </div>
+      <div style="display: grid; gap: 22px; align-content: start;">
+        <div style="font-size: 28px; line-height: 1.45; color: #3A3B3E;">3 mm wall, R = 147 mm, hemispherical caps, 3.25 MPa internal. CalculiX with C3D10 tetrahedra, hand-calc baseline, three-level mesh study, documented BC rationale.</div>
+        <div style="border-left: 4px solid #B23A1F; padding: 4px 0 4px 22px; font-size: 27px; line-height: 1.4;"><strong style="font-weight: 600;">Reported as a FAIL.</strong> FoS 1.91 against a self-set 2.00 at the cylinder-to-cap junction; 3 mm → 3.2 mm closes it.</div>
+        <div style="background: #0E1013; border-left: 4px solid #B23A1F; padding: 22px 26px; font-size: 25px; line-height: 1.4; color: #E8E5DE;">An earlier model fixed the junction edge — the highest stress zone — and read 204.1 MPa. Constraining two hemisphere tip vertices instead removed the artificial stiffness: 144.5 MPa.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">0.62 %</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Mesh convergence, ≤ 2 %</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">−1.0 %</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">FEA vs hand calc, mid-cyl</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">144.5 MPa</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Junction maximum, fine mesh</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">0.402 mm</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Radial disp., 53.6 % used</div></div>
+      </div>
+    </div>
+    <div style="background: #0E1013; border-left: 1px solid #0E1013; display: grid; grid-template-rows: 1fr 1fr; gap: 1px;">
+      <div style="background: #0E1013; display: grid; grid-template-rows: 1fr auto; padding: 48px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="figures/images-gas-vessel-geometry-image.png" alt="Gas vessel geometry" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 20px;">Geometry · R 147 / t 3 / L 700 mm · R/t = 49, thin-wall valid</div>
+      </div>
+      <div style="background: #0E1013; border-top: 1px solid #262A30; display: grid; grid-template-rows: 1fr auto; padding: 32px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="images/mesh_fine.png" alt="Fine mesh" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 24px;">Fine mesh · 132,628 C3D10 elements · governs every acceptance check</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-label="03 MK-10" data-screen-label="06" data-speaker-notes="Full light aircraft design sequence: mission, sizing, aero, performance, loads, spar sizing, CAD three-view. One baseline carried all the way through." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 720px 1fr;">
+    <div style="padding: 72px 56px 72px 96px; display: grid; grid-template-rows: auto 1fr auto; gap: 36px;">
+      <div>
+        <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 24px;"><span style="color: #B23A1F;">03</span><span>Aircraft design · loads · structures</span></div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 62px; line-height: 1.02; letter-spacing: -0.03em; margin: 0;">MK-10 light aircraft, concept to spar sizing</h2>
+      </div>
+      <div style="display: grid; gap: 22px; align-content: start;">
+        <div style="font-size: 28px; line-height: 1.45; color: #3A3B3E;">Two-seat single-engine trainer, low straight-tapered wing, fixed tricycle gear. Powerplant trade study, weight and CG travel to FAR Part 23, drag buildup, performance, V-n envelope, spanwise strip loads, spar shear-moment sizing per Bruhn.</div>
+        <div style="border-left: 4px solid #B23A1F; padding: 4px 0 4px 22px; font-size: 27px; line-height: 1.4;"><strong style="font-weight: 600;">One baseline, closed end to end</strong> — the same sized aircraft feeds aero, performance, loads and structure.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">1,649 lb</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Gross weight · AR 6.58</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">4.936</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Design limit load</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">459 nmi</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Range · 7.63 h endurance</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums;">9,536 ft</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Service ceiling</div></div>
+      </div>
+    </div>
+    <div style="background: #0E1013; border-left: 1px solid #0E1013; display: grid; grid-template-rows: 1.25fr 1fr; gap: 1px;">
+      <div style="background: #0E1013; display: grid; grid-template-rows: 1fr auto; padding: 48px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="figures/drawings-3d-view.png" alt="MK-10 three-view" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 20px;">Three-view · span 8.78 m · NACA 2415 wing, NACA 0012 tail</div>
+      </div>
+      <div style="background: #0E1013; border-top: 1px solid #262A30; display: grid; grid-template-rows: 1fr auto; padding: 32px 56px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+        <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="analysis/plots/vn-diagram.png" alt="V-n diagram" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 18px 0 24px;">V-n envelope · manoeuvring + gust · sets the strip load cases</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-label="04 UAV" data-screen-label="07" data-speaker-notes="Team UAV project. Every subsystem modelled and integrated into one master assembly with a ballooned BOM. Vendor CAD is flagged as not-original." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 720px 1fr;">
+    <div style="padding: 72px 56px 72px 96px; display: grid; grid-template-rows: auto 1fr auto; gap: 36px;">
+      <div>
+        <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 24px;"><span style="color: #B23A1F;">04</span><span>UAV · systems integration · CAD</span></div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 62px; line-height: 1.02; letter-spacing: -0.03em; margin: 0;">PANO-VISTA fixed-wing UAV</h2>
+      </div>
+      <div style="display: grid; gap: 22px; align-content: start;">
+        <div style="font-size: 28px; line-height: 1.45; color: #3A3B3E;">Tractor-configuration airframe with tricycle gear and full control surfaces, modelled part-by-part and mated into a master assembly with propulsion, avionics and every control linkage. Team: Bernaldo, Dominguez, Pardillo, Paulino, Yamanaka.</div>
+        <div style="border-left: 4px solid #B23A1F; padding: 4px 0 4px 22px; font-size: 27px; line-height: 1.4;"><strong style="font-weight: 600;">Buildable, not just modelled</strong> — real hardware dimensions, neutral STEP/IGES exports, ballooned BOM callouts.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 600;">A2212/6T</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">2200 KV brushless · 6035 prop</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 600;">40 A ESC</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">Li-Po 105 × 35 × 25 mm</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 600;">Crossfire</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">TBS Nano RX receiver</div></div>
+        <div style="background: #F2F0EA; padding: 22px 24px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 600;">4 servos</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #6B6A64; margin-top: 6px;">One per control surface</div></div>
+      </div>
+    </div>
+    <div style="background: #0E1013; border-left: 1px solid #0E1013; display: grid; grid-template-rows: 1fr auto; padding: 72px 72px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+      <img src="figures/docs-exploded-view.png" alt="PANO-VISTA exploded view" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" />
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 24px 0 40px;">Exploded isometric · airframe, propulsion, avionics and linkages in one master assembly</div>
+    </div>
+  </section>
+
+  <section data-label="05 Rotor" data-screen-label="08" data-speaker-notes="Rotor blade: hand drafting on tracing paper, then parametric CAD, then a dimensioned drawing. The twist distribution is the blade element theory result, not an arbitrary shape." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-columns: 720px 1fr;">
+    <div style="padding: 72px 56px 72px 96px; display: grid; grid-template-rows: auto 1fr auto; gap: 36px;">
+      <div>
+        <div style="display: flex; gap: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 24px;"><span style="color: #B23A1F;">05</span><span>Rotorcraft · drafting · CAD</span></div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 62px; line-height: 1.02; letter-spacing: -0.03em; margin: 0;">Two-blade rotor: tracing paper to dimensioned CAD</h2>
+      </div>
+      <div style="display: grid; gap: 22px; align-content: start;">
+        <div style="font-size: 28px; line-height: 1.45; color: #3A3B3E;">Ø71.10 in two-blade rotor. Orthographic views hand-drafted first to establish geometry and drawing convention, then blade and hub modelled as separate parts, mated, and drawn as a formal dimensioned sheet.</div>
+        <div style="border-left: 4px solid #B23A1F; padding: 4px 0 4px 22px; font-size: 27px; line-height: 1.4;"><strong style="font-weight: 600;">Twist follows the theory</strong> — pitch falls 78.04° → 23.52° outboard, holding angle of attack roughly constant as Ωr rises.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 22px 20px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 600; font-variant-numeric: tabular-nums;">78.04°</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #6B6A64; margin-top: 6px;">Station 1, inboard</div></div>
+        <div style="background: #F2F0EA; padding: 22px 20px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 600; font-variant-numeric: tabular-nums;">39.82°</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #6B6A64; margin-top: 6px;">Station 2, mid-span</div></div>
+        <div style="background: #F2F0EA; padding: 22px 20px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 600; font-variant-numeric: tabular-nums;">23.52°</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; color: #6B6A64; margin-top: 6px;">Station 3, outboard</div></div>
+      </div>
+    </div>
+    <div style="background: #0E1013; border-left: 1px solid #0E1013; display: grid; grid-template-rows: 1fr auto; padding: 72px 72px 0; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+      <div style="background: #FFFFFF; border: 1px solid #333A42; padding: 14px; display: grid; min-height: 0;"><img src="figures/iso.png" alt="Rotor assembly isometric" style="width: 100%; height: 100%; object-fit: contain; min-height: 0;" /></div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #AEB6BF; padding: 24px 0 40px;">Rotor assembly · Ø71.10 in · solidity 0.095 · P/D 1.37 · hub bolt pattern 4 × Ø0.67 in</div>
+    </div>
+  </section>
+
+  <section data-label="How I work" data-screen-label="09" data-speaker-notes="Six habits that hold across all five projects. The fourth one is the one worth hiring for: failures stay visible with their consequence bounded." style="background: #15171B; color: #F2F0EA; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-rows: auto 1fr; padding: 72px 96px; gap: 48px;">
+    <div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #E0704F; margin-bottom: 24px;">How I work</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 76px; line-height: 1.02; letter-spacing: -0.03em; margin: 0; max-width: 30ch;">A result is only as good as the gate it passed.</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 1px; background: #33353A; border: 1px solid #33353A;">
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #8A887F;">01 — GATED PHASES</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">Hand calc before CAD, CAD before mesh, mesh before load. Each phase validates against the one before it.</div></div>
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #8A887F;">02 — CLASSIFIED STRESS</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">Linearised membrane + bending on a path, not a probe maximum. Singular peaks identified and excluded.</div></div>
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #8A887F;">03 — CONVERGENCE OR A BAND</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">0.62 % where refinement converges; a 7.02–7.12 band where it does not, rather than a false single figure.</div></div>
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #E0704F;">04 — FAILURES STAY VISIBLE</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">Two of seventeen gates failed; the tank misses its own target at 1.91. Published, with consequence bounded.</div></div>
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #8A887F;">05 — TRACEABLE VALUES</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">Every dimension, tolerance and fit tied to a source and a claim tier in a value register.</div></div>
+      <div style="background: #1B1E23; padding: 36px 34px; display: grid; align-content: start; gap: 16px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; color: #8A887F;">06 — MAKEABLE OR IT ISN'T DONE</div><div style="font-size: 27px; line-height: 1.4; color: #E8E5DE;">GD&amp;T sheets, stack-ups closing on frozen geometry, machining route, inspection plan, BOM, RFQ.</div></div>
+    </div>
+  </section>
+
+  <section data-label="Contact" data-screen-label="10" data-speaker-notes="Open to aerospace and mechanical roles. Happy to walk through any project end to end, including the parts that failed." style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', sans-serif; display: grid; grid-template-rows: auto 1fr auto; padding: 72px 96px;">
+    <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6A64;">
+      <span>Thank you</span>
+      <span>Mark Lorenz Yamanaka · 2026</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: center;">
+      <div style="display: grid; gap: 36px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; letter-spacing: 0.16em; text-transform: uppercase; color: #B23A1F;">Open to aerospace / mechanical roles</div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 92px; line-height: 1.0; letter-spacing: -0.035em; margin: 0; max-width: 22ch;">Happy to walk through any of these end to end.</h2>
+        <div style="font-size: 30px; line-height: 1.45; color: #3A3B3E; max-width: 44ch;">Including the parts that failed — those are usually the more useful conversation.</div>
+      </div>
+      <div style="display: grid; gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: 30px 32px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6A64; margin-bottom: 10px;">Email</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 30px;">dmmark.work@gmail.com</div></div>
+        <div style="background: #F2F0EA; padding: 30px 32px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6A64; margin-bottom: 10px;">LinkedIn</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 30px;">mark-lorenz-yamanaka</div></div>
+        <div style="background: #F2F0EA; padding: 30px 32px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6A64; margin-bottom: 10px;">Repositories</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 30px;">github.com/dmmarkwork-cloud</div></div>
+        <div style="background: #F2F0EA; padding: 30px 32px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 21px; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6A64; margin-bottom: 10px;">Currently learning</div><div style="font-size: 26px; line-height: 1.4;">Classical lamination theory · composite laminates · topology optimisation</div></div>
+      </div>
+    </div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: #8A887F; border-top: 1px solid #D9D5CC; padding-top: 24px;">All figures in this deck are exports from the committed CFD, FEA and CAD work in the linked repositories.</div>
+  </section>
+</x-import>
+</x-dc>
+</body>
+</html>
