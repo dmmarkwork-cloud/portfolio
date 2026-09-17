@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+body { margin: 0; background: #F2F0EA; -webkit-font-smoothing: antialiased; }
+a { color: #B23A1F; text-decoration: none; }
+a:hover { color: #15171B; }
+::selection { background: #15171B; color: #F2F0EA; }
+</style>
+</helmet>
+<div style="background: #F2F0EA; color: #15171B; font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh;">
+
+  <div style="display: flex; justify-content: space-between; gap: 16px; align-items: baseline; padding: 14px clamp(20px, 5vw, 64px); border-bottom: 1px solid #D9D5CC; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64;">
+    <span>Aeronautical Engineering Portfolio</span>
+    <span>Five projects · CFD · FEA · CAD · DFM</span>
+    <span>2026</span>
+  </div>
+
+  <header style="padding: clamp(40px, 7vw, 96px) clamp(20px, 5vw, 64px) clamp(32px, 5vw, 64px); max-width: 1320px; margin: 0 auto;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(24px, 4vw, 56px); align-items: end;">
+      <div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #B23A1F; margin-bottom: 18px;">Mark Lorenz Yamanaka · Tsukuba, Japan</div>
+        <h1 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(38px, 6.2vw, 82px); line-height: 0.98; letter-spacing: -0.03em; margin: 0 0 22px; text-wrap: balance;">Analysis that survives<br />being checked.</h1>
+        <p style="font-size: clamp(16px, 1.4vw, 19px); line-height: 1.55; max-width: 54ch; margin: 0; color: #3A3B3E; text-wrap: pretty;">I design and analyse aerospace structures — compressible flow, thermal-structural FSI, pressure vessels, airframes — and carry the result through to a drawing set someone can actually quote. Every number below is traceable to a gate, a mesh, or a source.</p>
+      </div>
+      <div style="display: grid; gap: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #D9D5CC; padding-left: clamp(16px, 2.5vw, 32px);">
+        <div style="display: flex; gap: 14px;"><span style="color: #6B6A64; width: 78px; flex: none;">Discipline</span><span>Aerospace / mechanical</span></div>
+        <div style="display: flex; gap: 14px;"><span style="color: #6B6A64; width: 78px; flex: none;">Solvers</span><span>Fluent · Mechanical · CalculiX</span></div>
+        <div style="display: flex; gap: 14px;"><span style="color: #6B6A64; width: 78px; flex: none;">CAD</span><span>SolidWorks · SpaceClaim · CATIA</span></div>
+        <div style="display: flex; gap: 14px;"><span style="color: #6B6A64; width: 78px; flex: none;">Email</span><a href="mailto:dmmark.work@gmail.com">dmmark.work@gmail.com</a></div>
+        <div style="display: flex; gap: 14px;"><span style="color: #6B6A64; width: 78px; flex: none;">LinkedIn</span><a href="https://www.linkedin.com/in/mark-lorenz-yamanaka-6161a3210/">mark-lorenz-yamanaka</a></div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC; margin-top: clamp(32px, 5vw, 64px);">
+      <div style="background: #F2F0EA; padding: 20px 22px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em;">17</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6A64; margin-top: 6px;">FEA validation gates</div></div>
+      <div style="background: #F2F0EA; padding: 20px 22px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em;">88,800</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6A64; margin-top: 6px;">Structured CFD cells</div></div>
+      <div style="background: #F2F0EA; padding: 20px 22px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em;">1.74</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6A64; margin-top: 6px;">Peak wall y+ resolved</div></div>
+      <div style="background: #F2F0EA; padding: 20px 22px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em;">3 sheets</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6A64; margin-top: 6px;">GD&amp;T drawing set, Rev C</div></div>
+      <div style="background: #F2F0EA; padding: 20px 22px;"><div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em;">2</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6A64; margin-top: 6px;">Failed gates, published</div></div>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 30; background: rgba(242,240,234,0.94); backdrop-filter: blur(8px); border-top: 1px solid #D9D5CC; border-bottom: 1px solid #D9D5CC; padding: 0 clamp(20px, 5vw, 64px);">
+    <div style="max-width: 1320px; margin: 0 auto; display: flex; gap: clamp(14px, 3vw, 34px); flex-wrap: wrap; padding: 12px 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em;">
+      <a href="#p-nozzle" style="color: #15171B;" style-hover="color: #B23A1F;">01 / CD Nozzle</a>
+      <a href="#p-tank" style="color: #15171B;" style-hover="color: #B23A1F;">02 / Propellant Tank</a>
+      <a href="#p-mk10" style="color: #15171B;" style-hover="color: #B23A1F;">03 / MK-10 Aircraft</a>
+      <a href="#p-uav" style="color: #15171B;" style-hover="color: #B23A1F;">04 / PANO-VISTA UAV</a>
+      <a href="#p-rotor" style="color: #15171B;" style-hover="color: #B23A1F;">05 / Rotor Blade</a>
+      <a href="#method" style="color: #6B6A64;" style-hover="color: #B23A1F;">How I work</a>
+    </div>
+  </nav>
+
+  <main style="max-width: 1320px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 64px) clamp(60px, 8vw, 120px);">
+    <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+      <section id="{{ p.anchor }}" data-screen-label="{{ p.label }}" style="padding: clamp(44px, 6vw, 88px) 0; border-bottom: 1px solid #D9D5CC;">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(20px, 4vw, 52px); align-items: start; margin-bottom: clamp(24px, 3.5vw, 40px);">
+          <div>
+            <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 14px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6A64;">
+              <span style="color: #B23A1F;">{{ p.num }}</span>
+              <span>{{ p.kicker }}</span>
+            </div>
+            <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(27px, 3.4vw, 45px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 16px; max-width: 24ch; text-wrap: balance;">{{ p.title }}</h2>
+            <p style="font-size: 16px; line-height: 1.58; color: #3A3B3E; margin: 0 0 18px; max-width: 58ch; text-wrap: pretty;">{{ p.blurb }}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <sc-for list="{{ p.tools }}" as="t" hint-placeholder-count="4">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; padding: 5px 9px; border: 1px solid #D9D5CC; color: #4A4B4E; background: #EAE7DF;">{{ t }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="border-left: 1px solid #D9D5CC; padding-left: clamp(16px, 2.5vw, 30px); display: grid; gap: 14px;">
+            <div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 6px;">The question</div>
+              <div style="font-size: 15px; line-height: 1.5; color: #15171B;">{{ p.question }}</div>
+            </div>
+            <div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; margin-bottom: 6px;">The answer</div>
+              <div style="font-size: 15px; line-height: 1.5; color: #15171B;">{{ p.answer }}</div>
+            </div>
+            <sc-if value="{{ showRepoLinks }}" hint-placeholder-val="{{ true }}">
+              <a href="{{ p.repo }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; border-bottom: 1px solid #B23A1F; padding-bottom: 2px; justify-self: start;">View repository →</a>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0; border: 1px solid #15171B; border-bottom: none; background: #15171B;">
+          <sc-for list="{{ p.views }}" as="v" hint-placeholder-count="3">
+            <sc-if value="{{ v.active }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ v.select }}" style="appearance: none; border: none; cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; padding: 11px 16px; background: #F2F0EA; color: #15171B;">{{ v.label }}</button>
+            </sc-if>
+            <sc-if value="{{ v.idle }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ v.select }}" style="appearance: none; border: none; cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; padding: 11px 16px; background: #15171B; color: #9A9890;" style-hover="color: #F2F0EA;">{{ v.label }}</button>
+            </sc-if>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 1px; background: #15171B; border: 1px solid #15171B;">
+          <div style="background: #0E1013; display: flex; flex-direction: column; min-width: 0; flex: 3 1 340px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 11px 16px; border-bottom: 1px solid #262A30; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;">
+              <span style="color: #C9D1DA;">{{ p.figId }}</span>
+              <span style="color: #7E8794;">{{ p.viewLabel }}</span>
+            </div>
+            <button type="button" onClick="{{ p.zoom }}" title="Click to enlarge" style="appearance: none; border: none; cursor: zoom-in; display: block; width: 100%; text-align: left; position: relative; padding: clamp(18px, 2.6vw, 34px); background-color: #0E1013; background-image: linear-gradient(to right, rgba(201,209,218,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,209,218,0.05) 1px, transparent 1px); background-size: 24px 24px;">
+              <div style="position: absolute; left: 11px; top: 11px; width: 13px; height: 13px; border-left: 1px solid #4A525C; border-top: 1px solid #4A525C;"></div>
+              <div style="position: absolute; right: 11px; top: 11px; width: 13px; height: 13px; border-right: 1px solid #4A525C; border-top: 1px solid #4A525C;"></div>
+              <div style="position: absolute; left: 11px; bottom: 11px; width: 13px; height: 13px; border-left: 1px solid #4A525C; border-bottom: 1px solid #4A525C;"></div>
+              <div style="position: absolute; right: 11px; bottom: 11px; width: 13px; height: 13px; border-right: 1px solid #4A525C; border-bottom: 1px solid #4A525C;"></div>
+              <div style="position: relative; background: #FFFFFF; border: 1px solid #333A42; padding: 10px; min-height: 120px;">{{ p.figureImg }}</div>
+              <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #7E8794;">
+                <span>⤢ Click figure to enlarge</span>
+              </div>
+            </button>
+            <div style="border-top: 1px solid #262A30; padding: 15px clamp(14px, 2.5vw, 26px); font-size: 13.5px; line-height: 1.55; color: #AEB6BF; text-wrap: pretty;">{{ p.caption }}</div>
+          </div>
+          <div style="background: #15181C; padding: clamp(16px, 2vw, 26px); display: grid; gap: 0; align-content: start; min-width: 0; flex: 1.6 1 270px;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #7E8794; padding-bottom: 12px;">{{ p.metricsTitle }}</div>
+            <sc-for list="{{ p.metrics }}" as="m" hint-placeholder-count="4">
+              <div style="display: grid; gap: 3px; padding: 12px 0; border-top: 1px solid #262A30;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+                  <span style="font-size: 13px; color: #AEB6BF;">{{ m.k }}</span>
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; color: #F2F4F6; text-align: right; font-variant-numeric: tabular-nums;">{{ m.v }}</span>
+                </div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.04em; color: #99A2AD; font-variant-numeric: tabular-nums;">{{ m.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ p.hasNote }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top: clamp(18px, 2.4vw, 30px); background: #0E1013; color: #F2F0EA; border-top: 3px solid #B23A1F; padding: clamp(26px, 3.4vw, 44px) clamp(22px, 3vw, 40px);">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #E0704F; margin-bottom: 20px;">Correction on record</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: clamp(24px, 3.5vw, 56px); align-items: center;">
+              <div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.12; letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance;">{{ p.noteTitle }}</div>
+                <div style="font-size: 15.5px; line-height: 1.6; color: #AEB6BF; max-width: 58ch; text-wrap: pretty;">{{ p.noteBody }}</div>
+              </div>
+              <div style="display: flex; gap: clamp(18px, 2.4vw, 34px); align-items: flex-end; justify-self: end;">
+                <div>
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #9BA4AF; margin-bottom: 8px;">{{ p.noteFromLabel }}</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(38px, 4.4vw, 60px); line-height: 1; color: #8A939E; text-decoration: line-through; font-variant-numeric: tabular-nums;">{{ p.noteFrom }}</div>
+                </div>
+                <div style="font-size: 26px; color: #E0704F; padding-bottom: 8px;">→</div>
+                <div>
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #C9D1DA; margin-bottom: 8px;">{{ p.noteToLabel }}</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(38px, 4.4vw, 60px); line-height: 1; color: #FFFFFF; font-variant-numeric: tabular-nums;">{{ p.noteTo }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+    </sc-for>
+
+    <section id="method" data-screen-label="Method" style="padding: clamp(48px, 6vw, 92px) 0 clamp(32px, 4vw, 56px);">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #B23A1F; margin-bottom: 16px;">How I work</div>
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: clamp(28px, 3.6vw, 48px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 clamp(28px, 4vw, 48px); max-width: 28ch; text-wrap: balance;">A result is only as good as the gate it passed.</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: #D9D5CC; border: 1px solid #D9D5CC;">
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">01 — GATED PHASES</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Hand calculation before CAD, CAD before mesh, mesh before load. Each phase validates against the one before it — area–Mach against CFD, CFD wall integral against FEA reaction, FEA against thin-wall theory.</p>
+        </div>
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">02 — CLASSIFIED STRESS</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Linearised membrane + bending on a through-thickness path, not a body-scoped probe maximum. Singular re-entrant peaks are identified and excluded, not quietly reported as the answer.</p>
+        </div>
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">03 — CONVERGENCE OR A BAND</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Where refinement converges monotonically I report a converged value (0.62 % between meshes). Where it does not, I report a band — 7.02 to 7.12 — rather than a false single figure.</p>
+        </div>
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">04 — FAILURES STAY VISIBLE</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Two of seventeen gates failed on the nozzle; the tank misses its own FoS target at 1.91. Both are published with their consequence bounded, not re-scoped into a pass.</p>
+        </div>
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">05 — TRACEABLE VALUES</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Every dimension, tolerance and fit in the DFM package is tied to a source and a claim tier in a value register — down to a gasket bolt load taken from ASME BPVC VIII-1 Appendix 2.</p>
+        </div>
+        <div style="background: #F2F0EA; padding: clamp(20px, 2.5vw, 30px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #6B6A64; margin-bottom: 12px;">06 — MAKEABLE OR IT ISN'T DONE</div>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3A3B3E; text-wrap: pretty;">Analysis carries into a drawing set: GD&amp;T to ASME Y14.5-2018, tolerance stack-ups that close against the frozen FEA geometry, a machining route, inspection plan, BOM and RFQ.</p>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Toolset" style="padding: 0 0 clamp(40px, 5vw, 72px);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: clamp(20px, 3vw, 40px);">
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; padding-bottom: 12px; border-bottom: 1px solid #D9D5CC; margin-bottom: 14px;">CAD &amp; Design</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">SolidWorks</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">CATIA</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">SpaceClaim</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">GD&amp;T</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">DFM</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; padding-bottom: 12px; border-bottom: 1px solid #D9D5CC; margin-bottom: 14px;">Simulation</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">ANSYS Fluent</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">ANSYS Mechanical</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">CalculiX / PrePoMax</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">OpenFOAM</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">ParaView</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; padding-bottom: 12px; border-bottom: 1px solid #D9D5CC; margin-bottom: 14px;">Analysis &amp; code</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">Python / handcalcs</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">Jupyter</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">XFOIL</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">Excel</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #EAE7DF; border: 1px solid #D9D5CC;">OriginLab</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6A64; padding-bottom: 12px; border-bottom: 1px solid #D9D5CC; margin-bottom: 14px;">Currently learning</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #F2F0EA; border: 1px dashed #C6C1B6; color: #6B6A64;">Classical lamination theory</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #F2F0EA; border: 1px dashed #C6C1B6; color: #6B6A64;">Composite laminate analysis</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 6px 10px; background: #F2F0EA; border: 1px dashed #C6C1B6; color: #6B6A64;">Topology optimisation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="background: #15171B; color: #F2F0EA; padding: clamp(44px, 6vw, 84px) clamp(20px, 5vw, 64px);">
+    <div style="max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(24px, 4vw, 56px); align-items: end;">
+      <div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #8A887F; margin-bottom: 16px;">Open to aerospace / mechanical roles</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 3.4vw, 44px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.06;">Happy to walk through any<br />of these end to end.</div>
+      </div>
+      <div style="display: grid; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 14px;">
+        <a href="mailto:dmmark.work@gmail.com" style="color: #F2F0EA; border-bottom: 1px solid #4A4B4E; padding-bottom: 8px;" style-hover="color: #E0704F;">dmmark.work@gmail.com</a>
+        <a href="https://www.linkedin.com/in/mark-lorenz-yamanaka-6161a3210/" style="color: #F2F0EA; border-bottom: 1px solid #4A4B4E; padding-bottom: 8px;" style-hover="color: #E0704F;">linkedin.com/in/mark-lorenz-yamanaka</a>
+        <a href="https://github.com/dmmarkwork-cloud/aeronautics" style="color: #F2F0EA; border-bottom: 1px solid #4A4B4E; padding-bottom: 8px;" style-hover="color: #E0704F;">github.com/dmmarkwork-cloud</a>
+        <div style="color: #8A887F; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 6px;">Mark Lorenz Yamanaka · Tsukuba · 2026</div>
+      </div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ lightboxOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeLightbox }}" style="position: fixed; inset: 0; z-index: 90; background: rgba(21,23,27,0.93); display: flex; align-items: center; justify-content: center; padding: clamp(20px, 4vw, 60px); cursor: zoom-out;">
+      <div style="max-width: 1400px; width: 100%;">
+        {{ lightboxImg }}
+        <div style="display: flex; justify-content: space-between; gap: 20px; margin-top: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #C6C1B6;">
+          <span style="max-width: 80ch; line-height: 1.5;">{{ lightboxCaption }}</span>
+          <span style="flex: none;">Click anywhere to close</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showRepoLinks&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+class Component extends DCLogic {
+  state = { view: [0, 0, 0, 0, 0], lightbox: null };
+
+  data() {
+    return [
+      {
+        anchor: "p-nozzle", label: "01 Nozzle", num: "01", kicker: "Propulsion · multiphysics · DFM",
+        title: "SS316 converging–diverging nozzle: thermal, structural & manufacturing assessment",
+        blurb: "An uncooled stainless converging–diverging nozzle at Pc = 2 MPa, Tc = 800 K, area ratio 4. One-way FSI: 2D axisymmetric k-ω SST CFD hands wall temperature and pressure to a steady-state thermal and static structural chain, then the frozen geometry is carried into a toleranced, GD&T'd drawing set for a ground-test prototype.",
+        question: "Can SS316 survive the combined thermal and pressure loading at the design point?",
+        answer: "Yes against yield — FoS 7.12 at the governing junction. The binding questions are the startup transient and creep, not yield.",
+        tools: ["ANSYS Fluent 2026", "ANSYS Mechanical", "SolidWorks → SpaceClaim", "handcalcs", "ASME Y14.5-2018"],
+        repo: "https://github.com/dmmarkwork-cloud/ss316-cd-nozzle-feasibility",
+        note: {
+          title: "v1.0 was wrong. I said so in the README.",
+          body: "v1.0 reported FoS 42.70 at the throat. Two independent errors: the wrong location was assessed, and the assessed quantity was not a classified stress. v2.0 corrects both and the old tag is preserved rather than overwritten.",
+          fromLabel: "v1.0 FoS", from: "42.70", toLabel: "v2.0 FoS", to: "7.12"
+        },
+        views: [
+          { label: "CFD · Mach", src: "figures/cfd-figures-mach-contour.png", metricsTitle: "CFD validation gates",
+            caption: "Mach contour from the converged Fluent solution on a structured mapped-quad mesh, 444 × 200 = 88,800 cells, 100 % quad with no non-conformal interfaces. Area-weighted exit Mach 2.85 against hand-calc 2.94 (3.1 %, gate passed); the 2.98 peak is the inviscid core value, not the bulk exit.",
+            metrics: [
+              { k: "Exit Mach, area-weighted", v: "2.85", note: "vs 2.94 hand-calc · 3.1 % · gate passed" },
+              { k: "Peak wall y+", v: "1.74", note: "first cell 1.71 µm · viscous sublayer resolved" },
+              { k: "Mass imbalance", v: "3.0 × 10⁻⁵ %", note: "three orders better than v1.0" },
+              { k: "Discharge coefficient", v: "0.977", note: "direct test of throat BL resolution" }
+            ] },
+          { label: "FEA · global", src: "fea/mesh3/von-mises-global.png", metricsTitle: "Thermal-structural result",
+            caption: "von Mises field on mesh J3 from the one-way FSI chain. The 82.283 MPa maximum sits at the unfilleted junction kink — re-entrant, singular, and excluded from the assessment. The v1.0 inlet-vertex constraint singularity is gone: the displacement constraint moved from a vertex to the full inlet edge.",
+            metrics: [
+              { k: "Governing M+B stress", v: "29.611 MPa", note: "linearised membrane + bending, axisym straight" },
+              { k: "Factor of safety", v: "7.12", note: "band 7.02–7.12 across J1–J3" },
+              { k: "Wall temperature", v: "526.83 °C", note: "allowable interpolated at this temperature" },
+              { k: "Through-wall ΔT", v: "1.26 K", note: "natural convection is 99.64 % of resistance" }
+            ] },
+          { label: "FEA · junction", src: "fea/mesh3/von-mises-junction-converging.png", metricsTitle: "Why the junction governs",
+            caption: "Chamber-to-converging junction, converging side, inner surface — the governing location. Linearised M+B here is 1.72× the throat fillet value, and bending contributes 71–77 % of it. Increasing wall thickness therefore improves FoS, reversing the trend v1.0 reported at the throat.",
+            metrics: [
+              { k: "Junction vs throat", v: "1.72 ×", note: "29.611 MPa vs 17.183 MPa" },
+              { k: "Bending share of M+B", v: "71–77 %", note: "thermal bending only 4–16 %" },
+              { k: "FoS at t = 3 / 4 / 5 mm", v: "4.62 / 7.12 / 10.18", note: "v1.0 throat values withdrawn" },
+              { k: "Creep driver, membrane S₁", v: "9.914 MPa", note: "above 410 °C creep onset — the real limit" }
+            ] },
+          { label: "CAD · geometry", src: "figures/cad-cad_dimensions.png", metricsTitle: "Frozen as-built contour",
+            caption: "Nozzle half-section, dimensions in mm. Throat radius 15 nominal — as-built minimum 14.942, a −0.77 % area deviation formally dispositioned rather than silently accepted. Converging side is a 47.43° taper blended into the throat through an R22.5 arc, with no junction fillet.",
+            metrics: [
+              { k: "Throat radius", v: "15 mm", note: "as-built min 14.942 · −0.77 % area" },
+              { k: "Area ratio Ae/At", v: "4", note: "exit radius 30 mm" },
+              { k: "Contraction ratio", v: "8", note: "from M_inlet ≤ 0.1, NASA SP-8120" },
+              { k: "Wall thickness", v: "4 mm", note: "sensitivity run at 3 / 4 / 5 mm" }
+            ] },
+          { label: "DFM · inlet joint", src: "dfm/images/exploded-view.png", metricsTitle: "Manufacturing package",
+            caption: "Inlet-joint assembly CDN-000: nozzle body, flexible-graphite gasket, mounting flange, 8 × M8 A286 floating fasteners. Pilot locates, bolts clamp — a single Ø92.80 H7/g6 locational-clearance fit centres the flange and the fasteners only clamp, positioned at MMC.",
+            metrics: [
+              { k: "Drawing set", v: "3 sheets, Rev C", note: "ASME Y14.5-2018 · first-angle · A2" },
+              { k: "CTQ", v: "throat wall 4 +0.3/0", note: "justified on creep life, not yield margin" },
+              { k: "Concentricity stack", v: "0.060 / 0.10 mm", note: "worst-case 1-D · 1.68× margin" },
+              { k: "Contour control", v: "profile 0.2 A|B", note: "+ total runout 0.05 A|B" }
+            ] }
+        ]
+      },
+      {
+        anchor: "p-tank", label: "02 Tank", num: "02", kicker: "Pressure vessel · FEA · convergence",
+        title: "Thin-walled Al 6061-T6 propellant tank under internal pressurisation",
+        blurb: "Static linear FEA of a 3 mm cylindrical tank with hemispherical end caps at 3.25 MPa, solved in CalculiX with quadratic tetrahedra. Hand calculation sets the baseline, a three-level mesh study establishes convergence, and the boundary condition rationale is documented — including the one I had to correct.",
+        question: "Does the tank hold a factor of safety of at least 2.0 against yield everywhere at maximum operating pressure?",
+        answer: "No. FoS is 1.91 at the cylinder-to-hemisphere junction. Going from 3 mm to ~3.2 mm wall meets it — a design-margin finding, not a yield failure.",
+        tools: ["PrePoMax v2.5.1", "CalculiX", "C3D10 elements", "SolidWorks 2022", "Thin-wall theory"],
+        repo: "https://github.com/dmmarkwork-cloud/gas-vessel-fea",
+        note: {
+          title: "The boundary condition was corrupting the answer.",
+          body: "An earlier model fixed the cylinder-to-cap junction edge — the highest stress zone — which artificially stiffened the critical region and produced 204.1 MPa. Corrected to two hemisphere tip vertices: a minimum constraint set that kills all six rigid-body modes without adding wall stiffness.",
+          fromLabel: "Fixed junction", from: "204.1 MPa", toLabel: "Tip vertices", to: "144.5 MPa"
+        },
+        views: [
+          { label: "Geometry & load", src: "figures/images-gas-vessel-geometry-image.png", metricsTitle: "Design point",
+            caption: "Cylinder R = 147 mm, wall 3 mm, 400 mm barrel, hemispherical caps, 700 mm overall. Operating pressure was back-calculated from the FoS = 2.0 criterion applied to von Mises stress in the cylindrical section, which is what makes the junction shortfall the whole finding.",
+            metrics: [
+              { k: "Operating pressure", v: "3.25 MPa", note: "32.5 bar · back-calculated from FoS = 2.0" },
+              { k: "R / t", v: "49", note: "thin-wall assumption valid (> 10)" },
+              { k: "Material", v: "Al 6061-T6", note: "E 68.9 GPa · σy 276 MPa" },
+              { k: "Radial displacement", v: "0.402 mm", note: "limit 0.750 mm · 53.6 % utilisation" }
+            ] },
+          { label: "Mesh · coarse", src: "images/mesh_coarse.png", metricsTitle: "Coarse mesh — baseline",
+            caption: "Coarse mesh: 15 mm max / 5 mm min element size, 22,131 C3D10 elements, 44,087 nodes. Used as the convergence baseline; the junction maximum here is 148.7 MPa and the safety factor reads 1.86.",
+            metrics: [
+              { k: "Elements / nodes", v: "22,131 / 44,087", note: "15 mm max · 5 mm min" },
+              { k: "Mid-cylinder von Mises", v: "136.7 MPa", note: "hand-calc baseline 137.91 MPa" },
+              { k: "Global maximum", v: "148.7 MPa", note: "cylinder-to-hemisphere junction" },
+              { k: "Factor of safety", v: "1.86", note: "baseline — not yet converged" }
+            ] },
+          { label: "Mesh · fine", src: "images/mesh_fine.png", metricsTitle: "Fine mesh — governing",
+            caption: "Fine mesh: 6 mm max / 1 mm min, 132,628 elements, 264,007 nodes. Change from the medium mesh is 0.62 %, inside the 2 % criterion, so this mesh governs every acceptance check. FEA agrees with hand calculation to −1.0 % at mid-cylinder and −2.3 % in the hemisphere.",
+            metrics: [
+              { k: "Elements / nodes", v: "132,628 / 264,007", note: "6 mm max · 1 mm min" },
+              { k: "Mesh convergence", v: "0.62 %", note: "criterion ≤ 2 % · met medium → fine" },
+              { k: "Global maximum", v: "144.5 MPa", note: "4.8 % over the 137.91 MPa limit" },
+              { k: "Factor of safety", v: "1.91", note: "target 2.00 · reported as a FAIL" }
+            ] }
+        ]
+      },
+      {
+        anchor: "p-mk10", label: "03 MK-10", num: "03", kicker: "Aircraft design · loads · structures",
+        title: "MK-10 two-seat light aircraft, concept through spar sizing",
+        blurb: "A single design baseline carried from mission definition to a stress-analysed, CAD-modelled three-view across a two-part aircraft design sequence: powerplant trade study, weight and CG travel to FAR Part 23, drag buildup, performance, V-n envelope, spanwise strip loads, and front/rear spar shear-moment sizing per Bruhn.",
+        question: "Can a 1,650 lb two-seat trainer close on weight, performance and structure with one consistent baseline?",
+        answer: "Yes — 459 nmi range, 7.63 h endurance, 9,536 ft service ceiling, with spars sized against a 4.936 limit load envelope.",
+        tools: ["SolidWorks", "Excel", "OriginLab", "FAR Part 23", "Bruhn"],
+        repo: "https://github.com/dmmarkwork-cloud/mk10-aircraft-design",
+        views: [
+          { label: "Three-view", src: "figures/drawings-3d-view.png", metricsTitle: "Configuration & sizing",
+            caption: "Final three-view of the MK-10: low straight-tapered wing, fixed tricycle gear, single engine forward — configuration inspired by the Tecnam P2002-JF. Wing NACA 2415, tail NACA 0012, resolved in CAD from the sized baseline rather than drawn to look right.",
+            metrics: [
+              { k: "Gross weight", v: "1,649.25 lb", note: "748.09 kg · FAR Part 23 weight build" },
+              { k: "Wing area / span", v: "126.52 ft² / 28.85 ft", note: "11.75 m² / 8.79 m" },
+              { k: "Aspect ratio", v: "6.58", note: "straight-tapered low wing" },
+              { k: "Powerplant", v: "125 BHP @ 2,550 rpm", note: "from the powerplant trade study" }
+            ] },
+          { label: "V-n envelope", src: "analysis/plots/vn-diagram.png", metricsTitle: "Loads envelope",
+            caption: "V-n flight envelope combining manoeuvring and gust load cases. The envelope corners set the load distributions used for the spanwise wing-strip analysis and, through that, the front and rear spar shear-moment sizing.",
+            metrics: [
+              { k: "Design limit load", v: "4.936", note: "manoeuvring + gust cases combined" },
+              { k: "Design cruise speed", v: "137.20 mph", note: "envelope corner speed" },
+              { k: "Wing strips analysed", v: "10", note: "spanwise strip loads → spar shear/moment" },
+              { k: "Landing cases", v: "3", note: "level · nose-wheel-clear · tail-down" }
+            ] },
+          { label: "Airfoil", src: "analysis/plots/naca-2415-selected.png", metricsTitle: "Aerodynamic selection",
+            caption: "Corrected airfoil characteristics for the selected NACA 2415, plotted as a drag polar against the candidate set. Section data is corrected to the finite wing before it feeds drag buildup and performance.",
+            metrics: [
+              { k: "Wing airfoil", v: "NACA 2415", note: "selected on corrected characteristics" },
+              { k: "Tail airfoil", v: "NACA 0012", note: "symmetric section, horizontal + vertical" },
+              { k: "Correction", v: "section → finite wing", note: "before drag buildup" },
+              { k: "Plotting", v: "OriginLab", note: "source .opju committed with exports" }
+            ] },
+          { label: "Performance", src: "figures/analysis-plots-pa-pr.png", metricsTitle: "Performance closure",
+            caption: "Power available against power required across the speed range — the curve that sets climb rate, the two ceilings, and the range/endurance pair. Level flight, climb, ceiling and range/endurance were all evaluated off this single sized baseline.",
+            metrics: [
+              { k: "Range", v: "459 nmi", note: "off the sized baseline" },
+              { k: "Endurance", v: "7.63 h", note: "matched to the same fuel fraction" },
+              { k: "Service ceiling", v: "9,536 ft", note: "absolute ceiling 11,386 ft" },
+              { k: "Climb", v: "from Pa − Pr", note: "rate of climb vs velocity" }
+            ] }
+        ]
+      },
+      {
+        anchor: "p-uav", label: "04 UAV", num: "04", kicker: "UAV · systems integration · CAD",
+        title: "PANO-VISTA fixed-wing UAV: full airframe and systems assembly",
+        blurb: "A conventional tractor-configuration fixed-wing UAV modelled part-by-part in SolidWorks and brought together in a master assembly with propulsion, avionics and control linkages, plus an exploded isometric carrying the bill-of-materials callouts. Team project — Bernaldo, Dominguez, Pardillo, Paulino, Yamanaka.",
+        question: "Can a complete airframe plus real off-the-shelf hardware be integrated into one coherent, buildable assembly?",
+        answer: "Yes — airframe, propulsion, avionics and every control linkage resolved in a single master assembly with a ballooned BOM.",
+        tools: ["SolidWorks", "STEP / IGES exports", "eDrawings", "BOM callouts"],
+        repo: "https://github.com/dmmarkwork-cloud/pano-vista-uav",
+        views: [
+          { label: "Airframe", src: "figures/docs-exploded-view.png", metricsTitle: "Airframe & controls",
+            caption: "Exploded isometric of the master assembly. Fuselage, wings with ailerons, empennage with elevator and rudder, nose and main landing gear — every part modelled individually, then mated, with push rods, control horns and servo horns resolved for each control surface.",
+            metrics: [
+              { k: "Configuration", v: "tractor fixed-wing", note: "tricycle landing gear" },
+              { k: "Control surfaces", v: "ailerons · elevator · rudder", note: "each with linkage modelled" },
+              { k: "Linkages", v: "push rods 150 × 0.5 mm", note: "control horns 15 × 1 × 3 mm" },
+              { k: "Vendor CAD", v: "flagged separately", note: "off-the-shelf parts marked not-original" }
+            ] },
+          { label: "Propulsion", src: "figures/docs-exploded-view.png", metricsTitle: "Propulsion group",
+            caption: "Propulsion group as integrated into the assembly: A2212/6T brushless motor with adapter, spinner cap and back plate, driving a 6035 propeller, fed through a 40 A brushless ESC from a Li-Po pack. Vendor reference CAD is used where it represents real hardware, and is labelled as such.",
+            metrics: [
+              { k: "Motor", v: "A2212/6T, 2200 KV", note: "26 × 26 × 36 mm" },
+              { k: "ESC", v: "40 A brushless", note: "72 × 26 × 5 mm" },
+              { k: "Propeller", v: "6035", note: "150 × 19 × 10 mm" },
+              { k: "Battery", v: "Li-Po pack", note: "105 × 35 × 25 mm" }
+            ] },
+          { label: "Avionics", src: "figures/docs-exploded-view.png", metricsTitle: "Avionics & actuation",
+            caption: "Receiver and actuation: TBS Crossfire Nano RX driving four Tower Pro micro servos, one per control surface, with a smoke stopper and lock plate in the bench-test loop. Dimensions come from the submitted electronic-parts schedule, not from estimates.",
+            metrics: [
+              { k: "Receiver", v: "TBS Crossfire Nano RX", note: "12 × 11 × 1 mm" },
+              { k: "Servos", v: "4 × Tower Pro micro", note: "32 × 10 × 32 mm each" },
+              { k: "Bench protection", v: "PEONYR FPV smoke stopper", note: "37 × 33 × 10 mm" },
+              { k: "Drawings", v: "orthographic + part sheets", note: "exported PDFs with parts list" }
+            ] }
+        ]
+      },
+      {
+        anchor: "p-rotor", label: "05 Rotor", num: "05", kicker: "Rotorcraft · drafting · CAD",
+        title: "Two-blade helicopter rotor: hand drafting to dimensioned CAD",
+        blurb: "A Ø71.10 in two-blade rotor taken from manual orthographic drafting on tracing paper through parametric CAD to a formal dimensioned engineering drawing. Blade and hub were modelled as separate parts and mated into a full rotor assembly, with the twist distribution following blade element theory.",
+        question: "Does the modelled twist distribution match what blade element theory requires along the span?",
+        answer: "Yes — pitch falls from 78.04° inboard to 23.52° outboard, holding angle of attack roughly constant as local velocity Ωr grows with radius.",
+        tools: ["SolidWorks", "Manual drafting", "Blade element theory"],
+        repo: "https://github.com/dmmarkwork-cloud/rotor-blade-helicopter-design",
+        views: [
+          { label: "Rotor assembly", src: "figures/iso.png", metricsTitle: "Assembly & geometry",
+            caption: "Isometric of the full rotor assembly — blade mated to hub. Both components were modelled individually in SolidWorks, and the dimensioned orthographic drawing (front, top, right side, isometric) was generated from the final mated model for manufacturing reference.",
+            metrics: [
+              { k: "Rotor diameter", v: "Ø 71.10 in", note: "two-blade configuration" },
+              { k: "Solidity", v: "0.095", note: "P/D 1.37" },
+              { k: "Root chord region", v: "5.50 in", note: "hub bolt pattern 4 × Ø0.67 in" },
+              { k: "Deliverable", v: "dimensioned 4-view", note: "generated from the mated assembly" }
+            ] },
+          { label: "Twist distribution", src: "figures/iso.png", metricsTitle: "Blade element reasoning",
+            caption: "Three drafted blade stations give a nonlinear twist distribution — 78.04°, 39.82°, 23.52° from root to tip. That is the expected blade element theory result: pitch has to fall toward the tip to keep angle of attack roughly constant while local velocity Ωr rises with radius.",
+            metrics: [
+              { k: "Station 1 pitch", v: "78.04°", note: "inboard — low local velocity" },
+              { k: "Station 2 pitch", v: "39.82°", note: "mid-span" },
+              { k: "Station 3 pitch", v: "23.52°", note: "outboard — high Ωr" },
+              { k: "Origin", v: "traced, then parametric", note: "hand drafting preceded CAD" }
+            ] }
+        ]
+      }
+    ];
+  }
+
+  renderVals() {
+    const raw = this.data();
+    const projects = raw.map((p, pi) => {
+      const vi = Math.min(this.state.view[pi] || 0, p.views.length - 1);
+      const active = p.views[vi];
+      return {
+        anchor: p.anchor, label: p.label, num: p.num, kicker: p.kicker, title: p.title,
+        blurb: p.blurb, question: p.question, answer: p.answer, tools: p.tools, repo: p.repo,
+        figureImg: React.createElement("img", {
+          src: active.src, alt: active.caption,
+          style: { display: "block", width: "100%", height: "auto", maxHeight: "430px", objectFit: "contain" }
+        }),
+        caption: active.caption, metrics: active.metrics,
+        figId: "FIG " + p.num + "." + (vi + 1), viewLabel: active.label,
+        metricsTitle: active.metricsTitle,
+        zoom: () => this.setState({ lightbox: { src: active.src, caption: active.caption } }),
+        views: p.views.map((v, i) => ({
+          label: v.label, active: i === vi, idle: i !== vi,
+          select: () => this.setState(s => {
+            const next = s.view.slice();
+            next[pi] = i;
+            return { view: next };
+          })
+        })),
+        hasNote: !!p.note,
+        noteTitle: p.note && p.note.title, noteBody: p.note && p.note.body,
+        noteFromLabel: p.note && p.note.fromLabel, noteFrom: p.note && p.note.from,
+        noteToLabel: p.note && p.note.toLabel, noteTo: p.note && p.note.to
+      };
+    });
+
+    const lb = this.state.lightbox;
+    return {
+      projects,
+      showRepoLinks: this.props.showRepoLinks ?? true,
+      lightboxOpen: !!lb,
+      lightboxImg: lb ? React.createElement("img", {
+        src: lb.src, alt: lb.caption,
+        style: { display: "block", width: "100%", height: "auto", maxHeight: "76vh", objectFit: "contain", background: "#FFFFFF", padding: "20px", boxSizing: "border-box" }
+      }) : null,
+      lightboxCaption: lb ? lb.caption : "",
+      closeLightbox: () => this.setState({ lightbox: null })
+    };
+  }
+}
+</script>
+</body>
+</html>
