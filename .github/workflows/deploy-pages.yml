@@ -42,7 +42,6 @@ jobs:
             --exclude '.thumbnail'
           mkdir -p dist/uploads
           cp "project/uploads/Mark-Yamanaka-Resume.pdf" dist/uploads/
-          printf '<!DOCTYPE html>\n<meta charset="utf-8">\n<title>Redirecting…</title>\n<meta http-equiv="refresh" content="0; url=./portfolio-light.html">\n<link rel="canonical" href="./portfolio-light.html">\n' > dist/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
