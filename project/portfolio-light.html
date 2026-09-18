@@ -600,6 +600,36 @@ holo-bay:defined .holo-fallback { display: none; }
 .carousel-playpause.is-paused .icon-pause { opacity: 0; transform: scale(0.6); }
 .carousel-playpause.is-paused .icon-play  { opacity: 1; transform: scale(1); }
 
+/* ── Carousel prev/next arrows ─────────────────────────
+   The dot strip is precise (6px targets) but not a comfortable click
+   target. Large always-visible arrows let a visitor step through slides
+   without having to aim at a dot. */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.52);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(-50%);
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.carousel-arrow.arrow-prev { left: 10px; }
+.carousel-arrow.arrow-next { right: 10px; }
+.carousel-arrow:active { transform: translateY(-50%) scale(0.9); }
+@media (hover: hover) and (pointer: fine) {
+  .carousel-arrow:hover { background: rgba(23,19,16,0.72); }
+}
+
 /* ── Theme toggle button ─────────────────────────────── */
 .theme-toggle {
   position: relative;
@@ -637,6 +667,11 @@ holo-bay:defined .holo-fallback { display: none; }
   background: rgba(15, 23, 42, 0.93);
 }
 [data-theme="dark"] .header-wrap {
+  background-image:
+    linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
+}
+[data-theme="dark"] #hobby-graph {
   background-image:
     linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
@@ -760,7 +795,7 @@ holo-bay:defined .holo-fallback { display: none; }
         <div>
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(22px,2.2vw,30px);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Dornier Technology Inc.</div>
           <div style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Ten-plus base and line checks under PCAR Part 6 across A320, B737, ATR 72 and BAe 146. Access panels off and back on, fan cowls opened, fasteners removed and refitted, structural damage and corrosion inspected, dye penetrant and borescope runs, findings written up for the responsible engineer.</p>
+          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Fifteen-plus pre- and post-flight inspections across A320, ATR-72 and B737 during line maintenance, then an A320 engine overhaul in base maintenance, including a torque-controlled fastener installation on a wing leading-edge de-icing boot under a licensed mechanic's sign-off. The last rotation was technical records: reviewing NRC, service-bulletin and airworthiness-directive compliance.</p>
           <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">Also where I learned to safety-wire properly. It is a small, unglamorous detail, but it tells you whether a job was done by someone paying attention.</p>
         </div>
         <div id="dornier-carousel" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);aspect-ratio:4/3;">
@@ -786,6 +821,12 @@ holo-bay:defined .holo-fallback { display: none; }
             <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
             <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
           </button>
+          <button type="button" id="dornier-prev" class="carousel-arrow arrow-prev" aria-label="Previous slide">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" id="dornier-next" class="carousel-arrow arrow-next" aria-label="Next slide">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
           <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
             <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
@@ -798,9 +839,9 @@ holo-bay:defined .holo-fallback { display: none; }
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
         <div>
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(22px,2.2vw,30px);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Alpha Aviation Group Philippines</div>
-          <div style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Flight operations exposure · AAG</div>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">I spent time in the A320 full-flight simulator and on a light single's flight deck, seeing the aircraft from the crew's side of the bulkhead. Checklists, panel flows, and how a flight crew actually reads the systems an engineer signs off.</p>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">It changed how I write findings: the person at the other end is flying the thing.</p>
+          <div style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
+          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Two weeks with AAG's Ground Support Group: flight simulation sessions on a Cessna 172 and an A320, trainer aircraft external inspection and cockpit prep, and one supervised engine run-up and taxi on the Cessna, working through the function checks and fault indications that go with it.</p>
+          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">A fault indication reads differently once you have sat in the seat that shows it to you.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;">
           <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
@@ -825,7 +866,7 @@ holo-bay:defined .holo-fallback { display: none; }
       <span style="color:var(--rust);">mark@portfolio</span><span style="color:var(--border);margin:0 10px;">—</span><span>~/about</span>
     </div>
 
-    <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(27px,3.2vw,42px);line-height:1.06;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,52px);max-width:32ch;text-wrap:balance;">I like the part where the drawing has to be right.</h2>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(27px,3.2vw,42px);line-height:1.06;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,52px);max-width:32ch;text-wrap:balance;">The best I could do that week. Not yet the best I'll do.</h2>
 
     <!-- Two-column body -->
     <div class="about-grid">
@@ -890,7 +931,7 @@ holo-bay:defined .holo-fallback { display: none; }
           </div>
 
           <!-- Interests — force-directed node graph -->
-          <div id="hobby-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel" style="position:relative;width:100%;height:200px;border:1px solid var(--border-light);background:var(--bg);margin-bottom:18px;overflow:hidden;">
+          <div id="hobby-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;width:100%;height:240px;background-color:var(--bg);background-image:linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);background-size:28px 28px;margin-bottom:18px;overflow:hidden;">
             <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
           </div>
 
@@ -921,6 +962,12 @@ holo-bay:defined .holo-fallback { display: none; }
             <button type="button" id="hobby-playpause" class="carousel-playpause" aria-pressed="false" aria-label="Pause slideshow">
               <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
               <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
+            <button type="button" id="hobby-prev" class="carousel-arrow arrow-prev" aria-label="Previous slide">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" id="hobby-next" class="carousel-arrow arrow-next" aria-label="Next slide">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
             <!-- Dot indicators -->
             <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
@@ -1493,7 +1540,7 @@ function initHobbyGraph() {
   const canvas = document.getElementById('hobby-graph-canvas');
   if (!wrap || !canvas) return;
   const ctx = canvas.getContext('2d');
-  const labels = ['Running', 'Tennis', 'Bouldering', 'Snowboarding', 'Piano', 'Guitar', 'Saxophone', 'Backpack travel'];
+  const labels = ['Running', 'Tennis', 'Bouldering', 'Snowboarding', 'Piano', 'Guitar', 'Saxophone', 'Backpack travel', 'Hiking', 'Basketball', 'Quadcopter build', 'Cybersecurity', 'Gaming', 'Fragrance collecting', 'Dystopian films'];
 
   function readColors() {
     const cs = getComputedStyle(document.documentElement);
@@ -1713,6 +1760,11 @@ function initHobbyCarousel() {
     scheduleNext();
   }));
 
+  const prevBtn = document.getElementById('hobby-prev');
+  const nextBtn = document.getElementById('hobby-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
+
   // Touch-only visitors have no hover/focus to pause on — a real, always-
   // visible control, independent of the hover/focus pausing above.
   const playPauseBtn = document.getElementById('hobby-playpause');
@@ -1784,6 +1836,11 @@ function initInternshipCarousel() {
     goTo(i);
     scheduleNext();
   }));
+
+  const prevBtn = document.getElementById('dornier-prev');
+  const nextBtn = document.getElementById('dornier-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
 
   const playPauseBtn = document.getElementById('dornier-playpause');
   if (playPauseBtn) {
