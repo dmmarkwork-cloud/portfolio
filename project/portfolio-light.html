@@ -65,6 +65,12 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 .nav-inner::-webkit-scrollbar { display: none; }
+/* Only applied by JS once content actually overflows — otherwise it would
+   fade the last, fully-visible nav item (e.g. the theme toggle) for no reason. */
+.nav-inner.is-scrollable {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+}
 
 a { color: var(--rust); text-decoration: none; transition: color 150ms ease; }
 ::selection { background: var(--rust-tint); color: var(--ink); }
@@ -332,11 +338,13 @@ button { font-family: inherit; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 500ms var(--ease-out);
+  filter: blur(4px);
+  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
   pointer-events: none;
 }
 .hobby-slide.active {
   opacity: 1;
+  filter: blur(0);
   pointer-events: auto;
 }
 .hobby-caption {
@@ -492,11 +500,13 @@ button { font-family: inherit; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 500ms var(--ease-out);
+  filter: blur(4px);
+  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
   pointer-events: none;
 }
 .internship-slide.active {
   opacity: 1;
+  filter: blur(0);
   pointer-events: auto;
 }
 .internship-dot {
@@ -853,6 +863,11 @@ button { font-family: inherit; }
       <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,42px);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Feel free to reach out!</div>
     </div>
     <div style="display:grid;gap:10px;font-family:'Inter',sans-serif;">
+      <!-- Résumé -->
+      <a href="uploads/Resume%20-%20Airbus%20Helicopters%20Malaysia%20-%20Design%20Engineer%20Structure%20Mechanical.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" class="footer-cta-btn" onmouseover="this.style.borderColor='var(--rust)';this.style.color='var(--rust)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>
+        <span>Download résumé (PDF)</span>
+      </a>
       <!-- Gmail -->
       <a href="mailto:dmmark.work@gmail.com" class="footer-cta-btn" onmouseover="this.style.borderColor='var(--rust)';this.style.color='var(--rust)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6z" fill="#F1F3F4"/><path d="M22 6l-10 7L2 6" stroke="#EA4335" stroke-width="2" stroke-linecap="round"/><path d="M4 4h16v16H4z" fill="none"/><path d="M2 6l10 7 10-7" fill="none" stroke="#EA4335" stroke-width="2"/></svg>
@@ -1030,13 +1045,22 @@ const PROJECTS = [
 const viewIndex = [0, 0, 0, 0, 0, 0];
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function mediaTag(view, styleStr) {
+function mediaTag(view, styleStr, opts) {
+  opts = opts || {};
+  // Default fit follows content type — real photos read better cropped (cover),
+  // technical diagrams/plots must show every edge uncropped (contain). Callers
+  // that need a specific fit (e.g. the lightbox, which always wants the full
+  // frame) can still force it by including their own object-fit in styleStr —
+  // it's declared after this default, so it wins.
+  const isPng = !view.video && view.src && view.src.toLowerCase().endsWith('.png');
+  const fit = isPng ? 'object-fit:contain;' : 'object-fit:cover;';
   if (view.video) {
-    const autoplay = reducedMotion ? '' : 'autoplay';
-    return `<video src="${view.video}" ${autoplay} loop muted playsinline style="${styleStr}"></video>`;
+    const autoplay = (opts.autoplay === false || reducedMotion) ? '' : 'autoplay';
+    const preload = opts.autoplay === false ? ' preload="metadata"' : '';
+    return `<video src="${view.video}" ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
   }
   const alt = (view.caption || view.label || '').replace(/"/g, '&quot;');
-  return `<img src="${view.src}" alt="${alt}" style="${styleStr}">`;
+  return `<img src="${view.src}" alt="${alt}" loading="lazy" decoding="async" style="${fit}${styleStr}">`;
 }
 
 // Update gallery state in-place — no innerHTML rebuild on thumb strip
@@ -1047,7 +1071,7 @@ function renderGallery(pi) {
 
   const leadArea = document.getElementById(`lead-img-${pi}`);
   if (leadArea) {
-    leadArea.innerHTML = mediaTag(lead, 'display:block;width:100%;height:100%;object-fit:contain;');
+    leadArea.innerHTML = mediaTag(lead, 'display:block;width:100%;height:100%;');
   }
 
   const captionEl = document.getElementById(`lead-cap-${pi}`);
@@ -1187,7 +1211,7 @@ function buildProjects() {
         ${p.views.map((v, i) => `
           <button type="button" class="thumb-btn" onclick="selectView(${pi},${i})">
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
-              ${mediaTag(v, `width:100%;height:62px;object-fit:contain;opacity:${i === 0 ? 1 : 0.62};`)}
+              ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
             </div>
             <span style="font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);line-height:1.3;">${v.label}</span>
           </button>`).join('')}
@@ -1230,6 +1254,14 @@ function buildProjects() {
   }).join('');
 
   PROJECTS.forEach((_, pi) => renderGallery(pi));
+
+  // Thumbnail-strip videos are muted previews, not the active view — play only
+  // on intent (hover), same pattern already used for the overview-grid cards.
+  container.querySelectorAll('.thumb-btn video').forEach(v => {
+    const btn = v.closest('.thumb-btn');
+    btn.addEventListener('mouseenter', () => v.play().catch(() => {}));
+    btn.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+  });
 }
 
 function buildSoftware() {
@@ -1240,6 +1272,12 @@ function buildSoftware() {
 }
 
 function initNav() {
+  const navInner = document.querySelector('.nav-inner');
+  const syncNavScrollHint = () => {
+    if (!navInner) return;
+    navInner.classList.toggle('is-scrollable', navInner.scrollWidth > navInner.clientWidth + 1);
+  };
+
   let raf = null;
   const syncNav = () => {
     const mid = window.innerHeight * 0.42;
@@ -1258,8 +1296,9 @@ function initNav() {
     raf = requestAnimationFrame(() => { raf = null; syncNav(); });
   };
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
+  window.addEventListener('resize', () => { onScroll(); syncNavScrollHint(); });
   syncNav();
+  syncNavScrollHint();
 }
 
 function initReveal() {
@@ -1316,6 +1355,12 @@ function initHobbyCarousel() {
   const carousel = document.getElementById('hobby-carousel');
   carousel.addEventListener('mouseenter', () => clearTimeout(timer));
   carousel.addEventListener('mouseleave', () => scheduleNext());
+  // Keyboard users tabbing through the dots get the same pause a mouse hover
+  // gives — otherwise the slide can change out from under a focused control.
+  carousel.addEventListener('focusin', () => clearTimeout(timer));
+  carousel.addEventListener('focusout', (e) => {
+    if (!carousel.contains(e.relatedTarget)) scheduleNext();
+  });
 
   dots.forEach((dot, i) => dot.addEventListener('click', () => {
     clearTimeout(timer);
@@ -1365,6 +1410,10 @@ function initInternshipCarousel() {
   const carousel = document.getElementById('dornier-carousel');
   carousel.addEventListener('mouseenter', () => clearTimeout(timer));
   carousel.addEventListener('mouseleave', () => scheduleNext());
+  carousel.addEventListener('focusin', () => clearTimeout(timer));
+  carousel.addEventListener('focusout', (e) => {
+    if (!carousel.contains(e.relatedTarget)) scheduleNext();
+  });
 
   dots.forEach((dot, i) => dot.addEventListener('click', () => {
     clearTimeout(timer);
