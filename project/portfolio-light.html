@@ -126,6 +126,13 @@ button { font-family: inherit; }
 .lead-media-area {
   /* opacity transition managed by JS for directional easing */
   position: relative;
+  /* Safari bug: an absolutely-positioned child with height:100% inside a
+     grid item sized by `fr` (this row is `minmax(0,1fr)` in .lead-btn)
+     doesn't resolve — the child collapses to nothing. Chrome/Firefox
+     handle it fine via grid stretch alone. Explicit height/min-height
+     here gives Safari a definite value to anchor percentage heights to. */
+  height: 100%;
+  min-height: 100%;
 }
 
 .thumb-btn {
