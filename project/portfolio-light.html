@@ -156,6 +156,35 @@ button { font-family: inherit; }
   .hero-grid { grid-template-columns: 1fr; }
 }
 
+/* ── Holo-bay static fallback ─────────────────────────
+   holo-bay is an unknown element until holo-bay.js loads and registers it;
+   until then (or if the script never loads at all — CDN down, blocked,
+   offline) the fallback below stays visible via :not(:defined). No JS
+   needed for this half; rebootHoloBay() guards the other half so a theme
+   toggle can't wipe this out while the component is still unregistered. */
+.holo-fallback {
+  height: 358px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.holo-fallback-chip {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+holo-bay:defined .holo-fallback { display: none; }
+
 /* ── Hero CTA link ───────────────────────────────────── */
 .hero-cta-link {
   transition: color 150ms ease, transform 180ms var(--ease-out);
@@ -529,6 +558,45 @@ button { font-family: inherit; }
   .internship-dot.active:hover { background: var(--rust); }
 }
 
+/* ── Carousel play/pause control ──────────────────────
+   Touch-only visitors have no hover/focus to pause on, so both auto-
+   advancing carousels need a real, always-visible control, not just the
+   existing mouseenter/focusin pause. */
+.carousel-playpause {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.52);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.88);
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.carousel-playpause:active { transform: scale(0.9); }
+@media (hover: hover) and (pointer: fine) {
+  .carousel-playpause:hover { background: rgba(23,19,16,0.72); }
+}
+.carousel-playpause .icon-pause,
+.carousel-playpause .icon-play {
+  position: absolute;
+  display: flex;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.carousel-playpause .icon-pause { opacity: 1; transform: scale(1); }
+.carousel-playpause .icon-play  { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-pause { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-play  { opacity: 1; transform: scale(1); }
+
 /* ── Theme toggle button ─────────────────────────────── */
 .theme-toggle {
   position: relative;
@@ -633,7 +701,17 @@ button { font-family: inherit; }
           legend-border="#E2DAD0"
           legend-active="#171310"
           legend-active-border="#B4491B"
-        ></holo-bay>
+        ><div class="holo-fallback">
+            <span style="font-family:'Inter',sans-serif;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">Interactive view unavailable — the six projects</span>
+            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;">
+              <span class="holo-fallback-chip">01 CD Nozzle</span>
+              <span class="holo-fallback-chip">02 Propellant Tank</span>
+              <span class="holo-fallback-chip">03 MK-10</span>
+              <span class="holo-fallback-chip">04 PANO-VISTA</span>
+              <span class="holo-fallback-chip">05 Rotor</span>
+              <span class="holo-fallback-chip">06 Wing rig</span>
+            </div>
+          </div></holo-bay>
       </div>
     </div>
   </div>
@@ -651,6 +729,7 @@ button { font-family: inherit; }
     <a href="#p-wing" data-nav="p-wing" class="nav-link">06 Wing rig</a>
     <a href="#hangar" data-nav="hangar" class="nav-link">Internships</a>
     <a href="#about" data-nav="about" class="nav-link">About</a>
+    <a href="uploads/Resume%20-%20Airbus%20Helicopters%20Malaysia%20-%20Design%20Engineer%20Structure%20Mechanical.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" class="nav-link">Résumé</a>
     <a href="#contact" class="nav-cta">Get in touch →</a>
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
       <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -700,6 +779,10 @@ button { font-family: inherit; }
               <div class="hobby-caption">Inside a CFM56 fan nacelle</div>
             </div>
           </div>
+          <button type="button" id="dornier-playpause" class="carousel-playpause" aria-pressed="false" aria-label="Pause slideshow">
+            <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+            <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
           <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
             <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
@@ -767,7 +850,7 @@ button { font-family: inherit; }
             <div>
               <div style="font-family:'Inter',sans-serif;font-size:12.5px;color:var(--muted-2);margin-bottom:13px;">// weaknesses</div>
               <div style="display:grid;gap:9px;">
-                <span style="font-size:15.5px;line-height:1.55;color:var(--muted);padding-left:14px;border-left:2px solid var(--border);">Will re-run a mesh four times to earn one number.</span>
+                <span style="font-size:15.5px;line-height:1.55;color:var(--muted);padding-left:14px;border-left:2px solid var(--border);">Same habit, wrong week: will re-run a mesh four times to earn one number.</span>
                 <span style="font-size:15.5px;line-height:1.55;color:var(--muted);padding-left:14px;border-left:2px solid var(--border);">Cannot leave an unfilleted corner alone.</span>
                 <span style="font-size:15.5px;line-height:1.55;color:var(--muted);padding-left:14px;border-left:2px solid var(--border);">Explains the failed gate first, at parties.</span>
               </div>
@@ -836,6 +919,10 @@ button { font-family: inherit; }
                 <div class="hobby-caption">Snowboarding · Hakuba, Japan</div>
               </div>
             </div>
+            <button type="button" id="hobby-playpause" class="carousel-playpause" aria-pressed="false" aria-label="Pause slideshow">
+              <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+              <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
             <!-- Dot indicators -->
             <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
               <button class="hobby-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
@@ -1047,13 +1134,15 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 
 function mediaTag(view, styleStr, opts) {
   opts = opts || {};
-  // Default fit follows content type — real photos read better cropped (cover),
-  // technical diagrams/plots must show every edge uncropped (contain). Callers
-  // that need a specific fit (e.g. the lightbox, which always wants the full
-  // frame) can still force it by including their own object-fit in styleStr —
-  // it's declared after this default, so it wins.
-  const isPng = !view.video && view.src && view.src.toLowerCase().endsWith('.png');
-  const fit = isPng ? 'object-fit:contain;' : 'object-fit:cover;';
+  // Always contain, never crop. A type-based cover/contain split was tried
+  // here and reverted: several source photos are portrait shots of a full
+  // drawing sheet or document (figures/rotor/prop-on-drawing.jpg is
+  // 3024x4032, figures/wing/section-profile.jpg is 1341x1839) where the
+  // top/bottom margin is real content — cover forced them into this wide
+  // box and cropped most of the frame away. The overview grid's cards
+  // (buildProjectGrid) are a separate function with their own fit logic
+  // and pick cover/contain per file type; that one is unaffected.
+  const fit = 'object-fit:contain;';
   if (view.video) {
     const autoplay = (opts.autoplay === false || reducedMotion) ? '' : 'autoplay';
     const preload = opts.autoplay === false ? ' preload="metadata"' : '';
@@ -1228,7 +1317,7 @@ function buildProjects() {
           </div>
           <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(26px,3.2vw,44px);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
           <p style="font-size:clamp(15.5px,1.2vw,17.5px);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
-          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : ''}
+          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : `<span style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">Hardware build — no repository</span>`}
         </div>
         <div style="display:grid;gap:0;align-content:end;justify-items:stretch;">
           ${p.values.map((v, ri) => `
@@ -1323,6 +1412,10 @@ function initHobbyCarousel() {
 
   let current = 0;
   let timer = null;
+  // Reduced-motion visitors get a static first slide, not an un-transitioned
+  // snap every few seconds — the existing reducedMotion flag already governs
+  // the CSS crossfade duration; this gates the JS interval on the same flag.
+  let isPaused = reducedMotion;
 
   function videoIn(slide) {
     const v = slide.querySelector('video');
@@ -1345,6 +1438,7 @@ function initHobbyCarousel() {
 
   function scheduleNext() {
     clearTimeout(timer);
+    if (isPaused) return;
     const delay = 2800 + Math.random() * 2400; // 2.8s – 5.2s, non-fixed
     timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, delay);
   }
@@ -1367,6 +1461,23 @@ function initHobbyCarousel() {
     goTo(i);
     scheduleNext();
   }));
+
+  // Touch-only visitors have no hover/focus to pause on — a real, always-
+  // visible control, independent of the hover/focus pausing above.
+  const playPauseBtn = document.getElementById('hobby-playpause');
+  if (playPauseBtn) {
+    const syncButton = () => {
+      playPauseBtn.classList.toggle('is-paused', isPaused);
+      playPauseBtn.setAttribute('aria-label', isPaused ? 'Play slideshow' : 'Pause slideshow');
+      playPauseBtn.setAttribute('aria-pressed', String(isPaused));
+    };
+    syncButton();
+    playPauseBtn.addEventListener('click', () => {
+      isPaused = !isPaused;
+      syncButton();
+      if (isPaused) clearTimeout(timer); else scheduleNext();
+    });
+  }
 }
 
 function initInternshipCarousel() {
@@ -1378,6 +1489,7 @@ function initInternshipCarousel() {
 
   let current = 0;
   let timer = null;
+  let isPaused = reducedMotion;
 
   function videoIn(slide) {
     const v = slide.querySelector('video');
@@ -1400,6 +1512,7 @@ function initInternshipCarousel() {
 
   function scheduleNext() {
     clearTimeout(timer);
+    if (isPaused) return;
     const delay = 3200 + Math.random() * 2200;
     timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, delay);
   }
@@ -1420,6 +1533,21 @@ function initInternshipCarousel() {
     goTo(i);
     scheduleNext();
   }));
+
+  const playPauseBtn = document.getElementById('dornier-playpause');
+  if (playPauseBtn) {
+    const syncButton = () => {
+      playPauseBtn.classList.toggle('is-paused', isPaused);
+      playPauseBtn.setAttribute('aria-label', isPaused ? 'Play slideshow' : 'Pause slideshow');
+      playPauseBtn.setAttribute('aria-pressed', String(isPaused));
+    };
+    syncButton();
+    playPauseBtn.addEventListener('click', () => {
+      isPaused = !isPaused;
+      syncButton();
+      if (isPaused) clearTimeout(timer); else scheduleNext();
+    });
+  }
 }
 
 function rebootHoloBay(dark) {
@@ -1427,6 +1555,10 @@ function rebootHoloBay(dark) {
   if (!bay) return;
   const attrs = dark ? HOLO_ATTRS.dark : HOLO_ATTRS.light;
   Object.entries(attrs).forEach(([k,v]) => bay.setAttribute(k, v));
+  // If holo-bay.js never loaded, the element was never upgraded — there's no
+  // connectedCallback to invoke and nothing booted to tear down. Leave the
+  // static fallback in place instead of wiping it and throwing.
+  if (typeof bay.connectedCallback !== 'function') return;
   if (bay._renderer) { bay._stop = true; bay._renderer.dispose(); bay._renderer = null; }
   while (bay.firstChild) bay.removeChild(bay.firstChild);
   bay._booted = false;
