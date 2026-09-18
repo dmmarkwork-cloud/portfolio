@@ -1197,7 +1197,14 @@ function mediaTag(view, styleStr, opts) {
     return `<video src="${view.video}" ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
   }
   const alt = (view.caption || view.label || '').replace(/"/g, '&quot;');
-  return `<img src="${view.src}" alt="${alt}" loading="lazy" decoding="async" style="${fit}${styleStr}">`;
+  // Safari has a known bug where loading="lazy" on an <img> inserted via
+  // innerHTML (not present in the parsed HTML) can simply never fire its
+  // load — Chrome doesn't have this problem, so it only shows up here.
+  // The lead/highlight image (opts.eager) needs to always actually load;
+  // thumbnails and the lightbox stay lazy since those are genuinely
+  // numerous/off-screen.
+  const loading = opts.eager ? 'eager' : 'lazy';
+  return `<img src="${view.src}" alt="${alt}" loading="${loading}" decoding="async" style="${fit}${styleStr}">`;
 }
 
 // Lead display only: a blurred, cover-fit backdrop behind the sharp
@@ -1216,10 +1223,10 @@ function leadMediaMarkup(view) {
   if (view.video) {
     const autoplay = reducedMotion ? '' : 'autoplay';
     const backdrop = `<video src="${view.video}" ${autoplay} loop muted playsinline aria-hidden="true" style="${backdropStyle}"></video>`;
-    return backdrop + mediaTag(view, fgStyle);
+    return backdrop + mediaTag(view, fgStyle, { eager: true });
   }
-  const backdrop = `<img src="${view.src}" alt="" aria-hidden="true" loading="lazy" decoding="async" style="${backdropStyle}">`;
-  return backdrop + mediaTag(view, fgStyle);
+  const backdrop = `<img src="${view.src}" alt="" aria-hidden="true" loading="eager" decoding="async" style="${backdropStyle}">`;
+  return backdrop + mediaTag(view, fgStyle, { eager: true });
 }
 
 // Update gallery state in-place — no innerHTML rebuild on thumb strip
