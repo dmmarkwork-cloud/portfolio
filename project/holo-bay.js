@@ -335,11 +335,20 @@
       this._io.observe(this);
 
       const clock = new THREE.Clock();
+      let lastT = 0;
       const tick = () => {
         if (this._stop) return;
         requestAnimationFrame(tick);
         if (!visible || !sized) return;
         const t = clock.getElapsedTime();
+        // Clamp so a tab coming back from the background (huge elapsed gap)
+        // can't fire one giant hover step instead of a smooth settle.
+        const dt = Math.min(Math.max(t - lastT, 0), 0.1);
+        lastT = t;
+        // 0.09 was tuned per-frame at an assumed 60fps; scaling it by dt keeps
+        // the hover-in/out settle time the same in real seconds on any display
+        // refresh rate instead of snapping faster on 120Hz screens.
+        const hoverRate = 1 - Math.pow(1 - 0.09, dt * 60);
 
         if (!reduced) {
           ray.setFromCamera(pointer, camera);
@@ -365,7 +374,7 @@
         }
 
         items.forEach((it) => {
-          it.hover += (it.target - it.hover) * 0.09;
+          it.hover += (it.target - it.hover) * hoverRate;
           const drift = reduced ? 0 : 1;
           it.pivot.rotation.y = t * it.spin * (1 + it.hover * 1.6) + it.phase;
           it.pivot.rotation.x = it.tiltX + drift * Math.sin(t * 0.42) * 0.05;
