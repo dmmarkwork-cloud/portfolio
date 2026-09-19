@@ -43,6 +43,17 @@ jobs:
           mkdir -p dist/uploads
           cp "project/uploads/Mark-Yamanaka-Resume.pdf" dist/uploads/
 
+      - name: Generate Pages redirect stub
+        run: |
+          cat > dist/index.html <<'HTML'
+          <!DOCTYPE html>
+          <meta charset="utf-8">
+          <title>Redirecting…</title>
+          <meta http-equiv="refresh" content="0; url=./portfolio-light.html">
+          <link rel="canonical" href="./portfolio-light.html">
+          <p>Redirecting to <a href="./portfolio-light.html">the portfolio</a>…</p>
+          HTML
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
