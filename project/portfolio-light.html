@@ -1076,12 +1076,19 @@ const PROJECTS = [
       { k: 'Wall temperature', v: '527 °C' }
     ],
     views: [
-      { label: 'CFD · Mach contour', src: 'figures/cfd-figures-mach-contour.png', caption: 'Mach contour — converged Fluent solution, 88,800-cell structured mesh' },
+      { label: 'CAD · Dimensioned profile', src: 'figures/nozzle/cad-cad_dimensions.png', caption: 'Half-section contour sketch — 90 mm chamber, R22.50 converging fillet into an R5.73 throat, 183.44 mm overall' },
+      { label: 'CFD · Mesh & BCs', src: 'figures/nozzle/mesh-with-bc.png', caption: 'Structured axisymmetric mesh — pressure inlet at the chamber, pressure outlet at the exit plane, clustered through the throat' },
+      { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Mach contour — converged Fluent solution, 88,800-cell structured mesh' },
+      { label: 'CFD · Residuals', src: 'figures/nozzle/residuals.png', caption: 'Scaled residuals, k-omega SST — continuity and momentum flatten below 1e-3 by iteration 300' },
+      { label: 'CFD · Mass flow convergence', src: 'figures/nozzle/mass-flow-vs-residuals.png', caption: 'Mass flow imbalance monitor — settles to zero by iteration 250, confirming a converged solution' },
+      { label: 'CFD · Wall y+', src: 'figures/nozzle/y-plus-wall.png', caption: 'Wall y+ along the contour — under 1 through the chamber and diverging section, peaking near 1.75 at the throat' },
       { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', caption: 'von Mises field, mesh J3 — governing stress taken from a linearised path, not the singular peak' },
       { label: 'Exploded assembly', src: 'dfm/images/exploded-view.png', caption: 'Exploded assembly — body, flange, graphite gasket, 8 × M8 A286 bolts, 4.531 kg' },
-      { label: 'Drawing · CDN-000', src: 'figures/sheet-cdn-000.png', caption: 'CDN-000 Rev C — inlet joint assembly, nozzle body to mounting flange, 8 × M8 A286 bolts' },
-      { label: 'Drawing · CDN-001', src: 'figures/sheet-cdn-001.png', caption: 'CDN-001 Rev C — nozzle body detail, profile 0.2 A|B on the aerodynamic contour' },
-      { label: 'Drawing · CDN-002', src: 'figures/sheet-cdn-002.png', caption: 'CDN-002 Rev C — mounting flange, 8 × Ø9 holes positioned Ø0.9 Ⓜ A B' }
+      { label: 'DFM · Clash check', src: 'figures/nozzle/clash-check-result.png', caption: 'Interference check on the flange-to-body register — the highlighted contact ring confirmed a clean fit before releasing the drawing set' },
+      { label: 'DFM · Gasket engagement', src: 'figures/nozzle/gasket-compressed-register-engagement.png', caption: '3 mm of spigot engagement remains after full gasket compression, keeping the flange self-aligning under bolt preload' },
+      { label: 'Drawing · CDN-000', src: 'figures/nozzle/sheet-cdn-000.png', caption: 'CDN-000 Rev C — inlet joint assembly, nozzle body to mounting flange, 8 × M8 A286 bolts' },
+      { label: 'Drawing · CDN-001', src: 'figures/nozzle/sheet-cdn-001.png', caption: 'CDN-001 Rev C — nozzle body detail, profile 0.2 A|B on the aerodynamic contour' },
+      { label: 'Drawing · CDN-002', src: 'figures/nozzle/sheet-cdn-002.png', caption: 'CDN-002 Rev C — mounting flange, 8 × Ø9 holes positioned Ø0.9 Ⓜ A B' }
     ]
   },
   {
