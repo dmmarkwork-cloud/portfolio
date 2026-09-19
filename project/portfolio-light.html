@@ -1076,15 +1076,15 @@ const PROJECTS = [
       { k: 'Wall temperature', v: '527 °C' }
     ],
     views: [
-      { label: 'CAD · Dimensioned profile', src: 'figures/nozzle/cad-cad_dimensions.png', caption: 'Half-section contour sketch — 90 mm chamber, R22.50 converging fillet into an R5.73 throat, 183.44 mm overall' },
-      { label: 'CFD · Mesh & BCs', src: 'figures/nozzle/mesh-with-bc.png', caption: 'Structured axisymmetric mesh — pressure inlet at the chamber, pressure outlet at the exit plane, clustered through the throat' },
       { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Mach contour — converged Fluent solution, 88,800-cell structured mesh' },
+      { label: 'CAD · Dimensioned profile', src: 'figures/nozzle/cad-cad_dimensions.png', caption: 'Half-section contour sketch — 90 mm chamber, R22.50 converging fillet into an R5.73 throat, 183.44 mm overall' },
+      { label: 'CFD · Mesh & BCs', src: 'figures/nozzle/mesh-with-bc.png', noBackdrop: true, caption: 'Structured axisymmetric mesh — pressure inlet at the chamber, pressure outlet at the exit plane, clustered through the throat' },
       { label: 'CFD · Residuals', src: 'figures/nozzle/residuals.png', caption: 'Scaled residuals, k-omega SST — continuity and momentum flatten below 1e-3 by iteration 300' },
       { label: 'CFD · Mass flow convergence', src: 'figures/nozzle/mass-flow-vs-residuals.png', caption: 'Mass flow imbalance monitor — settles to zero by iteration 250, confirming a converged solution' },
       { label: 'CFD · Wall y+', src: 'figures/nozzle/y-plus-wall.png', caption: 'Wall y+ along the contour — under 1 through the chamber and diverging section, peaking near 1.75 at the throat' },
       { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', caption: 'von Mises field, mesh J3 — governing stress taken from a linearised path, not the singular peak' },
       { label: 'Exploded assembly', src: 'dfm/images/exploded-view.png', caption: 'Exploded assembly — body, flange, graphite gasket, 8 × M8 A286 bolts, 4.531 kg' },
-      { label: 'DFM · Clash check', src: 'figures/nozzle/clash-check-result.png', caption: 'Interference check on the flange-to-body register — the highlighted contact ring confirmed a clean fit before releasing the drawing set' },
+      { label: 'DFM · Clash check', src: 'figures/nozzle/clash-check-result.png', noBackdrop: true, caption: 'Interference check on the flange-to-body register — the highlighted contact ring confirmed a clean fit before releasing the drawing set' },
       { label: 'DFM · Gasket engagement', src: 'figures/nozzle/gasket-compressed-register-engagement.png', caption: '3 mm of spigot engagement remains after full gasket compression, keeping the flange self-aligning under bolt preload' },
       { label: 'Drawing · CDN-000', src: 'figures/nozzle/sheet-cdn-000.png', caption: 'CDN-000 Rev C — inlet joint assembly, nozzle body to mounting flange, 8 × M8 A286 bolts' },
       { label: 'Drawing · CDN-001', src: 'figures/nozzle/sheet-cdn-001.png', caption: 'CDN-001 Rev C — nozzle body detail, profile 0.2 A|B on the aerodynamic contour' },
@@ -1142,7 +1142,7 @@ const PROJECTS = [
       { label: 'Built airframe · top', src: 'figures/uav/build-top.jpg', caption: 'Plan view of the completed aircraft — constant-chord wing, taped centre section' },
       { label: 'Built airframe · front', src: 'figures/uav/build-front.jpg', caption: 'Head-on with the motor and prop fitted, gear down' },
       { label: 'Exploded CAD', src: 'figures/docs-exploded-view.png', caption: 'Exploded isometric of the master assembly — airframe, propulsion, avionics, linkages' },
-      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout.jpg', caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
+      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout.jpg', noBackdrop: true, caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
       { label: 'Servo install', src: 'figures/uav/tail-servos.jpg', caption: 'Elevator and rudder servos bedded into the rear fuselage, leads run forward' },
       { label: 'Linkage detail', src: 'figures/uav/servo-linkage.jpg', caption: 'Servo horn and pushrod as built — the linkage that was modelled in CAD' },
       { label: 'Receiver', src: 'figures/uav/receiver-r88.jpg', caption: 'RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle' },
@@ -1233,6 +1233,15 @@ function mediaTag(view, styleStr, opts) {
 function leadMediaMarkup(view) {
   const pad = 'clamp(14px,2.4vw,30px)';
   const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`;
+  // Some sources (a screen-space plot or render that already fills its own
+  // frame, with little to no true dead space) have almost nothing for the
+  // cover-fit backdrop to show but an enlarged, blurred duplicate of the
+  // same subject — it reads as a ghosted second copy overlapping the sharp
+  // image rather than ambient fill. view.noBackdrop opts those out back to
+  // a plain surface fill, same as before the backdrop treatment existed.
+  if (view.noBackdrop) {
+    return mediaTag(view, `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;`, { eager: true });
+  }
   const backdropStyle = 'position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(28px) brightness(0.85);transform:scale(1.15);';
   if (view.video) {
     const autoplay = reducedMotion ? '' : 'autoplay';
