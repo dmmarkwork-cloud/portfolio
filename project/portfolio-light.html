@@ -71,25 +71,54 @@ body {
   transition: background-color 280ms ease, color 280ms ease;
 }
 
-/* ── Nav inner row (horizontal scroll on narrow viewports) ── */
+/* ── Nav inner row ────────────────────────────────────
+   Two tracks. `.nav-scroll` holds the section links and is the only part
+   that scrolls; `.nav-actions` holds Get-in-touch and the theme toggle and
+   never scrolls out of reach. At 390px the link strip is 853px wide, so
+   with a single scrolling row the CTA and the toggle sat ~500px off the
+   right edge of a sticky bar — effectively absent on every phone. */
 .nav-inner {
   max-width: 1240px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: clamp(14px, 2.4vw, 28px);
   flex-wrap: nowrap;
-  overflow-x: auto;
   padding: 12px 0;
+}
+.nav-scroll {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 28px);
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  /* Deliberately not `scroll-behavior: smooth`. The strip is nudged by page
+     scrolling, and animating the side effect of a continuous gesture always
+     lags the gesture — flick past four sections and you would watch the
+     chips slide for a second after you stopped. Instant reads as part of
+     the scroll instead of as a second, late event. */
+  scroll-padding-inline: 20px;
+  overscroll-behavior-x: contain;
 }
-.nav-inner::-webkit-scrollbar { display: none; }
-/* Only applied by JS once content actually overflows — otherwise it would
-   fade the last, fully-visible nav item (e.g. the theme toggle) for no reason. */
-.nav-inner.is-scrollable {
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+.nav-scroll::-webkit-scrollbar { display: none; }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6vw, 18px);
+  flex: none;
+  margin-left: auto;
+  padding-left: clamp(12px, 2vw, 24px);
+}
+/* Edge fades, applied by JS only on the side that actually has more content.
+   A static right-hand fade would dim a fully-visible last link for no reason,
+   and would lie about there being more to the right once you reach the end. */
+.nav-scroll.fade-r { -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); }
+.nav-scroll.fade-l { -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); }
+.nav-scroll.fade-l.fade-r {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
 }
 
 a { color: var(--rust); text-decoration: none; transition: color 150ms ease; }
@@ -112,7 +141,6 @@ button { font-family: inherit; }
 .nav-link.active { color: var(--ink); border-bottom-color: var(--rust); }
 
 .nav-cta {
-  margin-left: auto;
   flex-shrink: 0;
   font-family: 'Inter', sans-serif;
   font-size: 10.5px;
@@ -402,6 +430,7 @@ holo-bay:defined .holo-fallback { display: none; }
   .nav-link:hover { color: var(--ink); }
   .nav-cta:hover { background: var(--rust); color: var(--surface); }
   .footer-link:hover { color: var(--rust); }
+  .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
   .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
   .hero-cta-link:hover { transform: translateX(3px); }
@@ -478,10 +507,12 @@ holo-bay:defined .holo-fallback { display: none; }
   transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
   cursor: pointer;
 }
-.proj-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--rust);
-  box-shadow: 0 6px 24px rgba(23,19,16,0.08);
+@media (hover: hover) and (pointer: fine) {
+  .proj-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--rust);
+    box-shadow: 0 6px 24px rgba(23,19,16,0.08);
+  }
 }
 .proj-card:active {
   transform: scale(0.99) translateY(-1px);
@@ -500,9 +531,11 @@ holo-bay:defined .holo-fallback { display: none; }
   display: block;
   transition: transform 300ms var(--ease-out);
 }
-.proj-card:hover .proj-card-thumb img,
-.proj-card:hover .proj-card-thumb video {
-  transform: scale(1.03);
+@media (hover: hover) and (pointer: fine) {
+  .proj-card:hover .proj-card-thumb img,
+  .proj-card:hover .proj-card-thumb video {
+    transform: scale(1.03);
+  }
 }
 .proj-card-num {
   position: absolute;
@@ -745,6 +778,167 @@ holo-bay:defined .holo-fallback { display: none; }
     linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
 }
 
+/* ── Mobile: the pinned nav actions ──────────────────────
+   Pinning the CTA and the toggle costs the link strip whatever they take:
+   at full size they left it 157px of a 375px bar, roughly two links. A
+   shorter label and tighter padding hand ~90px back to the links, which is
+   where the navigation actually happens. */
+@media (max-width: 640px) {
+  .cta-long { display: none; }
+  .nav-cta { font-size: 10px; letter-spacing: 0.1em; padding: 6px 9px; }
+  .nav-actions { gap: 8px; padding-left: 12px; }
+  .nav-scroll { gap: 15px; }
+}
+.cta-short { display: none; }
+@media (max-width: 640px) { .cta-short { display: inline; } }
+
+/* ── Mobile: touch targets ───────────────────────────────
+   37 of the page's 89 interactive elements measured under 44px on a 390px
+   viewport — the carousel dots were 6x6. Every fix below grows the HIT AREA
+   with a positioned ::after and leaves the painted pixel exactly where it
+   was, so the desktop composition is untouched. Keyed on width OR coarse
+   pointer, so touch laptops and tablets get it too. */
+@media (max-width: 640px), (pointer: coarse) {
+  .nav-link { position: relative; }
+  .nav-link::after { content: ''; position: absolute; inset: -13px -6px; }
+
+  .hobby-dot, .internship-dot { position: relative; }
+  .hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -19px -7px; }
+  .carousel-dots { gap: 18px !important; }
+
+  .carousel-arrow { width: 44px; height: 44px; }
+  .carousel-arrow.arrow-prev { left: 6px; }
+  .carousel-arrow.arrow-next { right: 6px; }
+  .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
+  .theme-toggle { width: 40px; height: 40px; }
+
+  /* Inline text links sit in running copy, so they can't grow a box without
+     shifting the paragraph. Pad the tap area vertically only. */
+  .hero-cta-link, .top-bar-link { position: relative; }
+  .hero-cta-link::after, .top-bar-link::after { content: ''; position: absolute; inset: -13px -6px; }
+}
+
+/* ── Mobile: the six-project overview ────────────────────
+   On desktop `.proj-grid` is a 4-across gallery you take in at a glance:
+   853px tall, one screenful, survey-then-choose. Stacked to one column on a
+   phone it became 2,737px — 3.2 viewports of queue, in front of the six full
+   sections that say the same thing. A snap rail keeps the original job
+   (all six are peers; see them, pick one) and gives back ~1,900px of scroll.
+   Cards are 78% wide so the next one is always half-visible: the affordance
+   is the layout, not an arrow. */
+@media (max-width: 640px) {
+  .proj-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    /* Bleed to the screen edges so a card can scroll flush to the bezel,
+       then re-inset the content — otherwise the first card starts in the
+       middle of nowhere and the last one can't reach the edge. */
+    margin-inline: calc(-1 * clamp(18px, 4vw, 56px));
+    padding-inline: clamp(18px, 4vw, 56px);
+    scroll-padding-inline: clamp(18px, 4vw, 56px);
+    padding-bottom: 4px;
+  }
+  .proj-grid::-webkit-scrollbar { display: none; }
+  .proj-card { scroll-snap-align: start; }
+}
+
+/* ── Mobile: thumbnail rail scroll hint ─────────────────
+   Mirrors the nav strip: a fade only on the side with more to see. */
+@media (max-width: 640px) {
+  .thumb-rail.fade-r { -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); }
+  .thumb-rail.fade-l { -webkit-mask-image: linear-gradient(to left, black calc(100% - 24px), transparent); mask-image: linear-gradient(to left, black calc(100% - 24px), transparent); }
+  .thumb-rail.fade-l.fade-r {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+}
+
+/* ── Lightbox: pan and zoom stage ────────────────────────
+   The reason this page exists is Mach contours and toleranced drawings, and
+   on a phone "⤢ Enlarge" was handing the image 329px where the inline figure
+   already had 337px — a gain factor of 0.98. It opened a black screen and
+   made the drawing slightly smaller. The stage below is pinch-, double-tap-
+   and drag-driven so the enlarge actually enlarges. */
+#lightbox-media {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
+.lb-media-el {
+  display: block;
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  background: var(--surface);
+  padding: 16px;
+  box-sizing: border-box;
+  transform-origin: 0 0;
+}
+/* Snaps back to fit on double-tap/release; the drag itself is untransitioned
+   so the image tracks the finger exactly. */
+.lb-media-el.settling { transition: transform 260ms var(--ease-out); }
+
+.lb-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.55);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.lb-close:active { transform: scale(0.9); }
+
+@media (max-width: 640px), (pointer: coarse) {
+  #lightbox { padding: 8px; }
+  .lb-close { display: flex; }
+  /* Side by side, a long figure caption wrapped to six lines against the
+     hint. Stack, and let the caption have the width. */
+  .lb-caption-row { flex-direction: column; gap: 6px !important; }
+  .lb-caption-row > span { flex: none !important; }
+  /* A definite stage height is what makes panning mean anything — with the
+     container hugging a wide figure there is nowhere to pan to. Desktop
+     keeps its auto height so the caption stays tucked under the image. */
+  #lightbox-media { height: 76vh; height: 76dvh; }
+  .lb-media-el { height: 100%; max-height: none; padding: 6px; }
+}
+
+/* ── Touch: hover-driven widgets ─────────────────────────
+   holo-bay and the interests graph both track a pointer. holo-bay already
+   listens on pointermove so touch reaches it; the graph listened on
+   mousemove only (fixed in JS). Both need pan-y: a vertical drag must still
+   scroll the page, a horizontal one drives the widget. Without this the
+   holo-bay swallows nothing and the graph swallows everything. */
+@media (pointer: coarse) {
+  holo-bay > div:first-of-type, #hobby-graph { touch-action: pan-y; }
+}
+
+/* Swipe surfaces: the gesture is horizontal, the page scroll is vertical. */
+.swipe-x { touch-action: pan-y; }
+
+/* ── Pointer-aware copy ──────────────────────────────────
+   "Hover to identify" is a lie on a phone. */
+.touch-only { display: none; }
+@media (hover: none), (pointer: coarse) {
+  .hover-only { display: none; }
+  .touch-only { display: inline; }
+}
+
 /* ── Reduced motion ──────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -780,7 +974,7 @@ setTimeout(function(){
 <!-- Top bar -->
 <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
   <span style="color:var(--ink);">Mark Lorenz Yamanaka</span>
-  <a href="#contact" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
+  <a href="#contact" class="top-bar-link" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
 </div>
 
 <!-- Header -->
@@ -805,7 +999,7 @@ setTimeout(function(){
     <div style="min-width:0;background:var(--surface);border:1px solid var(--border);align-self:center;">
       <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
         <span>All six, in the round</span>
-        <span>Hover to identify</span>
+        <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
       </div>
       <div style="padding:clamp(8px,1.2vw,14px);">
         <holo-bay
@@ -840,6 +1034,7 @@ setTimeout(function(){
 <!-- Sticky nav -->
 <nav style="position:sticky;top:0;z-index:40;background:rgba(247,243,237,0.92);backdrop-filter:blur(10px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 clamp(18px,4vw,56px);">
   <div class="nav-inner">
+    <div class="nav-scroll" id="nav-scroll">
     <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">01 Nozzle</a>
     <a href="#p-tank" data-nav="p-tank" class="nav-link">02 Tank</a>
     <a href="#p-mk10" data-nav="p-mk10" class="nav-link">03 MK-10</a>
@@ -849,11 +1044,14 @@ setTimeout(function(){
     <a href="#hangar" data-nav="hangar" class="nav-link">Internships</a>
     <a href="#about" data-nav="about" class="nav-link">About</a>
     <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="nav-link">Résumé</a>
-    <a href="#contact" class="nav-cta">Get in touch →</a>
+    </div>
+    <div class="nav-actions">
+    <a href="#contact" class="nav-cta"><span class="cta-long">Get in touch →</span><span class="cta-short">Contact</span></a>
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
       <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
     </button>
+    </div>
   </div>
 </nav>
 
@@ -908,7 +1106,7 @@ setTimeout(function(){
           <button type="button" id="dornier-next" class="carousel-arrow arrow-next" aria-label="Next slide">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
+          <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
             <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -1010,7 +1208,7 @@ setTimeout(function(){
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
             <span style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">04 — Beyond the desk</span>
-            <span style="font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">Hover to nudge</span>
+            <span style="font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);"><span class="hover-only">Hover to nudge</span><span class="touch-only">Drag to nudge</span></span>
           </div>
 
           <!-- Interests — force-directed node graph -->
@@ -1053,7 +1251,7 @@ setTimeout(function(){
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
             <!-- Dot indicators -->
-            <div style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
+            <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
               <button class="hobby-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -1080,22 +1278,22 @@ setTimeout(function(){
     </div>
     <div style="display:grid;gap:10px;font-family:'Inter',sans-serif;">
       <!-- Résumé -->
-      <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="footer-cta-btn" onmouseover="this.style.borderColor='var(--rust)';this.style.color='var(--rust)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
+      <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="footer-cta-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>
         <span>Download résumé (PDF)</span>
       </a>
       <!-- Gmail -->
-      <a href="mailto:dmmark.work@gmail.com" class="footer-cta-btn" onmouseover="this.style.borderColor='var(--rust)';this.style.color='var(--rust)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
+      <a href="mailto:dmmark.work@gmail.com" class="footer-cta-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6z" fill="#F1F3F4"/><path d="M22 6l-10 7L2 6" stroke="#EA4335" stroke-width="2" stroke-linecap="round"/><path d="M4 4h16v16H4z" fill="none"/><path d="M2 6l10 7 10-7" fill="none" stroke="#EA4335" stroke-width="2"/></svg>
         <span>dmmark.work@gmail.com</span>
       </a>
       <!-- LinkedIn -->
-      <a href="https://www.linkedin.com/in/mark-lorenz-yamanaka-6161a3210/" target="_blank" rel="noopener" class="footer-cta-btn" onmouseover="this.style.borderColor='#0A66C2';this.style.color='#0A66C2'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
+      <a href="https://www.linkedin.com/in/mark-lorenz-yamanaka-6161a3210/" target="_blank" rel="noopener" class="footer-cta-btn" style="--cta-hover:#0A66C2;">
         <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         <span>linkedin.com/in/mark-lorenz-yamanaka</span>
       </a>
       <!-- GitHub -->
-      <a href="https://github.com/dmmarkwork-cloud/aeronautics" target="_blank" rel="noopener" class="footer-cta-btn" onmouseover="this.style.borderColor='var(--ink)';this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink)'">
+      <a href="https://github.com/dmmarkwork-cloud/aeronautics" target="_blank" rel="noopener" class="footer-cta-btn" style="--cta-hover:var(--ink);">
         <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
         <span>github.com/dmmarkwork-cloud</span>
       </a>
@@ -1106,11 +1304,14 @@ setTimeout(function(){
 
 <!-- Lightbox — always in DOM, animated via .open class -->
 <div id="lightbox" onclick="closeLightbox()">
-  <div id="lightbox-inner">
+  <div id="lightbox-inner" style="position:relative;">
+    <button type="button" id="lb-close" class="lb-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
     <div id="lightbox-media"></div>
-    <div style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
+    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
       <span id="lightbox-caption"></span>
-      <span style="flex:none;">Click anywhere to close</span>
+      <span style="flex:none;"><span class="hover-only">Click anywhere to close</span><span class="touch-only">Pinch to zoom · ✕ to close</span></span>
     </div>
   </div>
 </div>
@@ -1340,12 +1541,24 @@ function renderGallery(pi) {
   // Update thumb borders and opacity in-place (no rebuild)
   const thumbsEl = document.getElementById(`thumbs-${pi}`);
   if (thumbsEl) {
+    let activeBtn = null;
     thumbsEl.querySelectorAll('.thumb-btn').forEach((btn, i) => {
       const active = i === vi;
+      if (active) activeBtn = btn;
       btn.style.borderColor = active ? 'var(--rust)' : 'var(--border)';
       const media = btn.querySelector('img, video');
       if (media) media.style.opacity = active ? '1' : '0.62';
     });
+    // Below 640px the rail runs horizontally, so the selected thumbnail can
+    // sit off the right edge after a swipe — the highlight would be real and
+    // invisible. Nudged by hand rather than with scrollIntoView, which would
+    // also scroll the page vertically to reach it.
+    if (activeBtn && thumbsEl.scrollWidth > thumbsEl.clientWidth + 1) {
+      const c = thumbsEl.getBoundingClientRect();
+      const r = activeBtn.getBoundingClientRect();
+      if (r.left < c.left + 8) thumbsEl.scrollLeft -= (c.left + 8 - r.left);
+      else if (r.right > c.right - 8) thumbsEl.scrollLeft += (r.right - (c.right - 8));
+    }
   }
 }
 
@@ -1368,8 +1581,15 @@ function selectView(pi, vi) {
 
 function openLightbox(pi) {
   const v = PROJECTS[pi].views[viewIndex[pi]];
-  document.getElementById('lightbox-media').innerHTML =
-    mediaTag(v, 'max-height:80vh;background:var(--surface);padding:16px;box-sizing:border-box;display:block;width:100%;object-fit:contain;');
+  const stage = document.getElementById('lightbox-media');
+  // Sizing moved to .lb-media-el so the mobile stage can take a definite
+  // height (panning needs somewhere to pan to) without touching the desktop
+  // layout, where the container still hugs the image. eager, because this
+  // element is inserted at the exact moment it is needed.
+  stage.innerHTML = mediaTag(v, '', { eager: true });
+  const el = stage.firstElementChild;
+  if (el) el.classList.add('lb-media-el');
+  lbResetZoom(false);
   document.getElementById('lightbox-caption').textContent = v.caption;
   document.getElementById('lightbox').classList.add('open');
   document.addEventListener('keydown', onLbKey);
@@ -1377,6 +1597,8 @@ function openLightbox(pi) {
 
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox').classList.remove('is-zoomed');
+  lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
   document.removeEventListener('keydown', onLbKey);
 }
 
@@ -1436,7 +1658,7 @@ function buildProjectGrid() {
           <div style="font-family:'Inter',sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">All six projects</div>
           <h2 style="font-family:'Space Grotesk',system-ui,sans-serif;font-size:clamp(22px,2.4vw,32px);font-weight:600;color:var(--ink);margin:0;line-height:1.2;">The work</h2>
         </div>
-        <span style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;">Scroll for detail ↓</span>
+        <span id="grid-hint" style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Scroll for detail ↓</span>
       </div>
       <div class="proj-grid">${cards}</div>
     </section>`;
@@ -1457,6 +1679,30 @@ function buildProjectGrid() {
     card.addEventListener('mouseenter', () => v.play().catch(() => {}));
     card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
   });
+
+  // On a phone the grid becomes a snap rail, and a rail needs to say how far
+  // along it you are — otherwise six peers look like one card and a gap.
+  // "Scroll for detail ↓" is still the right label on desktop, where the
+  // whole gallery is on screen at once and there is no position to report.
+  const grid = container.querySelector('.proj-grid');
+  const hint = container.querySelector('#grid-hint');
+  if (grid && hint) {
+    const total = PROJECTS.length;
+    const syncHint = () => {
+      if (grid.scrollWidth <= grid.clientWidth + 1) {
+        hint.textContent = 'Scroll for detail ↓';
+        return;
+      }
+      const max = grid.scrollWidth - grid.clientWidth;
+      const i = max > 0
+        ? Math.min(total - 1, Math.round((grid.scrollLeft / max) * (total - 1)))
+        : 0;
+      hint.textContent = `${i + 1} / ${total} · swipe →`;
+    };
+    grid.addEventListener('scroll', syncHint, { passive: true });
+    window.addEventListener('resize', syncHint);
+    syncHint();
+  }
 }
 
 function buildProjects() {
@@ -1515,12 +1761,36 @@ function buildProjects() {
 
   PROJECTS.forEach((_, pi) => renderGallery(pi));
 
+  // Same edge-fade language as the nav strip, so a horizontally scrollable
+  // row always looks like one.
+  container.querySelectorAll('.thumb-rail').forEach(rail => {
+    const sync = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      rail.classList.toggle('fade-l', max > 1 && rail.scrollLeft > 4);
+      rail.classList.toggle('fade-r', max > 1 && rail.scrollLeft < max - 4);
+    };
+    rail.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+
   // Thumbnail-strip videos are muted previews, not the active view — play only
   // on intent (hover), same pattern already used for the overview-grid cards.
   container.querySelectorAll('.thumb-btn video').forEach(v => {
     const btn = v.closest('.thumb-btn');
     btn.addEventListener('mouseenter', () => v.play().catch(() => {}));
     btn.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+  });
+
+  // Swipe the lead image between views. The arrows-and-thumbnails model is
+  // intact; this is the gesture a thumb reaches for first.
+  PROJECTS.forEach((p, pi) => {
+    if (p.views.length < 2) return;
+    const area = document.getElementById(`lead-img-${pi}`);
+    const btn = area && area.closest('.lead-btn');
+    if (!btn) return;
+    const step = (d) => selectView(pi, (viewIndex[pi] + d + p.views.length) % p.views.length);
+    attachSwipe(btn, () => step(-1), () => step(1));
   });
 }
 
@@ -1592,12 +1862,34 @@ function buildSoftware() {
 }
 
 function initNav() {
-  const navInner = document.querySelector('.nav-inner');
+  const navScroll = document.getElementById('nav-scroll');
+
+  // Fade only the side that actually has more content. A permanent right-hand
+  // fade dims a fully-visible last link, and keeps promising more once you
+  // have already reached the end.
   const syncNavScrollHint = () => {
-    if (!navInner) return;
-    navInner.classList.toggle('is-scrollable', navInner.scrollWidth > navInner.clientWidth + 1);
+    if (!navScroll) return;
+    const max = navScroll.scrollWidth - navScroll.clientWidth;
+    navScroll.classList.toggle('fade-l', max > 1 && navScroll.scrollLeft > 4);
+    navScroll.classList.toggle('fade-r', max > 1 && navScroll.scrollLeft < max - 4);
   };
 
+  // The strip is 853px of links inside a 339px window on a phone, so the
+  // active chip — the nav's only state indicator — was usually off-screen.
+  // Nudge it back into view, but only when it has actually moved out: never
+  // fight a visitor who is scrolling the strip themselves. scrollIntoView is
+  // deliberately avoided here, since it walks every scrollable ancestor and
+  // would yank the page vertically as a side effect.
+  const revealActive = (el) => {
+    if (!navScroll || !el) return;
+    const pad = 20;
+    const c = navScroll.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.left < c.left + pad) navScroll.scrollLeft -= (c.left + pad - r.left);
+    else if (r.right > c.right - pad) navScroll.scrollLeft += (r.right - (c.right - pad));
+  };
+
+  let lastActive = null;
   let raf = null;
   const syncNav = () => {
     const mid = window.innerHeight * 0.42;
@@ -1607,9 +1899,13 @@ function initNav() {
       const score = (r.top <= mid && r.bottom >= mid) ? Infinity : -Math.abs(r.top - mid);
       if (score > bestScore) { bestScore = score; best = s.getAttribute('data-section'); }
     });
+    let activeEl = null;
     document.querySelectorAll('[data-nav]').forEach(a => {
-      a.classList.toggle('active', a.getAttribute('data-nav') === best);
+      const on = a.getAttribute('data-nav') === best;
+      a.classList.toggle('active', on);
+      if (on) activeEl = a;
     });
+    if (best !== lastActive) { lastActive = best; revealActive(activeEl); }
   };
   const onScroll = () => {
     if (raf) return;
@@ -1617,8 +1913,197 @@ function initNav() {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', () => { onScroll(); syncNavScrollHint(); });
+  if (navScroll) navScroll.addEventListener('scroll', syncNavScrollHint, { passive: true });
   syncNav();
   syncNavScrollHint();
+}
+
+// ── Horizontal swipe ───────────────────────────────────
+// Every stepper on this page (both carousels, the project gallery) was
+// arrows-and-dots only: correct with a mouse, and nothing a thumb would ever
+// try. Distance OR velocity decides, so a quick flick does not have to cross
+// half the element. The axis is locked on the first 10px of travel and pan-y
+// leaves vertical scrolling to the browser, so the page never feels sticky.
+function attachSwipe(el, onPrev, onNext) {
+  if (!el) return;
+  el.classList.add('swipe-x');
+  let id = null, x0 = 0, y0 = 0, t0 = 0, axis = null, swiped = false;
+
+  el.addEventListener('pointerdown', (e) => {
+    if (id !== null) return;                // a second finger mid-swipe would jump
+    if (e.pointerType === 'mouse') return;  // a mouse has the arrows
+    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; t0 = e.timeStamp; axis = null;
+  }, { passive: true });
+
+  el.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== id || axis === 'y') return;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (axis === null && Math.abs(dx) + Math.abs(dy) > 10) {
+      axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      if (axis === 'x') { try { el.setPointerCapture(id); } catch (_) {} }
+    }
+  }, { passive: true });
+
+  const end = (e) => {
+    if (e.pointerId !== id) return;
+    const dx = e.clientX - x0;
+    const v = Math.abs(dx) / Math.max(1, e.timeStamp - t0);
+    if (axis === 'x' && (Math.abs(dx) > 45 || v > 0.11)) {
+      swiped = true;
+      (dx < 0 ? onNext : onPrev)();
+    }
+    id = null; axis = null;
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', () => { id = null; axis = null; });
+
+  // A swipe that started on a button (the gallery lead opens the lightbox)
+  // still ends in a click. Swallow exactly that one.
+  el.addEventListener('click', (e) => {
+    if (!swiped) return;
+    swiped = false;
+    e.preventDefault();
+    e.stopPropagation();
+  }, true);
+}
+
+// ── Lightbox pan and zoom ──────────────────────────────
+// Enlarge gave the image 329px on a 390px phone where the inline figure
+// already had 337px — a gain factor of 0.98. Contours and GD&T callouts are
+// the whole point of the page, so on a touch device the lightbox is now a
+// real viewer: pinch, double-tap and drag. Fine pointers keep the existing
+// click-anywhere-to-close behaviour untouched.
+const lbZoom = { scale: 1, tx: 0, ty: 0 };
+
+function lbEl() {
+  const stage = document.getElementById('lightbox-media');
+  return stage ? stage.firstElementChild : null;
+}
+
+function lbApply(settle) {
+  const el = lbEl();
+  if (!el) return;
+  el.classList.toggle('settling', !!settle);
+  el.style.transform = (lbZoom.scale === 1 && !lbZoom.tx && !lbZoom.ty)
+    ? ''
+    : 'translate(' + lbZoom.tx + 'px, ' + lbZoom.ty + 'px) scale(' + lbZoom.scale + ')';
+  document.getElementById('lightbox').classList.toggle('is-zoomed', lbZoom.scale > 1.01);
+}
+
+function lbClamp() {
+  const el = lbEl();
+  if (!el) return;
+  const s = lbZoom.scale;
+  // transform-origin is 0 0 and the element fills the stage at scale 1, so the
+  // pan range is exactly the overhang the scale created.
+  lbZoom.tx = Math.min(0, Math.max(el.offsetWidth * (1 - s), lbZoom.tx));
+  lbZoom.ty = Math.min(0, Math.max(el.offsetHeight * (1 - s), lbZoom.ty));
+}
+
+function lbSetScale(next, px, py) {
+  const el = lbEl();
+  if (!el) return;
+  const s0 = lbZoom.scale;
+  const s1 = Math.min(5, Math.max(1, next));
+  // Keep the point under the fingers pinned: content coord c = (p - t) / s.
+  lbZoom.tx = px - ((px - lbZoom.tx) / s0) * s1;
+  lbZoom.ty = py - ((py - lbZoom.ty) / s0) * s1;
+  lbZoom.scale = s1;
+  lbClamp();
+}
+
+function lbResetZoom(settle) {
+  lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
+  lbApply(settle);
+}
+
+function initLightboxZoom() {
+  const stage = document.getElementById('lightbox-media');
+  const closeBtn = document.getElementById('lb-close');
+  if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+  if (!stage || !window.PointerEvent) return;
+
+  const coarse = window.matchMedia('(pointer: coarse)');
+  const pts = new Map();
+  let base = null, lastTap = 0, dragged = false;
+
+  const local = (e) => {
+    const r = stage.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const centroid = () => {
+    const a = Array.from(pts.values());
+    return {
+      x: a.reduce((t, q) => t + q.x, 0) / a.length,
+      y: a.reduce((t, q) => t + q.y, 0) / a.length
+    };
+  };
+  const spread = () => {
+    const a = Array.from(pts.values());
+    return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  };
+
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    pts.set(e.pointerId, local(e));
+    dragged = false;
+    try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+    base = (pts.size === 2)
+      ? { d: spread(), s: lbZoom.scale, pinch: true }
+      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e) };
+  });
+
+  stage.addEventListener('pointermove', (e) => {
+    if (!pts.has(e.pointerId) || !base) return;
+    pts.set(e.pointerId, local(e));
+    if (pts.size >= 2 && base.pinch) {
+      const c = centroid();
+      lbSetScale(base.s * (spread() / base.d), c.x, c.y);
+      dragged = true;
+    } else if (pts.size === 1 && lbZoom.scale > 1.01) {
+      const q = local(e);
+      lbZoom.tx = base.tx + (q.x - base.p.x);
+      lbZoom.ty = base.ty + (q.y - base.p.y);
+      lbClamp();
+      if (Math.abs(q.x - base.p.x) + Math.abs(q.y - base.p.y) > 6) dragged = true;
+    } else {
+      return;
+    }
+    lbApply(false);
+  });
+
+  const lift = (e) => {
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    if (pts.size === 1) {
+      // Second finger lifted mid-pinch — re-anchor rather than let it jump.
+      const only = Array.from(pts.keys())[0];
+      base = { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: pts.get(only) };
+      return;
+    }
+    if (pts.size) return;
+    base = null;
+    if (lbZoom.scale < 1.02) lbResetZoom(true);
+
+    if (!dragged) {
+      const now = e.timeStamp;
+      if (now - lastTap < 300) {
+        const q = local(e);
+        if (lbZoom.scale > 1.01) lbResetZoom(true);
+        else { lbSetScale(2.6, q.x, q.y); lbApply(true); }
+        lastTap = 0;
+      } else {
+        lastTap = now;
+      }
+    }
+  };
+  stage.addEventListener('pointerup', lift);
+  stage.addEventListener('pointercancel', lift);
+
+  // On a coarse pointer a tap on the picture is the first half of a
+  // double-tap, so it must not also close the overlay — the backdrop and the
+  // close button do that. Fine pointers keep click-anywhere-to-close as it was.
+  stage.addEventListener('click', (e) => { if (coarse.matches) e.stopPropagation(); });
 }
 
 // Project sections are built by buildProjects() on DOMContentLoaded, so the
@@ -1739,14 +2224,21 @@ function initHobbyGraph() {
   new ResizeObserver(layout).observe(wrap);
   layout();
 
+  // pointermove covers mouse, pen and touch in one listener, so a finger
+  // dragged across the graph nudges the nodes exactly as a cursor does. It
+  // listened on mousemove alone, which meant the whole widget — and the
+  // "hover to nudge" label above it — did nothing at all on a phone. The
+  // pan-y touch-action in the stylesheet keeps a vertical drag scrolling the
+  // page, so only sideways travel is treated as intent.
   const mouse = { x: -9999, y: -9999, active: false };
-  wrap.addEventListener('mousemove', (e) => {
+  wrap.addEventListener('pointermove', (e) => {
     const r = wrap.getBoundingClientRect();
     mouse.x = e.clientX - r.left;
     mouse.y = e.clientY - r.top;
     mouse.active = true;
-  });
-  wrap.addEventListener('mouseleave', () => { mouse.active = false; });
+  }, { passive: true });
+  wrap.addEventListener('pointerleave', () => { mouse.active = false; });
+  wrap.addEventListener('pointercancel', () => { mouse.active = false; });
 
   function hoverIndex() {
     if (!mouse.active) return -1;
@@ -1921,6 +2413,8 @@ function initHobbyCarousel() {
   const nextBtn = document.getElementById('hobby-next');
   if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
   if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
+  attachSwipe(carousel, () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); },
+                        () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
 
   // Touch-only visitors have no hover/focus to pause on — a real, always-
   // visible control, independent of the hover/focus pausing above.
@@ -1998,6 +2492,8 @@ function initInternshipCarousel() {
   const nextBtn = document.getElementById('dornier-next');
   if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
   if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
+  attachSwipe(carousel, () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); },
+                        () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
 
   const playPauseBtn = document.getElementById('dornier-playpause');
   if (playPauseBtn) {
@@ -2055,6 +2551,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildSoftware();
   initNav();
   initReveal();
+  initLightboxZoom();
   initHashTarget();
   initNavJumpDistance();
   initHobbyGraph();
