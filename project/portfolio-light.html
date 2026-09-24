@@ -778,6 +778,49 @@ holo-bay:defined .holo-fallback { display: none; }
     linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
 }
 
+/* ── Reduced motion ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .js-reveal .section-reveal,
+  .js-reveal .section-reveal .metric-row,
+  .js-reveal .section-reveal .proj-card,
+  .proj-card {
+    opacity: 1;
+    transform: none;
+  }
+  html { scroll-behavior: auto; }
+  .hobby-slide { transition: none; }
+  .status-dot { animation: none; }
+  .hero-s1, .hero-s2, .hero-s3, .hero-s4, .hero-s5 { animation: none; opacity: 1; transform: none; }
+}
+</style>
+<!-- ─────────────────────────────────────────────────────────
+     MOBILE OVERRIDES — deliberately a separate stylesheet.
+
+     These rules have to outrank the desktop ones, and CSS breaks ties on
+     source order. While they lived at the bottom of the main <style> that
+     held, until the next rule was appended below them: an override written
+     here is beaten by a same-specificity rule added later in the file, with
+     no error and nothing to see. It happened once already while this block
+     was being written — a 44px arrow silently rendered at 34px because the
+     base rule came 400 lines later. A second stylesheet ends the race:
+     anything appended to the main <style> is still above this one.
+
+     Three more mobile traps this file cannot enforce on its own — run
+     `node tools/check-mobile.mjs` after editing, which fails on all three:
+
+       1. A `:hover` rule outside `@media (hover: hover) and (pointer: fine)`
+          sticks after a tap. It left the six project cards frozen lifted.
+       2. `mousemove` / `mouseenter` never fire on touch. Use `pointer*`
+          unless the behaviour is a genuine mouse-only enhancement that
+          already has a touch path.
+       3. A fixed px width in an inline `style=` beats every media query
+          here. There are ~150 inline styles in this file.
+     ───────────────────────────────────────────────────────── -->
+<style id="mobile-overrides">
 /* ── Mobile: the pinned nav actions ──────────────────────
    Pinning the CTA and the toggle costs the link strip whatever they take:
    at full size they left it 157px of a 375px bar, roughly two links. A
@@ -939,24 +982,6 @@ holo-bay:defined .holo-fallback { display: none; }
   .touch-only { display: inline; }
 }
 
-/* ── Reduced motion ──────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-  .js-reveal .section-reveal,
-  .js-reveal .section-reveal .metric-row,
-  .js-reveal .section-reveal .proj-card,
-  .proj-card {
-    opacity: 1;
-    transform: none;
-  }
-  html { scroll-behavior: auto; }
-  .hobby-slide { transition: none; }
-  .status-dot { animation: none; }
-  .hero-s1, .hero-s2, .hero-s3, .hero-s4, .hero-s5 { animation: none; opacity: 1; transform: none; }
-}
 </style>
 <script>(function(){
 var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;
@@ -2335,8 +2360,8 @@ function initHobbyGraph() {
     // reduced motion means gentler, not necessarily frozen mid-overlap.
     for (let k = 0; k < 400; k++) step(false, k);
     draw(-1);
-    wrap.addEventListener('mousemove', () => draw(hoverIndex()));
-    wrap.addEventListener('mouseleave', () => draw(-1));
+    wrap.addEventListener('pointermove', () => draw(hoverIndex()), { passive: true });
+    wrap.addEventListener('pointerleave', () => draw(-1));
   } else {
     const tick = (t) => {
       requestAnimationFrame(tick);

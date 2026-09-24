@@ -1,0 +1,37 @@
+name: Mobile checks
+
+# Deliberately a separate workflow rather than a step inside deploy-pages.yml.
+# Vercel builds straight from the push and does not consult GitHub Actions, so
+# blocking the Pages deploy on a failure here would only desynchronise the two
+# live URLs — Pages would hold the last good build while Vercel shipped the
+# broken one. Failing on its own instead puts a red ✗ on the commit and sends
+# the usual notification, and both deploys proceed.
+#
+# Run the same checks locally before pushing:
+#     node tools/check-mobile.mjs
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # No dependencies, no install step — the checker is plain Node.
+      - name: Check mobile invariants
+        run: node tools/check-mobile.mjs
