@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mobile harness — portfolio-light</title>
+<!--
+  Geometry half of the mobile guardrails. check-mobile.mjs reads the source;
+  this one renders the page at phone widths and measures it.
+
+  Usage:
+      cd project
+      python -m http.server 8099
+      # then open this file (also through the server, so the iframes are
+      # same-origin and their DOM can be measured):
+      #   http://localhost:8099/../tools/mobile-harness.html   — usually blocked
+      # simplest is to serve the repo root instead:
+      cd ..
+      python -m http.server 8099
+      # → http://localhost:8099/tools/mobile-harness.html
+
+  Set the path below to match whichever root you served.
+
+  Why an iframe and not devtools device mode: CSS media queries resolve
+  against the iframe's own width, so a 390px iframe exercises the real mobile
+  branch with no emulation and no extension. The one thing it cannot fake is
+  `(pointer: coarse)` — the harness rewrites those media conditions in the
+  CSSOM instead, which is what the "force coarse pointer" button does.
+
+  Known artefact: a backgrounded tab produces no frames, so IntersectionObserver
+  never fires and every .section-reveal measures at opacity 0. That is the
+  automation, not the page. The audit strips .js-reveal before measuring so
+  layout is real either way — do not read an opacity of 0 here as a bug.
+-->
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #1b1b1f; color: #d6d3cd;
+         font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  header { padding: 14px 18px; border-bottom: 1px solid #34343a;
+           display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 13px; font-weight: 600; margin: 0 14px 0 0; letter-spacing: .04em; }
+  button, input { font: inherit; background: #2a2a30; color: #d6d3cd;
+                  border: 1px solid #45454d; border-radius: 4px; padding: 5px 10px; }
+  button { cursor: pointer; }
+  button:hover { border-color: #b4491b; color: #fff; }
+  button:active { transform: scale(.97); }
+  input { width: 5.5em; }
+  main { display: flex; gap: 18px; padding: 18px; align-items: flex-start; flex-wrap: wrap; }
+  figure { margin: 0; }
+  figcaption { padding: 0 0 6px; color: #8d8a84; font-size: 11px; letter-spacing: .08em; }
+  iframe { border: 1px solid #45454d; background: #fff; display: block; }
+  #out { padding: 0 18px 24px; }
+  table { border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+  th, td { border: 1px solid #3a3a42; padding: 4px 10px; text-align: left; white-space: nowrap; }
+  th { color: #8d8a84; font-weight: 500; }
+  .ok { color: #7ac07a; }
+  .bad { color: #e2705f; font-weight: 600; }
+  .note { color: #8d8a84; padding: 8px 18px 0; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MOBILE HARNESS</h1>
+  <label>path <input id="path" value="/portfolio-light.html"></label>
+  <button id="reload">Reload frames</button>
+  <button id="audit">Run audit</button>
+  <button id="coarse">Force coarse pointer</button>
+  <span class="note" id="status"></span>
+</header>
+
+<main>
+  <figure><figcaption>390 × 844 — iPhone 14/15</figcaption>
+    <iframe id="f390" width="390" height="844"></iframe></figure>
+  <figure><figcaption>360 × 800 — common Android</figcaption>
+    <iframe id="f360" width="360" height="800"></iframe></figure>
+  <figure><figcaption>1280 × 800 — desktop reference</figcaption>
+    <iframe id="f1280" width="1280" height="800"></iframe></figure>
+</main>
+
+<div id="out"></div>
+
+<script>
+const FRAMES = [['f390', 844], ['f360', 800], ['f1280', 800]];
+const $ = (id) => document.getElementById(id);
+const status = (t) => { $('status').textContent = t; };
+
+function load() {
+  const p = $('path').value;
+  FRAMES.forEach(([id]) => { $(id).src = p + (p.includes('?') ? '&' : '?') + 'v=' + Date.now(); });
+  status('loading…');
+  return Promise.all(FRAMES.map(([id]) => new Promise((r) => {
+    const f = $(id);
+    f.onload = r;
+    setTimeout(r, 9000);
+  }))).then(() => status('loaded'));
+}
+
+// The reveal animations are gated on IntersectionObserver, which never fires
+// while this tab is backgrounded. Strip the gate so layout is measurable
+// regardless of whether the tab happened to be focused.
+function unveil(d) {
+  d.documentElement.classList.remove('js-reveal');
+  d.querySelectorAll('.section-reveal').forEach((e) => e.classList.add('visible'));
+  d.documentElement.style.scrollBehavior = 'auto';
+}
+
+// `(pointer: coarse)` cannot be emulated in an iframe, so rewrite the parsed
+// media conditions to `all`. This is the only way to see the touch-only copy
+// and the pan-y touch-actions without a real device.
+function forceCoarse(d) {
+  let n = 0;
+  for (const sheet of d.styleSheets) {
+    let rules;
+    try { rules = sheet.cssRules; } catch { continue; }
+    for (const r of rules) {
+      if (r.type === 4 && /pointer:\s*coarse|hover:\s*none/.test(r.conditionText || '')) {
+        try { r.media.mediaText = 'all'; n++; } catch {}
+      }
+    }
+  }
+  return n;
+}
+
+function measure(id, vh) {
+  const f = $(id), d = f.contentDocument, w = f.contentWindow;
+  unveil(d);
+  const reach = (sel) => {
+    const e = d.querySelector(sel);
+    if (!e) return null;
+    const r = e.getBoundingClientRect();
+    return r.left >= -1 && r.right <= w.innerWidth + 1;
+  };
+  const box = (sel) => {
+    const e = d.querySelector(sel);
+    if (!e) return null;
+    const r = e.getBoundingClientRect();
+    return Math.round(r.width) + '×' + Math.round(r.height);
+  };
+  // Hit area, not painted box: the touch targets are widened with a
+  // positioned ::after precisely so no pixel moves.
+  let under = 0;
+  d.querySelectorAll('a,button').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const cs = getComputedStyle(el, '::after');
+    let hw = r.width, hh = r.height;
+    if (cs.content !== 'none') {
+      const v = (x) => parseFloat(x) || 0;
+      hw += -v(cs.left) - v(cs.right);
+      hh += -v(cs.top) - v(cs.bottom);
+    }
+    if (hw < 44 || hh < 44) under++;
+  });
+  const ns = d.getElementById('nav-scroll');
+  const grid = d.querySelector('.proj-grid');
+  return {
+    width: w.innerWidth,
+    'page height': d.documentElement.scrollHeight,
+    viewports: (d.documentElement.scrollHeight / vh).toFixed(1),
+    'h-overflow': d.documentElement.scrollWidth > w.innerWidth,
+    'overview grid': grid ? Math.round(grid.getBoundingClientRect().height) : null,
+    'grid hint': (d.getElementById('grid-hint') || {}).textContent || null,
+    'nav link window': ns ? ns.clientWidth : null,
+    'CTA reachable': reach('.nav-cta'),
+    'toggle reachable': reach('.theme-toggle'),
+    'arrow': box('.carousel-arrow'),
+    'lead button': box('.lead-btn'),
+    'targets < 44px': under
+  };
+}
+
+function render(rows) {
+  const keys = Object.keys(rows[0].data);
+  const bad = (k, v, i) => {
+    if (k === 'h-overflow') return v === true;
+    if (k === 'CTA reachable' || k === 'toggle reachable') return v === false;
+    if (k === 'targets < 44px') return i < 2 && v > 26;   // phones only
+    return false;
+  };
+  let html = '<table><tr><th></th>' + rows.map((r) => '<th>' + r.label + '</th>').join('') + '</tr>';
+  for (const k of keys) {
+    html += '<tr><th>' + k + '</th>' + rows.map((r, i) => {
+      const v = r.data[k];
+      const cls = bad(k, v, i) ? 'bad' : (v === false || v === true ? 'ok' : '');
+      return '<td class="' + cls + '">' + (v === null ? '—' : String(v)) + '</td>';
+    }).join('') + '</tr>';
+  }
+  $('out').innerHTML = html + '</table>';
+}
+
+$('reload').onclick = load;
+$('audit').onclick = () => {
+  try {
+    render(FRAMES.map(([id, vh]) => ({ label: id.replace('f', '') + 'px', data: measure(id, vh) })));
+    status('audited ' + new Date().toLocaleTimeString());
+  } catch (e) {
+    status('audit failed: ' + e.message + ' — are the frames same-origin?');
+  }
+};
+$('coarse').onclick = () => {
+  const n = FRAMES.reduce((t, [id]) => t + forceCoarse($(id).contentDocument), 0);
+  status('rewrote ' + n + ' coarse-pointer media rules — reload to undo');
+};
+
+load();
+</script>
+</body>
+</html>
