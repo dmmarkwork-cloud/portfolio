@@ -24,6 +24,12 @@
 <meta name="twitter:image" content="https://mark-yamanaka.vercel.app/og-card.png">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23B4491B'/%3E%3Cpath d='M7 23V9h3.1l5.9 8.4L21.9 9H25v14h-3.2v-8.7L16.6 22h-1.2L10.2 14.3V23z' fill='%23fff'/%3E%3C/svg%3E">
+<!-- Kept in sync by the head script below and by applyTheme(). A media-query
+     pair would not work here: the theme is user-overridable via localStorage,
+     so it has to track the resolved theme, not the OS preference. The values
+     are --surface, not --bg: the browser chrome abuts the top bar, which
+     paints --surface. --bg only starts below it. -->
+<meta name="theme-color" id="theme-color" content="#FFFFFF">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -753,7 +759,9 @@ holo-bay:defined .holo-fallback { display: none; }
 .theme-toggle .icon-moon,
 .theme-toggle .icon-sun {
   position: absolute;
-  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  /* Same 220ms as the page swap: the icon finishing first was part of why the
+     switch felt unresolved. */
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
 }
 .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 .theme-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.6); }
@@ -776,6 +784,52 @@ holo-bay:defined .holo-fallback { display: none; }
   background-image:
     linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
+}
+
+/* ── Theme swap ──────────────────────────────────────────
+   A census of the toggle found 228 elements painting a themed colour across
+   18 different transition timings: 132 of them snapped instantly (no
+   transition declared), ~90 rippled over 150/160/180/200ms on five easing
+   curves, and the page background landed last at 280ms. The main thread cost
+   was only 7-10ms, so this was never performance — the page was changing in
+   about seven waves instead of once, and the eye reads that as tearing.
+
+   The fix is to stop animating the parts at all and animate the page. A view
+   transition snapshots before and after and crossfades the two on the
+   compositor, so the whole page changes as one object, on one curve, at one
+   duration — which is what the rest of this design does.
+
+   220ms and `ease`: under the 300ms ceiling, and `ease` is the curve for a
+   colour change. Nothing is entering, exiting or moving here, so `ease-out`
+   would be the wrong shape. */
+.theme-swap *,
+.theme-swap *::before,
+.theme-swap *::after {
+  /* Without this the per-element colour transitions still run underneath the
+     live `::view-transition-new` snapshot and the whole cascade survives
+     inside the crossfade. */
+  transition: none !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: ease;
+}
+
+/* No View Transitions support: collapse the 18 timings into one rather than
+   removing them. Carried on a class that is added for the swap and taken off
+   straight after, so it never touches hover or any other state change. */
+.theme-swap-fallback *,
+.theme-swap-fallback *::before,
+.theme-swap-fallback *::after {
+  transition: background-color 220ms ease, border-color 220ms ease,
+              color 220ms ease, fill 220ms ease !important;
+}
+/* The blanket above would otherwise strip the sun/moon crossfade, which is
+   the one thing on screen that should still move. */
+.theme-swap-fallback .theme-toggle .icon-moon,
+.theme-swap-fallback .theme-toggle .icon-sun {
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out) !important;
 }
 
 /* ── Reduced motion ──────────────────────────────────── */
@@ -985,7 +1039,10 @@ holo-bay:defined .holo-fallback { display: none; }
 </style>
 <script>(function(){
 var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;
-if(t==='dark'||(!t&&d))document.documentElement.dataset.theme='dark';
+var dark=(t==='dark'||(!t&&d));
+if(dark)document.documentElement.dataset.theme='dark';
+var m=document.getElementById('theme-color');
+if(m)m.setAttribute('content',dark?'#1E293B':'#FFFFFF');
 // Arm the scroll-reveal styles before first paint so nothing flashes in and
 // back out, then withdraw them if initReveal() never signals ready.
 document.documentElement.classList.add('js-reveal');
@@ -2563,21 +2620,49 @@ function rebootHoloBay(dark) {
   bay.connectedCallback();
 }
 
+// Every part of switching theme, in one place, so it can be handed to
+// startViewTransition as a single callback.
+function applyTheme(dark) {
+  const root = document.documentElement;
+  if (dark) root.dataset.theme = 'dark';
+  else root.removeAttribute('data-theme');
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+  const meta = document.getElementById('theme-color');
+  if (meta) meta.setAttribute('content', dark ? '#1E293B' : '#FFFFFF');
+  // holo-bay takes its colours as attributes, so it has to be torn down and
+  // rebooted — which resets the scene to its opening camera position. Inside a
+  // view transition the crossfade covers that jump; it used to be visible.
+  rebootHoloBay(dark);
+  if (window.updateHobbyGraphTheme) window.updateHobbyGraphTheme();
+}
+
 function initTheme() {
   const root = document.documentElement;
   const btn = document.getElementById('theme-toggle');
   btn.addEventListener('click', () => {
-    const isDark = root.dataset.theme === 'dark';
-    if (isDark) {
-      root.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      rebootHoloBay(false);
-    } else {
-      root.dataset.theme = 'dark';
-      localStorage.setItem('theme', 'dark');
-      rebootHoloBay(true);
+    const dark = root.dataset.theme !== 'dark';
+
+    // Reduced motion means no crossfade at all — a full-page colour change is
+    // exactly the kind of motion the setting is asking us not to make.
+    if (reducedMotion) { applyTheme(dark); return; }
+
+    if (typeof document.startViewTransition === 'function') {
+      root.classList.add('theme-swap');
+      const vt = document.startViewTransition(() => applyTheme(dark));
+      const clear = () => root.classList.remove('theme-swap');
+      // A transition can be aborted — the tab is hidden when it starts, or a
+      // second toggle skips the first. Both `ready` and `finished` reject when
+      // that happens, and an unhandled one lands in the console; the DOM
+      // update still runs either way, so the theme is applied regardless.
+      // then(clear, clear) rather than finally(), which would re-reject.
+      vt.ready.catch(() => {});
+      vt.finished.then(clear, clear);
+      return;
     }
-    if (window.updateHobbyGraphTheme) window.updateHobbyGraphTheme();
+
+    root.classList.add('theme-swap-fallback');
+    applyTheme(dark);
+    setTimeout(() => root.classList.remove('theme-swap-fallback'), 260);
   });
 }
 
