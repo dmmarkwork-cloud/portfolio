@@ -1366,7 +1366,14 @@ setTimeout(function(){
       </a>
       <!-- Gmail -->
       <a href="mailto:dmmark.work@gmail.com" class="footer-cta-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6z" fill="#F1F3F4"/><path d="M22 6l-10 7L2 6" stroke="#EA4335" stroke-width="2" stroke-linecap="round"/><path d="M4 4h16v16H4z" fill="none"/><path d="M2 6l10 7 10-7" fill="none" stroke="#EA4335" stroke-width="2"/></svg>
+        <!-- Official Gmail mark (2020), 88x66 viewBox, so 16x12 rather than the
+     16x16 the other icons use. The hand-drawn envelope it replaces filled
+     its body with #F1F3F4 on a #F7F3ED button: 1.01:1 contrast, so in the
+     default light theme only the red stroke rendered and the envelope
+     around it vanished. The white body path below is an addition to the
+     official file, which leaves that area transparent because it is drawn
+     to sit on white — without it the interior would go navy in dark mode. -->
+        <svg width="16" height="12" viewBox="52 42 88 66" xmlns="http://www.w3.org/2000/svg" style="flex:none" aria-hidden="true"><path fill="#FFFFFF" d="M72 48h48v60H72z"/><path fill="#4285F4" d="M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6"/><path fill="#34A853" d="M120 108h14c3.32 0 6-2.69 6-6V59l-20 15"/><path fill="#FBBC04" d="M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2"/><path fill="#EA4335" d="M72 74V48l24 18 24-18v26L96 92"/><path fill="#C5221F" d="M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2"/></svg>
         <span>dmmark.work@gmail.com</span>
       </a>
       <!-- LinkedIn -->
