@@ -1076,7 +1076,7 @@ setTimeout(function(){
       <div class="hero-s1" style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">01 — AERONAUTICAL ENGINEERING PORTFOLIO</div>
       <h1 class="hero-s2" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(38px,5.6vw,64px);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
       <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Two are published as failures, because the numbers came back short. The full working is in the repositories.</p>
-      <a href="#p-nozzle" class="hero-cta-link hero-s4" style="display:inline-block;font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the six projects ↓</a>
+      <a href="#p-bracket" class="hero-cta-link hero-s4" style="display:inline-block;font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the seven projects ↓</a>
       <div class="hero-s5" style="display:flex;flex-wrap:wrap;gap:8px;">
         <span style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
         <span style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">ASME Y14.5-2018</span>
@@ -1126,8 +1126,8 @@ setTimeout(function(){
 <nav style="position:sticky;top:0;z-index:40;background:rgba(247,243,237,0.92);backdrop-filter:blur(10px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 clamp(18px,4vw,56px);">
   <div class="nav-inner">
     <div class="nav-scroll" id="nav-scroll">
-    <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">01 Nozzle</a>
-    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">02 Bracket</a>
+    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">01 Bracket</a>
+    <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">02 Nozzle</a>
     <a href="#p-tank" data-nav="p-tank" class="nav-link">03 Tank</a>
     <a href="#p-mk10" data-nav="p-mk10" class="nav-link">04 MK-10</a>
     <a href="#p-uav" data-nav="p-uav" class="nav-link">05 PANO-VISTA</a>
@@ -1450,7 +1450,24 @@ const HOLO_ATTRS = {
 <script>
 const PROJECTS = [
   {
-    anchor: 'p-nozzle', num: '01',
+    anchor: 'p-bracket', num: '01', wip: true,
+    kicker: ['Structures', 'Dynamics', 'Fatigue'],
+    title: 'Ti-6Al-4V Engine Bracket',
+    story: 'A Ti-6Al-4V clevis lifting bracket, redesigned in CATIA 3DEXPERIENCE to the GrabCAD GE bracket challenge interfaces and load cases. It hoists the engine on the ground and stays bolted to it in flight, so it has to clear static strength and then survive engine vibration for its service life. Allowables trace to MIL-HDBK-5J Table 5.4.1.0(b). No factor of safety yet; the analysis is still open.',
+    repoNote: 'Analysis in progress \u2014 repository on release',
+    values: [
+      { k: 'Peak load case', v: '9,500 lbf' },
+      { k: 'Ftu (A-basis)', v: '896.3 MPa' },
+      { k: 'Minimum wall', v: '0.060 in' }
+    ],
+    views: [
+      { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
+      { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75 in pin bore cantilevered off a swept web, lightened through the centre and flared into the mounting plate' },
+      { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375 in bolt holes on the corners, clevis centred between them' }
+    ]
+  },
+  {
+    anchor: 'p-nozzle', num: '02',
     kicker: ['Propulsion', 'Multiphysics', 'DFM'],
     title: 'Uncooled SS316 C-D Nozzle',
     story: 'An uncooled SS316 converging–diverging nozzle running at 2 MPa and 800 K, carried from CFD through thermal-structural analysis into a full GD&T drawing set. Governing stress falls at the chamber-to-converging junction, not the throat. The v1.0 release missed this and reported a factor of safety of 42.70; the corrected v2.0 is 7.12, and both are published.',
@@ -1474,23 +1491,6 @@ const PROJECTS = [
       { label: 'Drawing · CDN-000', src: 'figures/nozzle/sheet-cdn-000.png', caption: 'CDN-000 Rev C — inlet joint assembly, nozzle body to mounting flange, 8 × M8 A286 bolts' },
       { label: 'Drawing · CDN-001', src: 'figures/nozzle/sheet-cdn-001.png', caption: 'CDN-001 Rev C — nozzle body detail, profile 0.2 A|B on the aerodynamic contour' },
       { label: 'Drawing · CDN-002', src: 'figures/nozzle/sheet-cdn-002.png', caption: 'CDN-002 Rev C — mounting flange, 8 × Ø9 holes positioned Ø0.9 Ⓜ A B' }
-    ]
-  },
-  {
-    anchor: 'p-bracket', num: '02', wip: true,
-    kicker: ['Structures', 'Dynamics', 'Fatigue'],
-    title: 'Ti-6Al-4V Engine Bracket',
-    story: 'A clevis-type lifting bracket redesigned in CATIA 3DEXPERIENCE against the interfaces and load cases of the GrabCAD GE bracket challenge \u2014 a 0.75 in pin, four 0.375 in bolts, 0.060 in minimum wall against a 0.050 in floor. It hoists the engine on the ground and stays bolted to it in flight, so it has to pass twice: static strength under the lift cases, then engine vibration for a full service life without cracking. Allowables come from one source, MIL-HDBK-5J Table 5.4.1.0(b), the last public-domain edition before MMPDS. Geometry is frozen; the analysis is still running, so there is no factor of safety to report yet.',
-    repoNote: 'Analysis in progress \u2014 repository on release',
-    values: [
-      { k: 'Peak load case', v: '9,500 lbf' },
-      { k: 'Ftu (A-basis)', v: '896.3 MPa' },
-      { k: 'Minimum wall', v: '0.060 in' }
-    ],
-    views: [
-      { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
-      { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75 in pin bore cantilevered off a swept web, lightened through the centre and flared into the mounting plate' },
-      { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375 in bolt holes on the corners, clevis centred between them' }
     ]
   },
   {
