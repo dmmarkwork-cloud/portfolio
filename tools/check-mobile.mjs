@@ -188,6 +188,27 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
   }
 }
 
+// ── 6. No array hardcoded to the project count ──────────────────────────────
+// viewIndex was six literal zeros. Adding a seventh project left viewIndex[6]
+// undefined, renderGallery handed leadMediaMarkup an undefined view, and the
+// throw aborted the rest of buildProjects — taking the thumbnail-rail fades,
+// the hover previews and the gallery swipe with it, silently.
+{
+  const rule = '6/ no per-project literals';
+  const offenders = [];
+  const m = src.match(/const\s+viewIndex\s*=\s*([^;]+);/);
+  if (!m) {
+    offenders.push('viewIndex not found — was it renamed?');
+  } else if (/^\s*\[/.test(m[1])) {
+    offenders.push(`line ${lineOf(m.index)}: viewIndex is a literal array; derive it (PROJECTS.map(() => 0))`);
+  }
+  if (offenders.length) {
+    fail(rule, offenders.join('\n        '));
+  } else {
+    pass(rule, 'viewIndex is derived from PROJECTS');
+  }
+}
+
 // ── Report ──────────────────────────────────────────────────────────────────
 const rel = relative(process.cwd(), file).replace(/\\/g, '/');
 console.log(`\nmobile checks — ${rel}\n`);
