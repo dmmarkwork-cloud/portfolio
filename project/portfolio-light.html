@@ -1593,7 +1593,14 @@ const PROJECTS = [
   }
 ];
 
-const viewIndex = [0, 0, 0, 0, 0, 0];
+// Derived, never literal. This was six hardcoded zeros, so adding a seventh
+// project left viewIndex[6] undefined; renderGallery then handed
+// leadMediaMarkup an undefined view and threw inside the forEach that
+// builds every gallery. That aborted the rest of buildProjects, which is
+// where the thumbnail-rail fades, the hover previews and the gallery swipe
+// are wired — so one stale array length silently disabled all three and
+// left the last project with no lead image.
+const viewIndex = PROJECTS.map(() => 0);
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function mediaTag(view, styleStr, opts) {

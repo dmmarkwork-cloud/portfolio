@@ -153,6 +153,16 @@ function measure(id, vh) {
   });
   const ns = d.getElementById('nav-scroll');
   const grid = d.querySelector('.proj-grid');
+  // Functional smoke test, not a measurement. buildProjects() wires the
+  // thumbnail fades, the hover previews and the gallery swipe AFTER it renders
+  // every gallery, so anything that throws partway through that render
+  // silently disables all of it and leaves a lead area empty. A stale
+  // viewIndex array did exactly that and nothing in the geometry moved, so
+  // the table above was entirely green while three features were dead.
+  const leads = [...d.querySelectorAll('.lead-media-area')];
+  const filled = leads.filter((e) => e.children.length > 0).length;
+  const swipes = d.querySelectorAll('.swipe-x').length;
+  const sections = d.querySelectorAll('#projects-container section').length;
   return {
     width: w.innerWidth,
     'page height': d.documentElement.scrollHeight,
@@ -165,7 +175,10 @@ function measure(id, vh) {
     'toggle reachable': reach('.theme-toggle'),
     'arrow': box('.carousel-arrow'),
     'lead button': box('.lead-btn'),
-    'targets < 44px': under
+    'targets < 44px': under,
+    'galleries filled': `${filled}/${leads.length}`,
+    'swipe surfaces': swipes,
+    'project sections': sections
   };
 }
 
@@ -175,6 +188,11 @@ function render(rows) {
     if (k === 'h-overflow') return v === true;
     if (k === 'CTA reachable' || k === 'toggle reachable') return v === false;
     if (k === 'targets < 44px') return i < 2 && v > 26;   // phones only
+    if (k === 'galleries filled') {                       // "6/7" means a throw
+      const [a, b] = String(v).split('/').map(Number);
+      return a !== b || !b;
+    }
+    if (k === 'swipe surfaces') return v < 3;             // 2 carousels + galleries
     return false;
   };
   let html = '<table><tr><th></th>' + rows.map((r) => '<th>' + r.label + '</th>').join('') + '</tr>';
