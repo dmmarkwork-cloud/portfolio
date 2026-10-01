@@ -280,6 +280,15 @@ holo-bay:defined .holo-fallback { display: none; }
   background: var(--bg);
 }
 
+/* A status chip, not a discipline one, so it carries the rust the rest of the
+   page uses for "this is live information" — the availability dot, the section
+   kickers — rather than the grey of the taxonomy chips beside it. */
+.kicker-chip.is-wip,
+.proj-card-kicker.is-wip {
+  color: var(--rust);
+  border-color: var(--rust);
+}
+
 /* ── Availability badge ──────────────────────────────── */
 .status-badge {
   display: inline-flex;
@@ -1066,7 +1075,7 @@ setTimeout(function(){
     <div>
       <div class="hero-s1" style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">01 — AERONAUTICAL ENGINEERING PORTFOLIO</div>
       <h1 class="hero-s2" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(38px,5.6vw,64px);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
-      <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Six projects below, each taken far enough that someone could build it. Two are published as failures, because the numbers came back short. The full working is in the repositories.</p>
+      <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Two are published as failures, because the numbers came back short. The full working is in the repositories.</p>
       <a href="#p-nozzle" class="hero-cta-link hero-s4" style="display:inline-block;font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the six projects ↓</a>
       <div class="hero-s5" style="display:flex;flex-wrap:wrap;gap:8px;">
         <span style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
@@ -1080,7 +1089,7 @@ setTimeout(function(){
     </div>
     <div style="min-width:0;background:var(--surface);border:1px solid var(--border);align-self:center;">
       <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:'Inter',sans-serif;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
-        <span>All six, in the round</span>
+        <span>Six of them, in the round</span>
         <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
       </div>
       <div style="padding:clamp(8px,1.2vw,14px);">
@@ -1099,12 +1108,12 @@ setTimeout(function(){
         ><div class="holo-fallback">
             <span style="font-family:'Inter',sans-serif;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">Interactive view unavailable — the six projects</span>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;">
-              <span class="holo-fallback-chip">01 CD Nozzle</span>
-              <span class="holo-fallback-chip">02 Propellant Tank</span>
-              <span class="holo-fallback-chip">03 MK-10</span>
-              <span class="holo-fallback-chip">04 PANO-VISTA</span>
-              <span class="holo-fallback-chip">05 Rotor</span>
-              <span class="holo-fallback-chip">06 Wing rig</span>
+              <span class="holo-fallback-chip">CD Nozzle</span>
+              <span class="holo-fallback-chip">Propellant Tank</span>
+              <span class="holo-fallback-chip">MK-10</span>
+              <span class="holo-fallback-chip">PANO-VISTA</span>
+              <span class="holo-fallback-chip">Rotor</span>
+              <span class="holo-fallback-chip">Wing rig</span>
             </div>
           </div></holo-bay>
       </div>
@@ -1118,11 +1127,12 @@ setTimeout(function(){
   <div class="nav-inner">
     <div class="nav-scroll" id="nav-scroll">
     <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">01 Nozzle</a>
-    <a href="#p-tank" data-nav="p-tank" class="nav-link">02 Tank</a>
-    <a href="#p-mk10" data-nav="p-mk10" class="nav-link">03 MK-10</a>
-    <a href="#p-uav" data-nav="p-uav" class="nav-link">04 PANO-VISTA</a>
-    <a href="#p-rotor" data-nav="p-rotor" class="nav-link">05 Rotor</a>
-    <a href="#p-wing" data-nav="p-wing" class="nav-link">06 Wing rig</a>
+    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">02 Bracket</a>
+    <a href="#p-tank" data-nav="p-tank" class="nav-link">03 Tank</a>
+    <a href="#p-mk10" data-nav="p-mk10" class="nav-link">04 MK-10</a>
+    <a href="#p-uav" data-nav="p-uav" class="nav-link">05 PANO-VISTA</a>
+    <a href="#p-rotor" data-nav="p-rotor" class="nav-link">06 Rotor</a>
+    <a href="#p-wing" data-nav="p-wing" class="nav-link">07 Wing rig</a>
     <a href="#hangar" data-nav="hangar" class="nav-link">Internships</a>
     <a href="#about" data-nav="about" class="nav-link">About</a>
     <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="nav-link">Résumé</a>
@@ -1467,7 +1477,24 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-tank', num: '02',
+    anchor: 'p-bracket', num: '02', wip: true,
+    kicker: ['Structures', 'Dynamics', 'Fatigue'],
+    title: 'Ti-6Al-4V Engine Bracket',
+    story: 'A clevis-type lifting bracket redesigned in CATIA 3DEXPERIENCE against the interfaces and load cases of the GrabCAD GE bracket challenge \u2014 a 0.75 in pin, four 0.375 in bolts, 0.060 in minimum wall against a 0.050 in floor. It hoists the engine on the ground and stays bolted to it in flight, so it has to pass twice: static strength under the lift cases, then engine vibration for a full service life without cracking. Allowables come from one source, MIL-HDBK-5J Table 5.4.1.0(b), the last public-domain edition before MMPDS. Geometry is frozen; the analysis is still running, so there is no factor of safety to report yet.',
+    repoNote: 'Analysis in progress \u2014 repository on release',
+    values: [
+      { k: 'Peak load case', v: '9,500 lbf' },
+      { k: 'Ftu (A-basis)', v: '896.3 MPa' },
+      { k: 'Minimum wall', v: '0.060 in' }
+    ],
+    views: [
+      { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
+      { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75 in pin bore cantilevered off a swept web, lightened through the centre and flared into the mounting plate' },
+      { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375 in bolt holes on the corners, clevis centred between them' }
+    ]
+  },
+  {
+    anchor: 'p-tank', num: '03',
     kicker: ['Pressure Vessel', 'FEA'],
     title: 'Al6061 Gas Vessel Propellant',
     story: 'A 3 mm aluminium tank with hemispherical caps at 32.5 bar. Hand calculation set the baseline, a three-level mesh study proved convergence, and the answer came back short of the safety target at the cylinder-to-cap junction. The factor of safety came out to 1.91 against a target of 2.00. A documented boundary-condition correction is part of the record; fixable with about 0.2 mm of extra wall.',
@@ -1484,7 +1511,7 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-mk10', num: '03',
+    anchor: 'p-mk10', num: '04',
     kicker: ['Aircraft Design', 'Loads', 'Structures'],
     title: 'MK-10: Part 23 Light Aircraft',
     story: 'The MK-10: one design baseline held all the way from mission definition through weight and CG, drag buildup and the V-n envelope into front and rear spar sizing. Every weight change had to be carried through to the shear-moment diagrams, which is the whole point.',
@@ -1502,7 +1529,7 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-uav', num: '04',
+    anchor: 'p-uav', num: '05',
     kicker: ['UAV', 'Systems Integration'],
     title: 'PANO-VISTA: UAV Fixed-Wing',
     story: 'PANO-VISTA is a tractor-configuration fixed-wing UAV, modelled part by part in one master assembly, then cut from foam board and wired up for real with brushless power, an eight-channel receiver, and four micro servos, one per surface. The hardware in the CAD is the hardware on the bench. Team project with four classmates.',
@@ -1526,7 +1553,7 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-rotor', num: '05',
+    anchor: 'p-rotor', num: '06',
     kicker: ['Rotorcraft', 'Drafting', 'CAD'],
     title: 'Wooden Rotor Blade Design',
     story: 'A Ø71.10 in two-blade rotor traced in orthographic projection on tracing paper before it was ever parametric. The twist falls from 78° inboard to 24° at the tip because blade element theory asks for it, so that angle of attack stays roughly constant as local velocity climbs with radius.',
@@ -1546,7 +1573,7 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-wing', num: '06',
+    anchor: 'p-wing', num: '07',
     kicker: ['Mechatronics', 'High-Lift Devices', 'Arduino'],
     title: 'High-Lift Device',
     story: 'A sectioned wing built in cardboard and skinned in aluminium foil, mounted on its own stand so it can be demonstrated at eye level. Servos embedded in the section drive the ailerons and leading-edge slats from an Arduino Uno sketch, with a dedicated control interface on the base, so these are high-lift devices you can watch deploy instead of read about.',
@@ -1734,7 +1761,8 @@ function buildProjectGrid() {
           ? `<video src="${media.src}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
           : `<img src="${media.src}" alt="${p.title}" loading="lazy" style="${imgStyle}">`)
       : '';
-    const kickers = p.kicker.map(k => `<span class="proj-card-kicker">${k}</span>`).join('');
+    const kickers = (p.wip ? '<span class="proj-card-kicker is-wip">In progress</span>' : '')
+      + p.kicker.map(k => `<span class="proj-card-kicker">${k}</span>`).join('');
     return `
       <a class="proj-card" href="#${p.anchor}" aria-label="${p.title}" style="--ci:${ci}">
         <div class="proj-card-thumb">
@@ -1830,11 +1858,11 @@ function buildProjects() {
         <div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
             <span style="font-family:'Inter',sans-serif;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">${p.num}</span>
-            <div class="kicker-chips">${kickerHtml}</div>
+            <div class="kicker-chips">${p.wip ? '<span class="kicker-chip is-wip">In progress</span>' : ''}${kickerHtml}</div>
           </div>
           <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(26px,3.2vw,44px);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
           <p style="font-size:clamp(15.5px,1.2vw,17.5px);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
-          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : `<span style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">Hardware build — no repository</span>`}
+          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : `<span style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
         </div>
         <div style="display:grid;gap:0;align-content:end;justify-items:stretch;">
           ${p.values.map((v, ri) => `
