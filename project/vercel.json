@@ -2,6 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "mark-yamanaka.vercel.app" }],
+      "destination": "https://www.mlyamanaka.com/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "mark-yamanaka.vercel.app" }],
       "destination": "https://www.mlyamanaka.com/:path*",
