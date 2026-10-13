@@ -1,0 +1,16 @@
+# Keep the Vercel deployment to what portfolio-light.html actually loads.
+# Mirrors the rsync excludes in .github/workflows/deploy-pages.yml, so both
+# live copies publish the same set of files. Without this, Vercel serves
+# everything in project/, including design prototypes and unused assets
+# that anyone could fetch by guessing the path.
+figures/about/_unused/
+*.dc.html
+cad/
+cfd/
+docs/
+drawings/
+screenshots/
+deck-stage.js
+support.js
+github.md
+.thumbnail
