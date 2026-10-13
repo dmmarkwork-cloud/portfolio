@@ -1,7 +1,10 @@
 /* holo-bay — five slowly-drifting wireframe holograms, one per portfolio project.
    Registers <holo-bay>. Loads three.js lazily; degrades to a quiet notice if unavailable. */
 (() => {
-  const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+  // Self-hosted rather than jsDelivr: same release, minified build (166 KB
+  // gzipped vs 256 KB), no third-party origin to fail or be blocked. Resolves
+  // against this script's URL, which sits beside vendor/ in both deployments.
+  const THREE_URL = './vendor/three-0.160.1/three.module.min.js';
   const DEF_LINE = 0xFF8A52, DEF_FILL = 0x4A2413, DEF_RING = 0x7FE8F6;
 
   class HoloBay extends HTMLElement {
