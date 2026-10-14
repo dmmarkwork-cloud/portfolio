@@ -2555,15 +2555,14 @@ function initHobbyGraph() {
   const interests = [];
   const between = (lo, hi) => lo + rand() * (hi - lo);
   // Irregular on purpose: hubs sit at jittered angles and distances, each
-  // interest lands at a random bearing and reach from its hub, and a few
-  // cross-links tie interests across groups. Seeded, so it is the same
-  // drawing on every visit; overlaps are relaxed apart in layout().
-  const hubs = [];
+  // interest lands at a random bearing and reach from its hub. Edges stay
+  // strictly within a category (centre to hub, hub to its own interests).
+  // Seeded, so it is the same drawing on every visit; overlaps are relaxed
+  // apart in layout().
   GROUPS.forEach((g, gi) => {
     const a = -Math.PI / 2 + (gi / GROUPS.length) * Math.PI * 2 + between(-0.45, 0.45);
     const reach = between(0.14, 0.26);
     const hub = add({ kind: 'hub', label: g.label, ux: 0.5 + Math.cos(a) * reach, uy: 0.5 + Math.sin(a) * reach * 1.3, r: 4.5 });
-    hubs.push(hub);
     edges.push({ a: centre, b: hub, w: 1 });
     g.items.forEach((label) => {
       const ia = a + between(-1.2, 1.2);
@@ -2575,20 +2574,6 @@ function initHobbyGraph() {
       interests.push(i);
     });
   });
-  const linked = new Set(edges.map(e => `${e.a}-${e.b}`));
-  const link = (a, b, w) => {
-    const k = a < b ? `${a}-${b}` : `${b}-${a}`;
-    if (a === b || linked.has(k)) return;
-    linked.add(k); edges.push({ a, b, w });
-  };
-  interests.forEach(i => {
-    if (rand() < 0.55) {
-      const others = interests.filter(j => nodes[j].hub !== nodes[i].hub);
-      link(i, others[Math.floor(rand() * others.length)], 0.35);
-    }
-  });
-  for (let k = 0; k < 3; k++) link(hubs[Math.floor(rand() * hubs.length)], hubs[Math.floor(rand() * hubs.length)], 0.45);
-
   // Label box for a node at (x, y): interest labels hang off the side away
   // from the centre; hub labels sit above or below their dot.
   const labelW = {};
