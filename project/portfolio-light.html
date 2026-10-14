@@ -561,12 +561,31 @@ holo-bay:defined .holo-fallback { display: none; }
    personal row stays a strip rather than a second column of its own. */
 .beyond-layout {
   display: grid;
-  grid-template-columns: minmax(0, 660px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   gap: clamp(32px, 5vw, 72px);
   align-items: start;
 }
 .beyond-media { display: grid; gap: 18px; }
 .beyond-media > :first-child { margin-bottom: -4px !important; }
+/* Graph and carousel on one line at one height. The carousel cell is as
+   wide as the widest photo (3:4); narrower 9:16 frames centre in it. */
+.beyond-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 16px;
+  height: 320px;
+}
+.graph-hint {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  pointer-events: none;
+}
 .beyond-text { padding-top: 32px; }
 .beyond-text p {
   font-size: 16.5px;
@@ -577,7 +596,7 @@ holo-bay:defined .holo-fallback { display: none; }
   text-wrap: pretty;
 }
 .beyond-graph {
-  height: 240px;
+  height: 100%;
   background-color: var(--surface);
   background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
   background-size: 28px 28px;
@@ -587,7 +606,16 @@ holo-bay:defined .holo-fallback { display: none; }
 /* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
    too, and contain shows the whole image; a blurred copy of the same
    photo fills whatever edge is left instead of flat bars. */
-.beyond-carousel { width: 100%; max-width: 400px; aspect-ratio: 3 / 4; border-radius: 4px; }
+.beyond-carousel { height: 100%; aspect-ratio: 3 / 4; justify-self: center; border-radius: 4px; }
+/* The frame takes the exact proportions of whichever photo is showing, so
+   nothing is cropped and nothing is left over. Ratios are each file's own
+   pixel size (the airshow photo after its EXIF rotation). Browsers without
+   :has() keep 3:4 and the contain + blurred fill below. */
+.beyond-carousel:has(.ar-1.active) { aspect-ratio: 1125 / 1978; }
+.beyond-carousel:has(.ar-2.active) { aspect-ratio: 1536 / 2730; }
+.beyond-carousel:has(.ar-3.active) { aspect-ratio: 1050 / 1400; }
+.beyond-carousel:has(.ar-4.active) { aspect-ratio: 3024 / 4032; }
+.beyond-carousel:has(.ar-5.active) { aspect-ratio: 1280 / 2276; }
 .beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
 .beyond-carousel .hobby-slide::before {
   content: '';
@@ -602,8 +630,9 @@ holo-bay:defined .holo-fallback { display: none; }
   .about-intro { grid-template-columns: 1fr; }
   .about-intro > :first-child { max-width: 360px; }
   .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
+  .beyond-row { grid-template-columns: 1fr; height: auto; }
   .beyond-graph { height: 340px; }
-  .beyond-carousel { max-width: 360px; justify-self: center; }
+  .beyond-carousel { height: 440px; }
   .beyond-text { padding-top: 0; }
 }
 
@@ -1435,38 +1464,37 @@ setTimeout(function(){
         <!-- 03 — Beyond the desk: graph over carousel, short note beside -->
         <div class="beyond-layout">
           <div class="beyond-media">
-          <!-- The hint sits on the graph's own header line, right above its
-               top-right corner, so it reads as the graph's instruction. -->
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
             <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">03 — Beyond the desk</span>
-            <span style="font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
           </div>
 
+          <div class="beyond-row">
           <!-- Interests — force-directed node graph -->
           <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
             <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
+            <span class="graph-hint"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
           </div>
 
           <!-- Image/video carousel -->
           <div id="hobby-carousel" class="beyond-carousel" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);">
             <div id="hobby-track" style="position:relative;width:100%;height:100%;">
-              <div class="hobby-slide" style="--bg-img:url('figures/about/bouldering.png')">
+              <div class="hobby-slide ar-1" style="--bg-img:url('figures/about/bouldering.png')">
                 <img src="figures/about/bouldering.png" alt="Indoor bouldering" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
                 <div class="hobby-caption">Bouldering · Laputa gym, Tsukuba</div>
               </div>
-              <div class="hobby-slide" style="--bg-img:url('figures/about/travel-fuji.jpg')">
+              <div class="hobby-slide ar-2" style="--bg-img:url('figures/about/travel-fuji.jpg')">
                 <img src="figures/about/travel-fuji.jpg" alt="Mt. Fuji from Oshima" style="width:100%;height:100%;object-fit:cover;object-position:center 65%;display:block;">
                 <div class="hobby-caption">Backpack travel · Oshima island, Japan</div>
               </div>
-              <div class="hobby-slide" style="--bg-img:url('figures/about/rock-climbing.jpg')">
+              <div class="hobby-slide ar-3" style="--bg-img:url('figures/about/rock-climbing.jpg')">
                 <img src="figures/about/rock-climbing.jpg" alt="Trail running on rocky terrain" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
                 <div class="hobby-caption">Trail running · Mount Tsukuba, Japan</div>
               </div>
-              <div class="hobby-slide" style="--bg-img:url('figures/about/aviation-navy.jpg')">
+              <div class="hobby-slide ar-4" style="--bg-img:url('figures/about/aviation-navy.jpg')">
                 <img src="figures/about/aviation-navy.jpg" alt="US Air Force airshow at Osan AB" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
                 <div class="hobby-caption">Osan AB · USAF Airshow, South Korea</div>
               </div>
-              <div class="hobby-slide" style="--bg-img:url('figures/about/snowboard-poster.jpg')">
+              <div class="hobby-slide ar-5" style="--bg-img:url('figures/about/snowboard-poster.jpg')">
                 <video src="figures/about/snowboard.mp4" poster="figures/about/snowboard-poster.jpg" muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
                 <div class="hobby-caption">Snowboarding · Hakuba, Japan</div>
               </div>
@@ -1489,6 +1517,7 @@ setTimeout(function(){
               <button class="hobby-dot" aria-label="Slide 4" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 5" style="pointer-events:auto;"></button>
             </div>
+          </div>
           </div>
           </div>
           <div class="beyond-text">
