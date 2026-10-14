@@ -2496,10 +2496,8 @@ function initReveal() {
   window.addEventListener('load', sweep, { once: true });
 }
 
-// Force-directed node graph for the "beyond the desk" interests — mutual
-// repulsion + weak centering keeps chips spread and readable; there are no
-// edges because these interests don't encode relationships to each other,
-// just a livelier presentation than a static tag row.
+// Node graph for the "beyond the desk" interests: centre, category hubs,
+// and each interest wired only to its own hub.
 function initHobbyGraph() {
   // A small "network" of interests, after a citation-graph look: one
   // centre, five category hubs on a ring, each interest fanned out from its
@@ -2543,87 +2541,181 @@ function initHobbyGraph() {
   readColors();
   const FONT = getComputedStyle(document.documentElement).getPropertyValue('--font-sans');
 
-  // Seeded RNG so the scatter is the same on every visit.
-  let seed = 7;
-  const rand = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  // Seeded RNG: the same jitter, and the same drawing, on every visit.
+  const seeded = (k) => () => { k = k + 0x6D2B79F5 | 0; let t = Math.imul(k ^ k >>> 15, 1 | k); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const rand = seeded(7);
 
-  // Nodes carry an anchor in unit space (0..1) so the graph re-fits on resize.
+  // Centre -> category hub -> that category's interests. No other edges.
   const nodes = [];
   const edges = [];
-  const add = (n) => { n.x = n.y = 0; n.vx = n.vy = 0; nodes.push(n); return nodes.length - 1; };
-  const centre = add({ kind: 'centre', ux: 0.5, uy: 0.5, r: 5 });
+  const add = (n) => { n.x = n.y = n.ax = n.ay = 0; n.vx = n.vy = 0; nodes.push(n); return nodes.length - 1; };
+  const centre = add({ kind: 'centre', r: 5 });
   const interests = [];
-  const between = (lo, hi) => lo + rand() * (hi - lo);
-  // Irregular on purpose: hubs sit at jittered angles and distances, each
-  // interest lands at a random bearing and reach from its hub. Edges stay
-  // strictly within a category (centre to hub, hub to its own interests).
-  // Seeded, so it is the same drawing on every visit; overlaps are relaxed
-  // apart in layout().
-  GROUPS.forEach((g, gi) => {
-    const a = -Math.PI / 2 + (gi / GROUPS.length) * Math.PI * 2 + between(-0.45, 0.45);
-    const reach = between(0.14, 0.26);
-    const hub = add({ kind: 'hub', label: g.label, ux: 0.5 + Math.cos(a) * reach, uy: 0.5 + Math.sin(a) * reach * 1.3, r: 4.5 });
-    edges.push({ a: centre, b: hub, w: 1 });
-    g.items.forEach((label) => {
-      const ia = a + between(-1.2, 1.2);
-      const d = between(0.12, 0.3);
-      const ux = Math.min(0.94, Math.max(0.06, nodes[hub].ux + Math.cos(ia) * d));
-      const uy = Math.min(0.92, Math.max(0.08, nodes[hub].uy + Math.sin(ia) * d * 1.3));
-      const i = add({ kind: 'interest', label, hub, ux, uy, r: 3.6 });
-      edges.push({ a: hub, b: i, w: 0.8 });
+  GROUPS.forEach((g) => {
+    g.hub = add({ kind: 'hub', label: g.label, r: 0 });
+    edges.push({ a: centre, b: g.hub, w: 1 });
+    g.ids = g.items.map((label) => {
+      const i = add({ kind: 'interest', label, hub: g.hub, r: 3.6 });
+      edges.push({ a: g.hub, b: i, w: 0.8 });
       interests.push(i);
+      return i;
     });
   });
-  // Label box for a node at (x, y): interest labels hang off the side away
-  // from the centre; hub labels sit above or below their dot.
+  // Wide panels split the categories either side of the centre; narrow ones
+  // (phones) run a single column with every label on the right.
+  const LEFT = GROUPS.filter(g => g.label === 'Sport' || g.label === 'Tech');
+  const RIGHT = GROUPS.filter(g => !LEFT.includes(g));
+
+  // A hub is drawn as a chip carrying its category name, so the name is the
+  // node and its own lines end under it. Interest labels sit left (L) or
+  // right (R) of the dot, always on the side facing away from the hub.
   const labelW = {};
-  function box(n, x, y) {
-    if (n.kind === 'interest') {
-      const w = labelW[n.label], left = x < W / 2;
-      return left ? [x - w - 12, y - 9, x + 6, y + 9] : [x - 6, y - 9, x + w + 12, y + 9];
-    }
-    if (n.kind === 'hub') { const w = labelW[n.label] / 2 + 6; return [x - w, y - 20, x + w, y + 20]; }
-    return [x - 10, y - 10, x + 10, y + 10];
+  function labelBox(n) {
+    const w = labelW[n.label], x = n.ax, y = n.ay;
+    if (n.kind === 'interest') return n.side === 'L' ? [x - w - 11, y - 8, x - 5, y + 8] : [x + 5, y - 8, x + w + 11, y + 8];
+    if (n.kind === 'hub') return [x - w / 2 - 7, y - 9, x + w / 2 + 7, y + 9];
+    return null;
   }
-  let W = 0, H = 0;
+  const grow = (r, m) => [r[0] - m, r[1] - m, r[2] + m, r[3] + m];
+  const boxesMeet = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+  // Segment p-q against a rectangle (Liang-Barsky clip).
+  function segHitsBox(px, py, qx, qy, r) {
+    let t0 = 0, t1 = 1;
+    const dx = qx - px, dy = qy - py;
+    const clip = (p, q) => {
+      if (p === 0) return q >= 0;
+      const t = q / p;
+      if (p < 0) { if (t > t1) return false; if (t > t0) t0 = t; } else { if (t < t0) return false; if (t < t1) t1 = t; }
+      return true;
+    };
+    return clip(-dx, px - r[0]) && clip(dx, r[2] - px) && clip(-dy, py - r[1]) && clip(dy, r[3] - py);
+  }
+  function distToSeg(x, y, A, B) {
+    const dx = B.ax - A.ax, dy = B.ay - A.ay;
+    const u = Math.max(0, Math.min(1, ((x - A.ax) * dx + (y - A.ay) * dy) / (dx * dx + dy * dy || 1)));
+    return Math.hypot(x - A.ax - u * dx, y - A.ay - u * dy);
+  }
+  const orient = (A, B, P) => (B.ax - A.ax) * (P.ay - A.ay) - (B.ay - A.ay) * (P.ax - A.ax);
+  const segsCross = (A, B, P, Q) => orient(A, B, P) * orient(A, B, Q) < 0 && orient(P, Q, A) * orient(P, Q, B) < 0;
+
+  // Number of collisions in the current anchors: a label or chip over a
+  // line it does not belong to, over a dot or another label; a dot on a
+  // line it is not part of; two lines crossing; anything outside the panel
+  // or under the corner hint.
+  let W = 0, H = 0, hint = null;
+  function collisions() {
+    let bad = 0;
+    const boxes = nodes.map(labelBox);
+    nodes.forEach((n, i) => {
+      if (n.ax < 8 || n.ax > W - 8 || n.ay < 8 || n.ay > H - 8) bad++;
+      const b = boxes[i];
+      if (!b) return;
+      if (b[0] < 4 || b[2] > W - 4 || b[1] < 4 || b[3] > H - 4) bad++;
+      if (hint && boxesMeet(b, hint)) bad++;
+      const g = grow(b, 3);
+      edges.forEach(e => {
+        if (n.kind === 'hub' && (e.a === i || e.b === i)) return;
+        const A = nodes[e.a], B = nodes[e.b];
+        if (segHitsBox(A.ax, A.ay, B.ax, B.ay, g)) bad++;
+      });
+      nodes.forEach((m, j) => {
+        if (j !== i && m.kind !== 'hub' && boxesMeet(grow(b, m.r + 3), [m.ax, m.ay, m.ax, m.ay])) bad++;
+        if (j > i && boxes[j] && boxesMeet(grow(b, 2), boxes[j])) bad++;
+      });
+    });
+    edges.forEach((e, ei) => {
+      const A = nodes[e.a], B = nodes[e.b];
+      if (hint && segHitsBox(A.ax, A.ay, B.ax, B.ay, hint)) bad++;
+      nodes.forEach((n, k) => { if (n.kind !== 'hub' && k !== e.a && k !== e.b && distToSeg(n.ax, n.ay, A, B) < n.r + 5) bad++; });
+      edges.forEach((f, fi) => {
+        if (fi > ei && f.a !== e.a && f.a !== e.b && f.b !== e.a && f.b !== e.b && segsCross(A, B, nodes[f.a], nodes[f.b])) bad++;
+      });
+    });
+    return bad;
+  }
+
+  // Place everything for the current panel. Interests stack in a column per
+  // side with the labels pointing outward, so every line reaches a dot from
+  // the side away from its label; each hub fans out to its own block of
+  // rows, so fans never cross. jitter() adds the irregularity; with R
+  // unset it is zero and the result is the plain, clean-by-construction
+  // tree.
+  let twoSided = true;
+  function place(R) {
+    const jit = (a) => R ? (R() - 0.5) * 2 * a : 0;
+    const widest = (gs) => Math.max(...gs.flatMap(g => g.items.map(l => labelW[l])));
+    const topRight = hint ? hint[3] + 12 : 16, bottom = H - 16;
+    const sides = twoSided
+      ? [{ dir: -1, groups: LEFT, col: 16 + widest(LEFT), top: 16 }, { dir: 1, groups: RIGHT, col: W - 16 - widest(RIGHT), top: topRight }]
+      : [{ dir: 1, groups: GROUPS, col: W - 16 - widest(GROUPS), top: topRight }];
+    const c = nodes[centre];
+    c.ax = twoSided ? (sides[0].col + sides[1].col) / 2 : 24;
+    c.ay = H / 2 + jit(10);
+    sides.forEach(({ dir, groups, col, top }) => {
+      const gap = twoSided ? 0.8 : 1;
+      const slots = groups.reduce((t, g) => t + g.items.length, 0) - 1 + gap * (groups.length - 1);
+      const step = Math.min(32, (bottom - top) / slots);
+      let y = top + (bottom - top - step * slots) / 2;
+      const reach = Math.abs(col - c.ax);
+      groups.forEach(g => {
+        let sum = 0;
+        g.ids.forEach(id => {
+          const n = nodes[id];
+          n.side = dir < 0 ? 'L' : 'R';
+          n.ax = col - dir * Math.abs(jit(9));
+          n.ay = y + jit(step * 0.12);
+          sum += n.ay;
+          y += step;
+        });
+        y += step * (gap - 1) + step;
+        const h = nodes[g.hub];
+        h.ax = c.ax + dir * reach * (0.48 + jit(0.1));
+        h.ay = sum / g.ids.length + jit(6);
+      });
+    });
+  }
+
   function layout() {
     const rect = wrap.getBoundingClientRect();
+    if (!rect.width || (rect.width === W && rect.height === H)) return;
     W = rect.width; H = rect.height;
+    ctx.font = `600 11.5px ${FONT}`;
+    GROUPS.forEach(g => g.items.forEach(l => { labelW[l] = ctx.measureText(l).width; }));
+    ctx.font = `600 10px ${FONT}`;
+    GROUPS.forEach(g => { labelW[g.label] = ctx.measureText(g.label.toUpperCase()).width; });
+    const widest = (gs) => Math.max(...gs.flatMap(g => g.items.map(l => labelW[l])));
+    // Two columns need room for both label stacks plus the hubs between them.
+    const mode = (W - 32 - widest(LEFT) - widest(RIGHT)) >= 190;
+    if (mode !== twoSided || !wrap.dataset.mode) {
+      twoSided = mode;
+      wrap.dataset.mode = mode ? 'two' : 'one';
+      // One column holds 15 rows: give it the height it needs (20px a row).
+      wrap.style.height = mode ? '' : `${Math.ceil(56 + 20 * (15 - 1 + GROUPS.length - 1))}px`;
+      const r2 = wrap.getBoundingClientRect();
+      W = r2.width; H = r2.height;
+    }
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = `500 11.5px ${FONT}`;
-    nodes.forEach(n => { if (n.label) labelW[n.label] = ctx.measureText(n.kind === 'hub' ? n.label.toUpperCase() : n.label).width; n.ax = n.ux * W; n.ay = n.uy * H; });
     // The hint text in the top-right corner is a fixed obstacle.
     const hintEl = wrap.querySelector('.graph-hint');
-    const hint = hintEl ? [W - hintEl.offsetWidth - 20, 0, W, hintEl.offsetTop + hintEl.offsetHeight + 6] : null;
-    // Relax label boxes apart and keep every box inside the panel.
-    for (let it = 0; it < 240; it++) {
-      for (let p = 0; p < nodes.length; p++) {
-        for (let q = p + 1; q < nodes.length; q++) {
-          const A = nodes[p], B = nodes[q];
-          const a = box(A, A.ax, A.ay), b = box(B, B.ax, B.ay);
-          const ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]) + 4;
-          const oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]) + 4;
-          if (ox > 0 && oy > 0) {
-            const fa = A.kind === 'centre' ? 0 : B.kind === 'centre' ? 1 : 0.5;
-            if (ox < oy) { const sgn = (B.ax + (b[0] + b[2]) / 2 - B.ax) > (A.ax + (a[0] + a[2]) / 2 - A.ax) ? 1 : -1; A.ax -= sgn * ox * fa; B.ax += sgn * ox * (1 - fa); }
-            else { const sgn = B.ay > A.ay ? 1 : -1; A.ay -= sgn * oy * fa; B.ay += sgn * oy * (1 - fa); }
-          }
-        }
-      }
-      nodes.forEach(n => {
-        if (n.kind === 'centre') { n.ax = W / 2; n.ay = H / 2; return; }
-        const b = box(n, n.ax, n.ay);
-        if (b[0] < 4) n.ax += 4 - b[0];
-        if (b[2] > W - 4) n.ax -= b[2] - (W - 4);
-        if (b[1] < 4) n.ay += 4 - b[1];
-        if (b[3] > H - 4) n.ay -= b[3] - (H - 4);
-        if (hint && b[2] > hint[0] && b[1] < hint[3]) n.ay += hint[3] - b[1];
-      });
+    hint = hintEl ? [W - hintEl.offsetWidth - 20, 0, W, hintEl.offsetTop + hintEl.offsetHeight + 6] : null;
+    // First jittered variant with no collisions wins; the unjittered tree is
+    // the fallback, and the least-bad of all if even that collides.
+    let best = null, bestBad = Infinity;
+    for (let k = 1; k <= 40 && bestBad > 0; k++) {
+      place(seeded(k * 97));
+      const bad = collisions();
+      if (bad < bestBad) { bestBad = bad; best = nodes.map(n => [n.ax, n.ay, n.side]); }
     }
-    nodes.forEach(n => { if (!n.x && !n.y) { n.x = n.ax; n.y = n.ay; } });
+    if (bestBad > 0) {
+      place(null);
+      if (collisions() < bestBad) best = nodes.map(n => [n.ax, n.ay, n.side]);
+    }
+    best.forEach((v, i) => { nodes[i].ax = v[0]; nodes[i].ay = v[1]; nodes[i].side = v[2]; });
+    // With reduced motion nothing animates toward the anchors, so jump there.
+    nodes.forEach(n => { if (reducedMotion || (!n.x && !n.y)) { n.x = n.ax; n.y = n.ay; } });
   }
   new ResizeObserver(layout).observe(wrap);
   layout();
@@ -2645,18 +2737,18 @@ function initHobbyGraph() {
     for (const i of interests) {
       const n = nodes[i];
       const w = ctx.measureText(n.label).width;
-      const left = n.x < W / 2;
+      const left = n.side === 'L';
       const x0 = left ? n.x - w - 12 : n.x - 8, x1 = left ? n.x + 8 : n.x + w + 12;
       if (mouse.x > x0 && mouse.x < x1 && Math.abs(mouse.y - n.y) < 11) return i;
     }
     return -1;
   }
 
-  function step(t) {
+  function step(t, hi) {
     for (let idx = 0; idx < nodes.length; idx++) {
       const n = nodes[idx];
       if (n.kind === 'centre') { n.x = n.ax; n.y = n.ay; continue; }
-      const k = n.kind === 'dot' ? 0.03 : 0.05;
+      const k = 0.05;
       n.vx += (n.ax - n.x) * k;
       n.vy += (n.ay - n.y) * k;
       if (!reducedMotion) {
@@ -2664,10 +2756,13 @@ function initHobbyGraph() {
         n.vx += Math.sin(t * 0.0005 + s) * 0.03;
         n.vy += Math.cos(t * 0.0006 + s * 1.3) * 0.03;
       }
-      if (mouse.active) {
+      // A slight lean away from the pointer: at most 3px (force / spring),
+      // inside the clearance layout() leaves, so nothing lands on a line.
+      // Off while a node is traced, so the target stays under the cursor.
+      if (mouse.active && hi < 0) {
         const dx = n.x - mouse.x, dy = n.y - mouse.y;
         const d = Math.hypot(dx, dy) || 1;
-        if (d < 70) { const f = (70 - d) / 70 * 1.6; n.vx += dx / d * f; n.vy += dy / d * f; }
+        if (d < 60) { const f = (60 - d) / 60 * 0.15; n.vx += dx / d * f; n.vy += dy / d * f; }
       }
       n.vx *= 0.82; n.vy *= 0.82;
       n.x += n.vx; n.y += n.vy;
@@ -2722,8 +2817,19 @@ function initHobbyGraph() {
         g.addColorStop(0, `rgba(${C.edge},0.55)`); g.addColorStop(1, `rgba(${C.edge},0)`);
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, 16, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = C.accent;
-      } else if (n.kind === 'hub') ctx.fillStyle = C.hub;
-      else ctx.fillStyle = lit.has(i) ? C.hot : C.node;
+      } else if (n.kind === 'hub') {
+        // Chip: an opaque surface first, so the lines that end at the hub
+        // stop at its border, then the tint, rule and name.
+        const hw = labelW[n.label] / 2 + 7, x0 = n.x - hw, y0 = n.y - 9;
+        const chip = () => { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, y0, hw * 2, 18, 9) : ctx.rect(x0, y0, hw * 2, 18); };
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = C.surface; chip(); ctx.fill();
+        ctx.globalAlpha = dim ? 0.4 : 1;
+        ctx.fillStyle = `rgba(${C.edge},${lit.has(i) && hi >= 0 ? 0.2 : 0.09})`; chip(); ctx.fill();
+        ctx.strokeStyle = `rgba(${C.edge},0.75)`; ctx.lineWidth = 1; chip(); ctx.stroke();
+        ctx.globalAlpha = 1;
+        continue;
+      } else ctx.fillStyle = lit.has(i) ? C.hot : C.node;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (lit.has(i) && n.kind === 'interest' ? 1.4 : 0), 0, Math.PI * 2); ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -2736,10 +2842,9 @@ function initHobbyGraph() {
         ctx.font = `600 10px ${FONT}`;
         ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.hub;
         ctx.textAlign = 'center';
-        const below = n.y > H / 2;
-        ctx.fillText(n.label.toUpperCase(), n.x, n.y + (below ? 13 : -12));
+        ctx.fillText(n.label.toUpperCase(), n.x, n.y + 0.5);
       } else if (n.kind === 'interest') {
-        const left = n.x < W / 2;
+        const left = n.side === 'L';
         ctx.font = `${lit.has(i) ? 600 : 500} 11.5px ${FONT}`;
         ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.label;
         ctx.textAlign = left ? 'right' : 'left';
@@ -2763,8 +2868,9 @@ function initHobbyGraph() {
       if (!visible) return;
       t = t || 0;
       if (t - lastPulse > 650) { spawnPulse(t); lastPulse = t; }
-      step(t);
-      draw(hovered(), t);
+      const hi = hovered();
+      step(t, hi);
+      draw(hi, t);
     };
     requestAnimationFrame(tick);
   }
