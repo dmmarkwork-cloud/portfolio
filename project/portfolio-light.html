@@ -561,17 +561,36 @@ holo-bay:defined .holo-fallback { display: none; }
    personal row stays a strip rather than a second column of its own. */
 .about-beyond {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(14px, 2vw, 24px);
-  height: 360px;
+  height: 380px;
 }
-.beyond-graph, .beyond-carousel { height: 100%; }
+.beyond-graph {
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 50%, #142230 0%, #0B1118 70%);
+  border: 1px solid #1B2733;
+  border-radius: 4px;
+}
+/* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
+   too, and contain shows the whole image; a blurred copy of the same
+   photo fills whatever edge is left instead of flat bars. */
+.beyond-carousel { height: 100%; aspect-ratio: 3 / 4; border-radius: 4px; }
+.beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
+.beyond-carousel .hobby-slide::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  background: var(--bg-img, none) center / cover;
+  filter: blur(18px) brightness(0.7);
+}
+.beyond-carousel .hobby-slide > img,
+.beyond-carousel .hobby-slide > video { position: relative; object-fit: contain !important; }
 @media (max-width: 820px) {
   .about-intro { grid-template-columns: 1fr; }
   .about-intro > :first-child { max-width: 360px; }
   .about-beyond { grid-template-columns: 1fr; height: auto; }
-  .beyond-graph { height: 240px; }
-  .beyond-carousel { height: auto; aspect-ratio: 4 / 3; }
+  .beyond-graph { height: 340px; }
+  .beyond-carousel { height: auto; width: 100%; max-width: 360px; justify-self: center; }
 }
 
 /* ── Hobby carousel ──────────────────────────────────── */
@@ -910,11 +929,6 @@ holo-bay:defined .holo-fallback { display: none; }
   background: rgba(15, 23, 42, 0.93);
 }
 [data-theme="dark"] .header-wrap {
-  background-image:
-    linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
-}
-[data-theme="dark"] #hobby-graph {
   background-image:
     linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
@@ -1403,36 +1417,36 @@ setTimeout(function(){
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
             <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">03 — Beyond the desk</span>
-            <span style="font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);"><span class="hover-only">Hover to nudge</span><span class="touch-only">Drag to nudge</span></span>
+            <span style="font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
           </div>
 
           <div class="about-beyond">
           <!-- Interests — force-directed node graph -->
-          <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;background-color:var(--surface);background-image:linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);background-size:28px 28px;overflow:hidden;">
+          <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
             <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
           </div>
 
           <!-- Image/video carousel -->
           <div id="hobby-carousel" class="beyond-carousel" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);">
             <div id="hobby-track" style="position:relative;width:100%;height:100%;">
-              <div class="hobby-slide">
+              <div class="hobby-slide" style="--bg-img:url('figures/about/bouldering.png')">
                 <img src="figures/about/bouldering.png" alt="Indoor bouldering" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
                 <div class="hobby-caption">Bouldering · Laputa gym, Tsukuba</div>
               </div>
-              <div class="hobby-slide">
+              <div class="hobby-slide" style="--bg-img:url('figures/about/travel-fuji.jpg')">
                 <img src="figures/about/travel-fuji.jpg" alt="Mt. Fuji from Oshima" style="width:100%;height:100%;object-fit:cover;object-position:center 65%;display:block;">
                 <div class="hobby-caption">Backpack travel · Oshima island, Japan</div>
               </div>
-              <div class="hobby-slide">
+              <div class="hobby-slide" style="--bg-img:url('figures/about/rock-climbing.jpg')">
                 <img src="figures/about/rock-climbing.jpg" alt="Trail running on rocky terrain" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
                 <div class="hobby-caption">Trail running · Mount Tsukuba, Japan</div>
               </div>
-              <div class="hobby-slide">
+              <div class="hobby-slide" style="--bg-img:url('figures/about/aviation-navy.jpg')">
                 <img src="figures/about/aviation-navy.jpg" alt="US Air Force airshow at Osan AB" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
                 <div class="hobby-caption">Osan AB · USAF Airshow, South Korea</div>
               </div>
-              <div class="hobby-slide">
-                <video src="figures/about/snowboard.mp4" muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+              <div class="hobby-slide" style="--bg-img:url('figures/about/snowboard-poster.jpg')">
+                <video src="figures/about/snowboard.mp4" poster="figures/about/snowboard-poster.jpg" muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
                 <div class="hobby-caption">Snowboarding · Hakuba, Japan</div>
               </div>
             </div>
@@ -2434,34 +2448,82 @@ function initReveal() {
 // edges because these interests don't encode relationships to each other,
 // just a livelier presentation than a static tag row.
 function initHobbyGraph() {
+  // A small "network" of interests, after a citation-graph look: one bright
+  // centre, five category hubs on a ring, each interest fanned out from its
+  // hub, and a scatter of unlabeled dots for texture. Hover (or touch) an
+  // interest to light its path back to the centre; the pointer still nudges
+  // nearby nodes, and faint signals travel the edges while it is on screen.
   const wrap = document.getElementById('hobby-graph');
   const canvas = document.getElementById('hobby-graph-canvas');
   if (!wrap || !canvas) return;
   const ctx = canvas.getContext('2d');
-  const labels = ['Running', 'Tennis', 'Bouldering', 'Snowboarding', 'Piano', 'Guitar', 'Saxophone', 'Backpack travel', 'Hiking', 'Basketball', 'Quadcopter build', 'Cybersecurity', 'Gaming', 'Fragrance collecting', 'Dystopian films'];
 
-  function readColors() {
-    const cs = getComputedStyle(document.documentElement);
-    return {
-      fill: cs.getPropertyValue('--surface').trim(),
-      border: cs.getPropertyValue('--border').trim(),
-      text: cs.getPropertyValue('--muted-2').trim(),
-      hoverBorder: cs.getPropertyValue('--rust').trim(),
-      hoverText: cs.getPropertyValue('--ink').trim(),
-    };
+  const GROUPS = [
+    { label: 'Sport',    items: ['Running', 'Tennis', 'Bouldering', 'Snowboarding', 'Basketball'] },
+    { label: 'Outdoors', items: ['Hiking', 'Backpack travel'] },
+    { label: 'Music',    items: ['Piano', 'Guitar', 'Saxophone'] },
+    { label: 'Tech',     items: ['Quadcopter build', 'Cybersecurity', 'Gaming'] },
+    { label: 'Culture',  items: ['Fragrance collecting', 'Dystopian films'] },
+  ];
+  // Fixed palette: the panel is dark in both themes, like the reference.
+  const C = {
+    edge: '56,189,248',      // sky
+    blue: '#3BA7EE',
+    amber: '#F2B33D',
+    red: '#E5484D',
+    label: 'rgba(230,237,243,0.92)',
+    labelDim: 'rgba(230,237,243,0.38)',
+    hub: 'rgba(242,179,61,0.95)',
+  };
+  const FONT = getComputedStyle(document.documentElement).getPropertyValue('--font-sans');
+
+  // Seeded RNG so the scatter is the same on every visit.
+  let seed = 7;
+  const rand = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+
+  // Nodes carry an anchor in unit space (0..1) so the graph re-fits on resize.
+  const nodes = [];
+  const edges = [];
+  const add = (n) => { n.x = n.y = 0; n.vx = n.vy = 0; nodes.push(n); return nodes.length - 1; };
+  const centre = add({ kind: 'centre', ux: 0.5, uy: 0.5, r: 5 });
+  const interests = [];
+  GROUPS.forEach((g, gi) => {
+    const a = -Math.PI / 2 + (gi / GROUPS.length) * Math.PI * 2;
+    const hub = add({ kind: 'hub', label: g.label, ang: a, ux: 0.5 + Math.cos(a) * 0.2, uy: 0.5 + Math.sin(a) * 0.27, r: 4.5 });
+    edges.push({ a: centre, b: hub, w: 1 });
+    g.items.forEach((label, k) => {
+      const spread = (k - (g.items.length - 1) / 2) * 0.42;
+      const ia = a + spread;
+      const i = add({ kind: 'interest', label, hub, ux: 0.5 + Math.cos(ia) * 0.37, uy: 0.5 + Math.sin(ia) * 0.4, r: 3.6 });
+      edges.push({ a: hub, b: i, w: 0.8 });
+      interests.push(i);
+    });
+  });
+  // Texture: small five-dot rosettes and single dots, each tied to the
+  // nearest labelled node by a faint edge.
+  const labelled = nodes.map((_, i) => i);
+  const nearest = (ux, uy) => labelled.reduce((best, i) => {
+    const d = Math.hypot(nodes[i].ux - ux, (nodes[i].uy - uy) * 0.6);
+    return d < best.d ? { i, d } : best;
+  }, { i: 0, d: 9 }).i;
+  for (let k = 0; k < 26; k++) {
+    const cx = 0.04 + rand() * 0.92, cy = 0.06 + rand() * 0.88;
+    if (Math.hypot(cx - 0.5, (cy - 0.5) * 0.6) < 0.08) continue;
+    const anchor = nearest(cx, cy);
+    for (let p = 0; p < 5; p++) {
+      const pa = (p / 5) * Math.PI * 2;
+      const d = add({ kind: 'dot', ux: cx + Math.cos(pa) * 0.007, uy: cy + Math.sin(pa) * 0.016, r: 1.9, color: C.blue });
+      if (p === 0) edges.push({ a: anchor, b: d, w: 0.25 });
+    }
   }
-  let colors = readColors();
+  for (let k = 0; k < 70; k++) {
+    const ux = 0.02 + rand() * 0.96, uy = 0.03 + rand() * 0.94;
+    const roll = rand();
+    const d = add({ kind: 'dot', ux, uy, r: 1.5 + rand(), color: roll < 0.06 ? C.red : roll < 0.55 ? C.amber : C.blue });
+    if (rand() < 0.45) edges.push({ a: nearest(ux, uy), b: d, w: 0.2 });
+  }
 
   let W = 0, H = 0;
-  ctx.font = `500 11.5px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans')}`;
-  const nodes = labels.map((label, i) => ({
-    label,
-    w: ctx.measureText(label).width + 24,
-    h: 28,
-    x: 0, y: 0, vx: 0, vy: 0,
-    seed: i,
-  }));
-
   function layout() {
     const rect = wrap.getBoundingClientRect();
     W = rect.width; H = rect.height;
@@ -2469,141 +2531,166 @@ function initHobbyGraph() {
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    nodes.forEach((n, i) => {
-      if (n.x === 0 && n.y === 0) {
-        const angle = (i / nodes.length) * Math.PI * 2;
-        n.x = W / 2 + Math.cos(angle) * Math.min(W, H) * 0.3;
-        n.y = H / 2 + Math.sin(angle) * Math.min(W, H) * 0.3;
+    ctx.font = `500 11.5px ${FONT}`;
+    nodes.forEach(n => {
+      n.ax = n.ux * W; n.ay = n.uy * H;
+      // Keep every label inside the panel: a label hangs off the side of its
+      // dot away from the centre, so pull the anchor in by the label width.
+      if (n.kind === 'interest') {
+        const lw = ctx.measureText(n.label).width + 18;
+        n.ax = n.ax < W / 2 ? Math.max(n.ax, lw) : Math.min(n.ax, W - lw);
+        n.ay = Math.min(Math.max(n.ay, 14), H - 14);
       }
+      if (!n.x && !n.y) { n.x = n.ax; n.y = n.ay; }
     });
   }
   new ResizeObserver(layout).observe(wrap);
   layout();
 
-  // pointermove covers mouse, pen and touch in one listener, so a finger
-  // dragged across the graph nudges the nodes exactly as a cursor does. It
-  // listened on mousemove alone, which meant the whole widget — and the
-  // "hover to nudge" label above it — did nothing at all on a phone. The
-  // pan-y touch-action in the stylesheet keeps a vertical drag scrolling the
-  // page, so only sideways travel is treated as intent.
   const mouse = { x: -9999, y: -9999, active: false };
-  wrap.addEventListener('pointermove', (e) => {
+  const setPointer = (e) => {
     const r = wrap.getBoundingClientRect();
-    mouse.x = e.clientX - r.left;
-    mouse.y = e.clientY - r.top;
-    mouse.active = true;
-  }, { passive: true });
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
+  };
+  wrap.addEventListener('pointermove', setPointer, { passive: true });
+  wrap.addEventListener('pointerdown', setPointer, { passive: true });
   wrap.addEventListener('pointerleave', () => { mouse.active = false; });
   wrap.addEventListener('pointercancel', () => { mouse.active = false; });
 
-  function hoverIndex() {
+  // Hit-test the dot and its label together, so the label is a target too.
+  function hovered() {
     if (!mouse.active) return -1;
-    for (let i = 0; i < nodes.length; i++) {
+    ctx.font = `500 11.5px ${FONT}`;
+    for (const i of interests) {
       const n = nodes[i];
-      if (Math.abs(mouse.x - n.x) < n.w / 2 && Math.abs(mouse.y - n.y) < n.h / 2) return i;
+      const w = ctx.measureText(n.label).width;
+      const left = n.x < W / 2;
+      const x0 = left ? n.x - w - 12 : n.x - 8, x1 = left ? n.x + 8 : n.x + w + 12;
+      if (mouse.x > x0 && mouse.x < x1 && Math.abs(mouse.y - n.y) < 11) return i;
     }
     return -1;
   }
 
-  function step(withMouse, t) {
-    for (let i = 0; i < nodes.length; i++) {
-      const a = nodes[i];
-      a.vx += (W / 2 - a.x) * 0.0018;
-      a.vy += (H / 2 - a.y) * 0.0018;
+  function step(t) {
+    for (let idx = 0; idx < nodes.length; idx++) {
+      const n = nodes[idx];
+      if (n.kind === 'centre') { n.x = n.ax; n.y = n.ay; continue; }
+      const k = n.kind === 'dot' ? 0.03 : 0.05;
+      n.vx += (n.ax - n.x) * k;
+      n.vy += (n.ay - n.y) * k;
       if (!reducedMotion) {
-        a.vx += Math.sin(t * 0.0006 + a.seed) * 0.02;
-        a.vy += Math.cos(t * 0.0007 + a.seed * 1.7) * 0.02;
+        const s = idx * 0.37;
+        n.vx += Math.sin(t * 0.0005 + s) * 0.03;
+        n.vy += Math.cos(t * 0.0006 + s * 1.3) * 0.03;
       }
-      if (withMouse && mouse.active) {
-        const dx = a.x - mouse.x, dy = a.y - mouse.y;
+      if (mouse.active) {
+        const dx = n.x - mouse.x, dy = n.y - mouse.y;
         const d = Math.hypot(dx, dy) || 1;
-        if (d < 90) {
-          const f = (90 - d) / 90 * 2.2;
-          a.vx += (dx / d) * f;
-          a.vy += (dy / d) * f;
-        }
+        if (d < 70) { const f = (70 - d) / 70 * 1.6; n.vx += dx / d * f; n.vy += dy / d * f; }
       }
-      for (let j = i + 1; j < nodes.length; j++) {
-        // Nodes are wide, short pills, not circles — a single radial distance
-        // threshold under- or over-corrects depending on whether two nodes
-        // are side-by-side or stacked. Resolve as real rectangle overlap
-        // instead: push apart along whichever axis (x or y) has the smaller
-        // penetration, same as standard 2D box-collision resolution.
-        const b = nodes[j];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const combinedHalfW = (a.w + b.w) / 2 + 8;
-        const combinedHalfH = (a.h + b.h) / 2 + 6;
-        const overlapX = combinedHalfW - Math.abs(dx);
-        const overlapY = combinedHalfH - Math.abs(dy);
-        if (overlapX > 0 && overlapY > 0) {
-          if (overlapX < overlapY) {
-            const f = overlapX * 0.08;
-            const sign = dx < 0 ? -1 : 1;
-            a.vx -= sign * f; b.vx += sign * f;
-          } else {
-            const f = overlapY * 0.08;
-            const sign = dy < 0 ? -1 : 1;
-            a.vy -= sign * f; b.vy += sign * f;
-          }
-        }
-      }
-    }
-    nodes.forEach(n => {
-      n.vx *= 0.9; n.vy *= 0.9;
+      n.vx *= 0.82; n.vy *= 0.82;
       n.x += n.vx; n.y += n.vy;
-      const halfW = n.w / 2, halfH = n.h / 2;
-      n.x = Math.max(halfW + 2, Math.min(W - halfW - 2, n.x));
-      n.y = Math.max(halfH + 2, Math.min(H - halfH - 2, n.y));
-    });
+    }
   }
 
-  function draw(hovered) {
+  // Signals: a bright point running centre -> hub -> interest.
+  const pulses = [];
+  let lastPulse = 0;
+  function spawnPulse(t) {
+    const i = interests[Math.floor(rand() * interests.length)];
+    pulses.push({ path: [centre, nodes[i].hub, i], t0: t });
+  }
+
+  function draw(hi, t) {
     ctx.clearRect(0, 0, W, H);
-    nodes.forEach((n, i) => {
-      const on = i === hovered;
-      const r = n.h / 2;
-      const x = n.x - n.w / 2, y = n.y - n.h / 2;
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + n.w, y, x + n.w, y + n.h, r);
-      ctx.arcTo(x + n.w, y + n.h, x, y + n.h, r);
-      ctx.arcTo(x, y + n.h, x, y, r);
-      ctx.arcTo(x, y, x + n.w, y, r);
-      ctx.closePath();
-      ctx.fillStyle = colors.fill;
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = on ? colors.hoverBorder : colors.border;
-      ctx.stroke();
-      ctx.fillStyle = on ? colors.hoverText : colors.text;
-      ctx.font = `500 11.5px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans')}`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(n.label, n.x, n.y + 0.5);
-    });
+    const lit = new Set();
+    if (hi >= 0) { lit.add(hi); lit.add(nodes[hi].hub); lit.add(centre); }
+    const isLit = (e) => lit.has(e.a) && lit.has(e.b);
+
+    // edges
+    for (const e of edges) {
+      const a = nodes[e.a], b = nodes[e.b];
+      const on = hi >= 0 && isLit(e);
+      const alpha = on ? 0.95 : hi >= 0 ? 0.08 + e.w * 0.08 : 0.12 + e.w * 0.38;
+      ctx.strokeStyle = `rgba(${C.edge},${alpha})`;
+      ctx.lineWidth = on ? 1.6 : e.w > 0.5 ? 0.9 : 0.6;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+
+    // signals
+    if (!reducedMotion) {
+      for (let p = pulses.length - 1; p >= 0; p--) {
+        const u = (t - pulses[p].t0) / 1400;
+        if (u >= 1) { pulses.splice(p, 1); continue; }
+        const seg = u < 0.5 ? 0 : 1, f = u < 0.5 ? u * 2 : (u - 0.5) * 2;
+        const a = nodes[pulses[p].path[seg]], b = nodes[pulses[p].path[seg + 1]];
+        const x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 7);
+        g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(1, `rgba(${C.edge},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const dim = hi >= 0 && !lit.has(i);
+      ctx.globalAlpha = dim ? (n.kind === 'dot' ? 0.35 : 0.5) : 1;
+      if (n.kind === 'centre') {
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 16);
+        g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, `rgba(${C.edge},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#FFFFFF';
+      } else if (n.kind === 'hub') ctx.fillStyle = C.amber;
+      else if (n.kind === 'interest') ctx.fillStyle = lit.has(i) ? '#FFFFFF' : C.blue;
+      else ctx.fillStyle = n.color;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (lit.has(i) && n.kind === 'interest' ? 1.4 : 0), 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // labels last, so no edge crosses over text
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      if (n.kind === 'hub') {
+        ctx.font = `600 10px ${FONT}`;
+        ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.hub;
+        ctx.textAlign = 'center';
+        const below = Math.sin(n.ang) > 0.2;
+        ctx.fillText(n.label.toUpperCase(), n.x, n.y + (below ? 13 : -12));
+      } else if (n.kind === 'interest') {
+        const left = n.x < W / 2;
+        ctx.font = `${lit.has(i) ? 600 : 500} 11.5px ${FONT}`;
+        ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.label;
+        ctx.textAlign = left ? 'right' : 'left';
+        ctx.fillText(n.label, n.x + (left ? -8 : 8), n.y + 0.5);
+      }
+    }
   }
 
   let visible = true;
   new IntersectionObserver((es) => { es.forEach(e => { visible = e.isIntersecting; }); }, { rootMargin: '80px' }).observe(wrap);
 
   if (reducedMotion) {
-    // Settle into a static, well-spread layout once rather than animating —
-    // reduced motion means gentler, not necessarily frozen mid-overlap.
-    for (let k = 0; k < 400; k++) step(false, k);
-    draw(-1);
-    wrap.addEventListener('pointermove', () => draw(hoverIndex()), { passive: true });
-    wrap.addEventListener('pointerleave', () => draw(-1));
+    draw(-1, 0);
+    wrap.addEventListener('pointermove', () => draw(hovered(), 0), { passive: true });
+    wrap.addEventListener('pointerdown', () => draw(hovered(), 0), { passive: true });
+    wrap.addEventListener('pointerleave', () => draw(-1, 0));
+    new ResizeObserver(() => draw(-1, 0)).observe(wrap);
   } else {
     const tick = (t) => {
       requestAnimationFrame(tick);
       if (!visible) return;
-      step(true, t || 0);
-      draw(hoverIndex());
+      t = t || 0;
+      if (t - lastPulse > 650) { spawnPulse(t); lastPulse = t; }
+      step(t);
+      draw(hovered(), t);
     };
     requestAnimationFrame(tick);
   }
 
-  window.updateHobbyGraphTheme = () => { colors = readColors(); };
+  // The panel keeps its own dark palette in both themes; nothing to swap.
+  window.updateHobbyGraphTheme = () => {};
 }
 
 function initHobbyCarousel() {
