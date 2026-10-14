@@ -567,11 +567,11 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 .beyond-media { display: grid; gap: 18px; }
 .beyond-media > :first-child { margin-bottom: -4px !important; }
-/* Graph and carousel on one line at one height. The carousel cell is as
-   wide as the widest photo (3:4); narrower 9:16 frames centre in it. */
+/* Carousel then graph on one line. The carousel is a fixed 9:16 frame
+   (auto column); the graph takes the remaining width. */
 .beyond-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
@@ -1468,12 +1468,6 @@ setTimeout(function(){
           </div>
 
           <div class="beyond-row">
-          <!-- Interests — force-directed node graph -->
-          <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
-            <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
-            <span class="graph-hint"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
-          </div>
-
           <!-- Image/video carousel -->
           <div id="hobby-carousel" class="beyond-carousel" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);">
             <div id="hobby-track" style="position:relative;width:100%;height:100%;">
@@ -1516,6 +1510,12 @@ setTimeout(function(){
               <button class="hobby-dot" aria-label="Slide 4" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 5" style="pointer-events:auto;"></button>
             </div>
+          </div>
+
+          <!-- Interests: category node graph -->
+          <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
+            <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
+            <span class="graph-hint"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
           </div>
           </div>
           </div>
