@@ -42,14 +42,14 @@
       holder.appendChild(canvas);
 
       const legend = document.createElement('div');
-      legend.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px 0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;";
+      legend.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px 0;font-family:var(--font-sans);font-size:var(--text-label);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;";
       this.appendChild(holder);
       this.appendChild(legend);
 
       let THREE;
       try { THREE = await import(THREE_URL); }
       catch (e) {
-        holder.innerHTML = "<div style=\"display:grid;place-items:center;height:100%;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#8B96A4;\">HOLO BAY OFFLINE</div>";
+        holder.innerHTML = "<div style=\"display:grid;place-items:center;height:100%;font-family:var(--font-sans);font-size:var(--text-label);font-weight:600;letter-spacing:0.12em;color:#8B96A4;\">HOLO BAY OFFLINE</div>";
         return;
       }
 
