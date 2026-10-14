@@ -567,8 +567,10 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 .beyond-graph {
   height: 100%;
-  background: radial-gradient(ellipse at 50% 50%, #142230 0%, #0B1118 70%);
-  border: 1px solid #1B2733;
+  background-color: var(--surface);
+  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 1px solid var(--border);
   border-radius: 4px;
 }
 /* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
@@ -927,6 +929,11 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 [data-theme="dark"] #lightbox {
   background: rgba(15, 23, 42, 0.93);
+}
+[data-theme="dark"] .beyond-graph {
+  background-image:
+    linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
 }
 [data-theme="dark"] .header-wrap {
   background-image:
@@ -2448,9 +2455,9 @@ function initReveal() {
 // edges because these interests don't encode relationships to each other,
 // just a livelier presentation than a static tag row.
 function initHobbyGraph() {
-  // A small "network" of interests, after a citation-graph look: one bright
+  // A small "network" of interests, after a citation-graph look: one
   // centre, five category hubs on a ring, each interest fanned out from its
-  // hub, and a scatter of unlabeled dots for texture. Hover (or touch) an
+  // hub. Hover (or touch) an
   // interest to light its path back to the centre; the pointer still nudges
   // nearby nodes, and faint signals travel the edges while it is on screen.
   const wrap = document.getElementById('hobby-graph');
@@ -2465,16 +2472,29 @@ function initHobbyGraph() {
     { label: 'Tech',     items: ['Quadcopter build', 'Cybersecurity', 'Gaming'] },
     { label: 'Culture',  items: ['Fragrance collecting', 'Dystopian films'] },
   ];
-  // Fixed palette: the panel is dark in both themes, like the reference.
-  const C = {
-    edge: '56,189,248',      // sky
-    blue: '#3BA7EE',
-    amber: '#F2B33D',
-    red: '#E5484D',
-    label: 'rgba(230,237,243,0.92)',
-    labelDim: 'rgba(230,237,243,0.38)',
-    hub: 'rgba(242,179,61,0.95)',
+  // Colours come from the page's own tokens, so the graph follows the
+  // theme: rust on warm white in light, sky on navy in dark.
+  const rgb = (hex) => {
+    const h = hex.trim().replace('#', '');
+    const f = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+    return [0, 2, 4].map(i => parseInt(f.slice(i, i + 2), 16)).join(',');
   };
+  let C;
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    const v = (n) => cs.getPropertyValue(n).trim();
+    C = {
+      edge: rgb(v('--rust')),
+      accent: v('--rust'),
+      node: v('--muted'),
+      hot: v('--ink'),
+      surface: v('--surface'),
+      label: v('--ink'),
+      labelDim: `rgba(${rgb(v('--muted-2'))},0.45)`,
+      hub: v('--rust'),
+    };
+  }
+  readColors();
   const FONT = getComputedStyle(document.documentElement).getPropertyValue('--font-sans');
 
   // Seeded RNG so the scatter is the same on every visit.
@@ -2499,30 +2519,6 @@ function initHobbyGraph() {
       interests.push(i);
     });
   });
-  // Texture: small five-dot rosettes and single dots, each tied to the
-  // nearest labelled node by a faint edge.
-  const labelled = nodes.map((_, i) => i);
-  const nearest = (ux, uy) => labelled.reduce((best, i) => {
-    const d = Math.hypot(nodes[i].ux - ux, (nodes[i].uy - uy) * 0.6);
-    return d < best.d ? { i, d } : best;
-  }, { i: 0, d: 9 }).i;
-  for (let k = 0; k < 26; k++) {
-    const cx = 0.04 + rand() * 0.92, cy = 0.06 + rand() * 0.88;
-    if (Math.hypot(cx - 0.5, (cy - 0.5) * 0.6) < 0.08) continue;
-    const anchor = nearest(cx, cy);
-    for (let p = 0; p < 5; p++) {
-      const pa = (p / 5) * Math.PI * 2;
-      const d = add({ kind: 'dot', ux: cx + Math.cos(pa) * 0.007, uy: cy + Math.sin(pa) * 0.016, r: 1.9, color: C.blue });
-      if (p === 0) edges.push({ a: anchor, b: d, w: 0.25 });
-    }
-  }
-  for (let k = 0; k < 70; k++) {
-    const ux = 0.02 + rand() * 0.96, uy = 0.03 + rand() * 0.94;
-    const roll = rand();
-    const d = add({ kind: 'dot', ux, uy, r: 1.5 + rand(), color: roll < 0.06 ? C.red : roll < 0.55 ? C.amber : C.blue });
-    if (rand() < 0.45) edges.push({ a: nearest(ux, uy), b: d, w: 0.2 });
-  }
-
   let W = 0, H = 0;
   function layout() {
     const rect = wrap.getBoundingClientRect();
@@ -2611,7 +2607,7 @@ function initHobbyGraph() {
     for (const e of edges) {
       const a = nodes[e.a], b = nodes[e.b];
       const on = hi >= 0 && isLit(e);
-      const alpha = on ? 0.95 : hi >= 0 ? 0.08 + e.w * 0.08 : 0.12 + e.w * 0.38;
+      const alpha = on ? 0.95 : hi >= 0 ? 0.1 : 0.22 + e.w * 0.3;
       ctx.strokeStyle = `rgba(${C.edge},${alpha})`;
       ctx.lineWidth = on ? 1.6 : e.w > 0.5 ? 0.9 : 0.6;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
@@ -2626,7 +2622,7 @@ function initHobbyGraph() {
         const a = nodes[pulses[p].path[seg]], b = nodes[pulses[p].path[seg + 1]];
         const x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
         const g = ctx.createRadialGradient(x, y, 0, x, y, 7);
-        g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(1, `rgba(${C.edge},0)`);
+        g.addColorStop(0, `rgba(${C.edge},0.95)`); g.addColorStop(1, `rgba(${C.edge},0)`);
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
       }
     }
@@ -2635,15 +2631,14 @@ function initHobbyGraph() {
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       const dim = hi >= 0 && !lit.has(i);
-      ctx.globalAlpha = dim ? (n.kind === 'dot' ? 0.35 : 0.5) : 1;
+      ctx.globalAlpha = dim ? 0.4 : 1;
       if (n.kind === 'centre') {
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 16);
-        g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, `rgba(${C.edge},0)`);
+        g.addColorStop(0, `rgba(${C.edge},0.55)`); g.addColorStop(1, `rgba(${C.edge},0)`);
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, 16, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
-      } else if (n.kind === 'hub') ctx.fillStyle = C.amber;
-      else if (n.kind === 'interest') ctx.fillStyle = lit.has(i) ? '#FFFFFF' : C.blue;
-      else ctx.fillStyle = n.color;
+        ctx.fillStyle = C.accent;
+      } else if (n.kind === 'hub') ctx.fillStyle = C.hub;
+      else ctx.fillStyle = lit.has(i) ? C.hot : C.node;
       ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (lit.has(i) && n.kind === 'interest' ? 1.4 : 0), 0, Math.PI * 2); ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -2689,8 +2684,7 @@ function initHobbyGraph() {
     requestAnimationFrame(tick);
   }
 
-  // The panel keeps its own dark palette in both themes; nothing to swap.
-  window.updateHobbyGraphTheme = () => {};
+  window.updateHobbyGraphTheme = () => { readColors(); if (reducedMotion) draw(-1, 0); };
 }
 
 function initHobbyCarousel() {
