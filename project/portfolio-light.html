@@ -561,7 +561,7 @@ holo-bay:defined .holo-fallback { display: none; }
    personal row stays a strip rather than a second column of its own. */
 .beyond-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
   gap: clamp(32px, 5vw, 72px);
   align-items: start;
 }
@@ -571,9 +571,9 @@ holo-bay:defined .holo-fallback { display: none; }
    wide as the widest photo (3:4); narrower 9:16 frames centre in it. */
 .beyond-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
-  height: 320px;
+  align-items: start;
 }
 .graph-hint {
   position: absolute;
@@ -596,7 +596,7 @@ holo-bay:defined .holo-fallback { display: none; }
   text-wrap: pretty;
 }
 .beyond-graph {
-  height: 100%;
+  height: 300px;
   background-color: var(--surface);
   background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
   background-size: 28px 28px;
@@ -606,16 +606,11 @@ holo-bay:defined .holo-fallback { display: none; }
 /* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
    too, and contain shows the whole image; a blurred copy of the same
    photo fills whatever edge is left instead of flat bars. */
-.beyond-carousel { height: 100%; aspect-ratio: 3 / 4; justify-self: center; border-radius: 4px; }
-/* The frame takes the exact proportions of whichever photo is showing, so
-   nothing is cropped and nothing is left over. Ratios are each file's own
-   pixel size (the airshow photo after its EXIF rotation). Browsers without
-   :has() keep 3:4 and the contain + blurred fill below. */
-.beyond-carousel:has(.ar-1.active) { aspect-ratio: 1125 / 1978; }
-.beyond-carousel:has(.ar-2.active) { aspect-ratio: 1536 / 2730; }
-.beyond-carousel:has(.ar-3.active) { aspect-ratio: 1050 / 1400; }
-.beyond-carousel:has(.ar-4.active) { aspect-ratio: 3024 / 4032; }
-.beyond-carousel:has(.ar-5.active) { aspect-ratio: 1280 / 2276; }
+/* The carousel is the lead on this line. Every frame uses the backpack
+   travel photo's own ratio (1536 x 2730, 9:16). The other two 9:16 items
+   fill it within 1%; the two 3:4 photos are trimmed at the sides, with
+   their subjects kept in frame by object-position. */
+.beyond-carousel { height: 540px; aspect-ratio: 1536 / 2730; border-radius: 4px; }
 .beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
 .beyond-carousel .hobby-slide::before {
   content: '';
@@ -625,14 +620,18 @@ holo-bay:defined .holo-fallback { display: none; }
   filter: blur(18px) brightness(0.7);
 }
 .beyond-carousel .hobby-slide > img,
-.beyond-carousel .hobby-slide > video { position: relative; object-fit: contain !important; }
+.beyond-carousel .hobby-slide > video { position: relative; object-fit: cover !important; }
+/* Below ~1100px the note drops under the media so the graph keeps room. */
+@media (max-width: 1100px) {
+  .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
+  .beyond-text { padding-top: 0; }
+}
 @media (max-width: 820px) {
   .about-intro { grid-template-columns: 1fr; }
   .about-intro > :first-child { max-width: 360px; }
-  .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
-  .beyond-row { grid-template-columns: 1fr; height: auto; }
-  .beyond-graph { height: 340px; }
-  .beyond-carousel { height: 440px; }
+  .beyond-row { grid-template-columns: 1fr; }
+  .beyond-graph { height: 320px; }
+  .beyond-carousel { height: auto; width: min(100%, 320px); justify-self: center; }
   .beyond-text { padding-top: 0; }
 }
 
@@ -2554,18 +2553,53 @@ function initHobbyGraph() {
   const add = (n) => { n.x = n.y = 0; n.vx = n.vy = 0; nodes.push(n); return nodes.length - 1; };
   const centre = add({ kind: 'centre', ux: 0.5, uy: 0.5, r: 5 });
   const interests = [];
+  const between = (lo, hi) => lo + rand() * (hi - lo);
+  // Irregular on purpose: hubs sit at jittered angles and distances, each
+  // interest lands at a random bearing and reach from its hub, and a few
+  // cross-links tie interests across groups. Seeded, so it is the same
+  // drawing on every visit; overlaps are relaxed apart in layout().
+  const hubs = [];
   GROUPS.forEach((g, gi) => {
-    const a = -Math.PI / 2 + (gi / GROUPS.length) * Math.PI * 2;
-    const hub = add({ kind: 'hub', label: g.label, ang: a, ux: 0.5 + Math.cos(a) * 0.2, uy: 0.5 + Math.sin(a) * 0.27, r: 4.5 });
+    const a = -Math.PI / 2 + (gi / GROUPS.length) * Math.PI * 2 + between(-0.45, 0.45);
+    const reach = between(0.14, 0.26);
+    const hub = add({ kind: 'hub', label: g.label, ux: 0.5 + Math.cos(a) * reach, uy: 0.5 + Math.sin(a) * reach * 1.3, r: 4.5 });
+    hubs.push(hub);
     edges.push({ a: centre, b: hub, w: 1 });
-    g.items.forEach((label, k) => {
-      const spread = (k - (g.items.length - 1) / 2) * 0.42;
-      const ia = a + spread;
-      const i = add({ kind: 'interest', label, hub, ux: 0.5 + Math.cos(ia) * 0.37, uy: 0.5 + Math.sin(ia) * 0.4, r: 3.6 });
+    g.items.forEach((label) => {
+      const ia = a + between(-1.2, 1.2);
+      const d = between(0.12, 0.3);
+      const ux = Math.min(0.94, Math.max(0.06, nodes[hub].ux + Math.cos(ia) * d));
+      const uy = Math.min(0.92, Math.max(0.08, nodes[hub].uy + Math.sin(ia) * d * 1.3));
+      const i = add({ kind: 'interest', label, hub, ux, uy, r: 3.6 });
       edges.push({ a: hub, b: i, w: 0.8 });
       interests.push(i);
     });
   });
+  const linked = new Set(edges.map(e => `${e.a}-${e.b}`));
+  const link = (a, b, w) => {
+    const k = a < b ? `${a}-${b}` : `${b}-${a}`;
+    if (a === b || linked.has(k)) return;
+    linked.add(k); edges.push({ a, b, w });
+  };
+  interests.forEach(i => {
+    if (rand() < 0.55) {
+      const others = interests.filter(j => nodes[j].hub !== nodes[i].hub);
+      link(i, others[Math.floor(rand() * others.length)], 0.35);
+    }
+  });
+  for (let k = 0; k < 3; k++) link(hubs[Math.floor(rand() * hubs.length)], hubs[Math.floor(rand() * hubs.length)], 0.45);
+
+  // Label box for a node at (x, y): interest labels hang off the side away
+  // from the centre; hub labels sit above or below their dot.
+  const labelW = {};
+  function box(n, x, y) {
+    if (n.kind === 'interest') {
+      const w = labelW[n.label], left = x < W / 2;
+      return left ? [x - w - 12, y - 9, x + 6, y + 9] : [x - 6, y - 9, x + w + 12, y + 9];
+    }
+    if (n.kind === 'hub') { const w = labelW[n.label] / 2 + 6; return [x - w, y - 20, x + w, y + 20]; }
+    return [x - 10, y - 10, x + 10, y + 10];
+  }
   let W = 0, H = 0;
   function layout() {
     const rect = wrap.getBoundingClientRect();
@@ -2575,17 +2609,36 @@ function initHobbyGraph() {
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = `500 11.5px ${FONT}`;
-    nodes.forEach(n => {
-      n.ax = n.ux * W; n.ay = n.uy * H;
-      // Keep every label inside the panel: a label hangs off the side of its
-      // dot away from the centre, so pull the anchor in by the label width.
-      if (n.kind === 'interest') {
-        const lw = ctx.measureText(n.label).width + 18;
-        n.ax = n.ax < W / 2 ? Math.max(n.ax, lw) : Math.min(n.ax, W - lw);
-        n.ay = Math.min(Math.max(n.ay, 14), H - 14);
+    nodes.forEach(n => { if (n.label) labelW[n.label] = ctx.measureText(n.kind === 'hub' ? n.label.toUpperCase() : n.label).width; n.ax = n.ux * W; n.ay = n.uy * H; });
+    // The hint text in the top-right corner is a fixed obstacle.
+    const hintEl = wrap.querySelector('.graph-hint');
+    const hint = hintEl ? [W - hintEl.offsetWidth - 20, 0, W, hintEl.offsetTop + hintEl.offsetHeight + 6] : null;
+    // Relax label boxes apart and keep every box inside the panel.
+    for (let it = 0; it < 240; it++) {
+      for (let p = 0; p < nodes.length; p++) {
+        for (let q = p + 1; q < nodes.length; q++) {
+          const A = nodes[p], B = nodes[q];
+          const a = box(A, A.ax, A.ay), b = box(B, B.ax, B.ay);
+          const ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]) + 4;
+          const oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]) + 4;
+          if (ox > 0 && oy > 0) {
+            const fa = A.kind === 'centre' ? 0 : B.kind === 'centre' ? 1 : 0.5;
+            if (ox < oy) { const sgn = (B.ax + (b[0] + b[2]) / 2 - B.ax) > (A.ax + (a[0] + a[2]) / 2 - A.ax) ? 1 : -1; A.ax -= sgn * ox * fa; B.ax += sgn * ox * (1 - fa); }
+            else { const sgn = B.ay > A.ay ? 1 : -1; A.ay -= sgn * oy * fa; B.ay += sgn * oy * (1 - fa); }
+          }
+        }
       }
-      if (!n.x && !n.y) { n.x = n.ax; n.y = n.ay; }
-    });
+      nodes.forEach(n => {
+        if (n.kind === 'centre') { n.ax = W / 2; n.ay = H / 2; return; }
+        const b = box(n, n.ax, n.ay);
+        if (b[0] < 4) n.ax += 4 - b[0];
+        if (b[2] > W - 4) n.ax -= b[2] - (W - 4);
+        if (b[1] < 4) n.ay += 4 - b[1];
+        if (b[3] > H - 4) n.ay -= b[3] - (H - 4);
+        if (hint && b[2] > hint[0] && b[1] < hint[3]) n.ay += hint[3] - b[1];
+      });
+    }
+    nodes.forEach(n => { if (!n.x && !n.y) { n.x = n.ax; n.y = n.ay; } });
   }
   new ResizeObserver(layout).observe(wrap);
   layout();
@@ -2698,7 +2751,7 @@ function initHobbyGraph() {
         ctx.font = `600 10px ${FONT}`;
         ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.hub;
         ctx.textAlign = 'center';
-        const below = Math.sin(n.ang) > 0.2;
+        const below = n.y > H / 2;
         ctx.fillText(n.label.toUpperCase(), n.x, n.y + (below ? 13 : -12));
       } else if (n.kind === 'interest') {
         const left = n.x < W / 2;
