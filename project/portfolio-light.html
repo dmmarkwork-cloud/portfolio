@@ -669,6 +669,51 @@ holo-bay:defined .holo-fallback { display: none; }
   transition: transform 180ms var(--ease-out);
   margin-top: auto;
 }
+.tools-title {
+  font-family: var(--font-sans);
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.tools-lede {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 28px;
+  max-width: 54ch;
+}
+/* auto-fit: one column in the narrow about column today, three or four
+   across once the block is given full width. */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 26px clamp(24px, 3vw, 48px);
+}
+.tool-group-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.tool-group-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.tool-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 6px 14px 6px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+}
 .hobby-dot {
   width: 6px;
   height: 6px;
@@ -1324,7 +1369,9 @@ setTimeout(function(){
         <!-- 02 — Tools -->
         <div>
           <div style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">02 — Tools</div>
-          <div style="display:flex;flex-wrap:wrap;gap:7px;" id="software-list"></div>
+          <h3 class="tools-title">What I bring to a project</h3>
+          <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
+          <div class="tools-grid" id="software-list"></div>
         </div>
 
       </div>
@@ -2012,25 +2059,34 @@ const RASTER_LOGOS = {
   matlab:     { src: 'logos/matlab.png',     bg: 'transparent' },
 };
 
+// Grouped by the stage of the work a tool serves, in the order a project
+// moves through them: geometry, analysis, computation, then reporting.
+const TOOL_GROUPS = [
+  { id: 'cad',  label: 'CAD & drafting' },
+  { id: 'sim',  label: 'Simulation (CFD & FEA)' },
+  { id: 'code', label: 'Programming & data' },
+  { id: 'pm',   label: 'Planning & reporting' },
+];
+
 const TOOLS = [
-  { name: 'SolidWorks', raster: 'solidworks' },
-  { name: 'CATIA V6', raster: 'catia' },
-  { name: 'ANSYS Fluent', raster: 'ansys' },
-  { name: 'ANSYS Mechanical', raster: 'ansys' },
-  { name: 'CalculiX / PrePoMax', initials: 'CX' },
-  { name: 'OpenFOAM', raster: 'openfoam' },
-  { name: 'XFOIL', raster: 'xfoil' },
-  { name: 'SpaceClaim', raster: 'ansys' },
-  { name: 'DFM', initials: 'DFM' },
-  { name: 'Python', icon: 'python' },
-  { name: 'MATLAB', raster: 'matlab' },
-  { name: 'C++', icon: 'cpp' },
-  { name: 'Jupyter', icon: 'jupyter' },
-  { name: 'OriginLab', raster: 'originlab' },
-  { name: 'Git', icon: 'git' },
-  { name: 'MS Project', icon: 'msproject' },
-  { name: 'Excel', icon: 'excel' },
-  { name: 'Power BI', icon: 'powerbi' },
+  { name: 'SolidWorks', cat: 'cad', raster: 'solidworks' },
+  { name: 'CATIA V6', cat: 'cad', raster: 'catia' },
+  { name: 'ANSYS Fluent', cat: 'sim', raster: 'ansys' },
+  { name: 'ANSYS Mechanical', cat: 'sim', raster: 'ansys' },
+  { name: 'CalculiX / PrePoMax', cat: 'sim', initials: 'CX' },
+  { name: 'OpenFOAM', cat: 'sim', raster: 'openfoam' },
+  { name: 'XFOIL', cat: 'sim', raster: 'xfoil' },
+  { name: 'SpaceClaim', cat: 'cad', raster: 'ansys' },
+  { name: 'DFM', cat: 'cad', initials: 'DFM' },
+  { name: 'Python', cat: 'code', icon: 'python' },
+  { name: 'MATLAB', cat: 'code', raster: 'matlab' },
+  { name: 'C++', cat: 'code', icon: 'cpp' },
+  { name: 'Jupyter', cat: 'code', icon: 'jupyter' },
+  { name: 'OriginLab', cat: 'code', raster: 'originlab' },
+  { name: 'Git', cat: 'code', icon: 'git' },
+  { name: 'MS Project', cat: 'pm', icon: 'msproject' },
+  { name: 'Excel', cat: 'pm', icon: 'excel' },
+  { name: 'Power BI', cat: 'pm', icon: 'powerbi' },
 ];
 
 function toolChip(t) {
@@ -2043,11 +2099,15 @@ function toolChip(t) {
   } else {
     icon = `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 3px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-family:var(--font-sans);font-size:8px;font-weight:600;letter-spacing:0.02em;color:var(--muted-2);flex-shrink:0;">${t.initials}</span>`;
   }
-  return `<span style="display:inline-flex;align-items:center;gap:7px;font-family:var(--font-sans);font-size:12px;padding:5px 10px 5px 6px;background:var(--surface);border:1px solid var(--border);color:var(--muted);">${icon}${t.name}</span>`;
+  return `<span class="tool-pill">${icon}${t.name}</span>`;
 }
 
 function buildSoftware() {
-  document.getElementById('software-list').innerHTML = TOOLS.map(toolChip).join('');
+  document.getElementById('software-list').innerHTML = TOOL_GROUPS.map(g => `
+    <div class="tool-group">
+      <div class="tool-group-label">${g.label}</div>
+      <div class="tool-group-pills">${TOOLS.filter(t => t.cat === g.id).map(toolChip).join('')}</div>
+    </div>`).join('');
 }
 
 function initNav() {
