@@ -502,7 +502,6 @@ holo-bay:defined .holo-fallback { display: none; }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
   .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
   .hero-cta-link:hover { transform: translateX(3px); }
-  .proj-card:hover .proj-card-cta { transform: translateX(3px); }
 }
 
 /* ── Focus visible (keyboard navigation) ────────────── */
@@ -655,18 +654,8 @@ holo-bay:defined .holo-fallback { display: none; }
   font-weight: 500;
   color: var(--rust);
   letter-spacing: 0.04em;
-  margin-bottom: 14px;
-}
-.proj-card-cta {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--rust);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: transform 180ms var(--ease-out);
+  /* Last line of the card: pinned to the bottom so the numbers line up
+     across a row however many lines the titles wrap to. */
   margin-top: auto;
 }
 .tools-title {
@@ -1854,8 +1843,7 @@ function buildProjectGrid() {
         <div class="proj-card-body">
           <div class="proj-card-kickers">${kickers}</div>
           <h3 class="proj-card-title">${p.title}</h3>
-          <div class="proj-card-metric">${topMetric.k} — ${dataValue(topMetric.v)}</div>
-          <span class="proj-card-cta">View project →</span>
+          <div class="proj-card-metric">${topMetric.k}: ${dataValue(topMetric.v)}</div>
         </div>
       </a>`;
   }).join('');
