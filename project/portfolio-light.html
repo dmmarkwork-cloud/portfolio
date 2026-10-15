@@ -798,8 +798,39 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .beyond-carousel .hobby-slide > img,
 .beyond-carousel .hobby-slide > video { position: relative; object-fit: cover !important; }
-/* Below ~1100px the note drops under the media so the graph keeps room. */
-@media (max-width: 1100px) {
+/* Wide screens: one grid for the whole row, so the learning panel can run
+   under both the graph and the note. The wrapper divs step aside
+   (display: contents) and their children take named areas:
+
+     label  label  .
+     car    graph  text
+     car    learn  learn
+
+   The carousel spans the last two rows at its fixed 540px, the panel takes
+   its text height, and the graph row flexes to fill the rest (min 240px),
+   so the carousel, the panel and the note column all end level. The
+   column gap is 16px; the note's left padding restores its old wider gap.
+   From 1200px: narrower, the graph would drop under the ~432px its
+   two-sided layout needs. The canvas is absolutely positioned (inline), so
+   its pixel size never feeds back into the row height. */
+@media (min-width: 1200px) {
+  .beyond-layout {
+    /* note column: its 280px measure plus the wider gap it used to have */
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, calc(280px + clamp(32px, 5vw, 72px) - 16px));
+    grid-template-rows: auto minmax(240px, 1fr) auto;
+    grid-template-areas: "label label ." "car graph text" "car learn learn";
+    gap: 16px;
+    align-items: stretch;
+  }
+  .beyond-media, .beyond-row, .beyond-side { display: contents; }
+  .beyond-media > :first-child { grid-area: label; margin-bottom: -2px !important; }
+  .beyond-carousel { grid-area: car; }
+  .beyond-side > .beyond-graph { grid-area: graph; height: auto; min-height: 240px; }
+  .learning { grid-area: learn; }
+  .beyond-text { grid-area: text; padding-top: 0; padding-left: calc(clamp(32px, 5vw, 72px) - 16px); }
+}
+/* Below 1200px the note drops under the media so the graph keeps room. */
+@media (max-width: 1199px) {
   .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
   .beyond-text { padding-top: 0; }
 }
@@ -1708,7 +1739,7 @@ setTimeout(function(){
           <div class="beyond-side">
           <!-- Interests: category node graph -->
           <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
-            <canvas id="hobby-graph-canvas" style="display:block;width:100%;height:100%;"></canvas>
+            <canvas id="hobby-graph-canvas" style="position:absolute;inset:0;display:block;width:100%;height:100%;"></canvas>
             <span class="graph-hint"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
           </div>
 
