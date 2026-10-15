@@ -491,6 +491,45 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 .footer-cta-btn:active { transform: scale(0.98); }
 
+/* ── Footer layout ──────────────────────────────────────
+   Left column: the heading at the top, numbers and copyright pinned to the
+   bottom, so it starts level with the first button and ends level with the
+   last. Right column: the buttons alone. The three small lines share one
+   gap. On a phone it stacks heading, buttons, then the small print, so the
+   copyright stays last. 640px is where the old auto-fit grid collapsed. */
+.footer-grid {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "head cta" "info cta";
+  column-gap: clamp(26px, 4vw, 60px);
+  row-gap: 24px;
+}
+.footer-head { grid-area: head; }
+.footer-cta { grid-area: cta; display: grid; gap: 10px; font-family: var(--font-sans); }
+.footer-info {
+  grid-area: info;
+  align-self: end;
+  display: grid;
+  gap: 8px;
+  color: var(--muted-2);
+  font-size: 10.5px;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "head" "cta" "info";
+    row-gap: 28px;
+  }
+  .footer-info { align-self: start; }
+}
+
 /* ── Hover states (pointer-device only) ─────────────── */
 @media (hover: hover) and (pointer: fine) {
   .lead-btn:hover { border-color: var(--muted); }
@@ -1531,12 +1570,12 @@ setTimeout(function(){
 
 <!-- Footer -->
 <footer id="contact" style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(44px,6vw,88px) clamp(18px,4vw,56px);">
-  <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(26px,4vw,60px);align-items:start;">
-    <div>
+  <div class="footer-grid">
+    <div class="footer-head">
       <div style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--rust);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
       <div style="font-family:var(--font-sans);font-size:clamp(26px,3.2vw,42px);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Feel free to reach out!</div>
     </div>
-    <div style="display:grid;gap:10px;font-family:var(--font-sans);">
+    <div class="footer-cta">
       <!-- Résumé -->
       <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="footer-cta-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>
@@ -1564,19 +1603,16 @@ setTimeout(function(){
         <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="flex:none"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
         <span>github.com/dmmarkwork-cloud</span>
       </a>
-      <!-- Two bases, so the numbers read as a pair rather than as one line
-           with an afterthought under it. Grid gap instead of a margin on the
-           second line keeps them evenly spaced if a third is ever added.
-           The nowrap halves fix where the longer entry breaks on a phone:
-           unconstrained it split the address and orphaned "Philippines",
-           which read as a third location. The only legal break is now before
-           the separator, so it leads the continuation line. Desktop is
-           unchanged — same string, still one line. -->
-      <div style="display:grid;gap:3px;color:var(--muted-2);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;margin-top:4px;">
-        <div><span style="white-space:nowrap;">+81-70-3276-7554</span> <span style="white-space:nowrap;">· Tsukuba, Ibaraki, Japan</span></div>
-        <div><span style="white-space:nowrap;">+63-933-665-1535</span> <span style="white-space:nowrap;">· Angeles, Pampanga, Philippines</span></div>
-      </div>
-      <div style="color:var(--muted-2);font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;margin-top:14px;">© 2026 Mark Lorenz Yamanaka · All rights reserved</div>
+    </div>
+    <!-- Two bases and the copyright, one gap between all three lines. The
+         nowrap halves fix where the longer entry breaks on a phone:
+         unconstrained it split the address and orphaned "Philippines",
+         which read as a third location. The only legal break is before the
+         separator, so it leads the continuation line. -->
+    <div class="footer-info">
+      <div><span style="white-space:nowrap;">+81-70-3276-7554</span> <span style="white-space:nowrap;">· Tsukuba, Ibaraki, Japan</span></div>
+      <div><span style="white-space:nowrap;">+63-933-665-1535</span> <span style="white-space:nowrap;">· Angeles, Pampanga, Philippines</span></div>
+      <div>© 2026 Mark Lorenz Yamanaka · All rights reserved</div>
     </div>
   </div>
 </footer>
