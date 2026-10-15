@@ -2548,10 +2548,6 @@ function initHashTarget() {
   window.addEventListener('load', () => { if (!taken) jump(); }, { once: true });
 }
 
-// scroll-behavior: smooth suits a nudge between neighbouring projects and
-// works against a ~7,000px jump from project 01 to About. The nav is the
-// control people use most here, so past three viewports go straight there
-// rather than animating the whole page past them.
 // Home button: its centre sits on the midpoint between the nav bar's left
 // edge and the left edge of the "01 Bracket" chip, measured live. The CSS
 // margins already give that on screens up to ~1350px, where the bar's edge
@@ -2578,18 +2574,49 @@ function initNavHome() {
   place();
 }
 
-function initNavJumpDistance() {
+// In-page links (nav chips, home, "see the projects", contact) always
+// scroll, whatever the distance. The browser's own smooth scroll gets slower
+// the further it goes (~7,000px from About back to the top), which is why
+// long jumps used to be instant. This animation takes 300ms plus 0.06ms per
+// pixel, capped at 900ms, so the longest trip still reads as a scroll but
+// never drags. The target is re-measured every frame (late images can shift
+// layout), and a wheel, touch or key press hands control back at once.
+// Reduced motion keeps the browser default, which is then an instant jump.
+function initAnchorScroll() {
+  let run = 0;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const stop = () => { run++; };
+  ['wheel', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, stop, { passive: true }));
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
+    if (!a || reducedMotion) return;
     const href = a.getAttribute('href');
     if (!href || href === '#') return;
     const el = document.getElementById(decodeURIComponent(href.slice(1)));
     if (!el) return;
-    if (Math.abs(el.getBoundingClientRect().top) <= window.innerHeight * 3) return;
     e.preventDefault();
-    el.scrollIntoView({ behavior: 'instant', block: 'start' });
     history.pushState(null, '', href);
+    // Layout position from the offsetTop chain, not getBoundingClientRect:
+    // sections slide up 10px as they reveal, and a rect taken mid-slide
+    // landed the page 10px short once the slide finished.
+    const targetY = () => {
+      let y = 0;
+      for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+      const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+      const max = document.scrollingElement.scrollHeight - window.innerHeight;
+      return Math.max(0, Math.min(max, y - margin));
+    };
+    const from = window.scrollY;
+    const dur = Math.min(900, 300 + Math.abs(targetY() - from) * 0.06);
+    const id = ++run;
+    const t0 = performance.now();
+    const frame = (now) => {
+      if (id !== run) return;
+      const k = Math.min(1, (now - t0) / dur);
+      window.scrollTo({ top: from + (targetY() - from) * ease(k), behavior: 'instant' });
+      if (k < 1) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   });
 }
 
@@ -3235,7 +3262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initLightboxZoom();
   initHashTarget();
-  initNavJumpDistance();
+  initAnchorScroll();
   // Pills are sized from measureText once, so measure with the real face.
   (document.fonts && document.fonts.load
     ? document.fonts.load("500 11.5px 'Atkinson Hyperlegible Next'").catch(() => {})
