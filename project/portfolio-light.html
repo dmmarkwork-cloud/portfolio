@@ -399,7 +399,15 @@ holo-bay:defined .holo-fallback { display: none; }
 
 /* ── Lightbox (class-driven, always in DOM) ──────────── */
 /* Base = closed state; transition here fires on CLOSE (ease-in: accelerates to gone) */
+/* Page frozen behind the open viewer. scrollbar-gutter keeps the space the
+   scrollbar used, so nothing shifts sideways when it disappears. touch-action
+   and overscroll-behavior stop a swipe on the backdrop scrolling the page
+   on touch browsers that ignore overflow on <html>. */
+html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
+#lightbox:focus { outline: none; }
 #lightbox {
+  touch-action: none;
+  overscroll-behavior: contain;
   display: flex;
   position: fixed;
   inset: 0;
@@ -922,6 +930,11 @@ holo-bay:defined .holo-fallback { display: none; }
   filter: blur(0);
   pointer-events: auto;
 }
+/* Hit area: the painted dot stays 6px, its ::after grows the target to
+   24x24 (WCAG 2.2 minimum), taller still on touch below. The 18px gap in
+   .carousel-dots is exactly two 9px margins, so neighbours never overlap. */
+.hobby-dot, .internship-dot { position: relative; }
+.hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -9px; }
 .internship-dot {
   width: 6px;
   height: 6px;
@@ -1173,8 +1186,7 @@ holo-bay:defined .holo-fallback { display: none; }
   .nav-link { position: relative; }
   .nav-link::after { content: ''; position: absolute; inset: -8px -2px; }
 
-  .hobby-dot, .internship-dot { position: relative; }
-  .hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -19px -7px; }
+  .hobby-dot::after, .internship-dot::after { inset: -19px -9px; }
   .carousel-dots { gap: 18px !important; }
 
   .carousel-arrow { width: 44px; height: 44px; }
@@ -1333,16 +1345,17 @@ setTimeout(function(){
 </head>
 <body>
 
-<!-- Top bar. id="top" is the home button's target: the page's first pixel,
-     so the whole landing (top bar and hero) is back in view. -->
-<div id="top" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
+<!-- Top bar: the site banner (name + contact), so it is the page's <header>.
+     id="top" is the home button's target: the page's first pixel, so the
+     whole landing (top bar and hero) is back in view. -->
+<header id="top" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
   <span style="color:var(--ink);">Mark Lorenz Yamanaka</span>
   <a href="#contact" class="top-bar-link" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
-</div>
+</header>
 
 <!-- Header -->
 <div class="header-wrap">
-<header style="max-width:1240px;margin:0 auto;padding:clamp(44px,7vw,104px) clamp(18px,4vw,56px) clamp(32px,5vw,64px);">
+<section aria-label="Introduction" style="max-width:1240px;margin:0 auto;padding:clamp(44px,7vw,104px) clamp(18px,4vw,56px) clamp(32px,5vw,64px);">
   <div class="hero-grid" style="gap:clamp(28px,4vw,64px);">
     <div>
       <div class="hero-s1" style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">01 — AERONAUTICAL ENGINEERING PORTFOLIO</div>
@@ -1361,7 +1374,7 @@ setTimeout(function(){
     </div>
     <div style="min-width:0;background:var(--surface);border:1px solid var(--border);align-self:center;">
       <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
-        <span>Six of them, in the round</span>
+        <span>Six of seven, in the round</span>
         <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
       </div>
       <div style="padding:clamp(8px,1.2vw,14px);">
@@ -1391,7 +1404,7 @@ setTimeout(function(){
       </div>
     </div>
   </div>
-</header>
+</section>
 </div>
 
 <!-- Sticky nav -->
@@ -1474,7 +1487,7 @@ setTimeout(function(){
           <button type="button" id="dornier-next" class="carousel-arrow arrow-next" aria-label="Next slide">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
+          <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
             <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -1593,7 +1606,7 @@ setTimeout(function(){
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
             <!-- Dot indicators -->
-            <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:2;">
+            <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
               <button class="hobby-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -1610,8 +1623,9 @@ setTimeout(function(){
           </div>
           </div>
           <div class="beyond-text">
-            <!-- Draft from facts already on this page; replace with your own words. -->
-            <p>Away from the desk: bouldering at Laputa in Tsukuba, trail running on Mount Tsukuba, and snowboarding in Hakuba. Indoors it is piano, guitar and saxophone, a quadcopter build, and cybersecurity.</p>
+            <!-- Every place and activity named here appears in the carousel
+                 captions or the interests graph beside it. -->
+            <p>Outside work, I'm usually outdoors: bouldering at Laputa in Tsukuba, trail running on Mount Tsukuba, snowboarding in Hakuba, or backpacking somewhere like Oshima island. Indoors, it's piano, guitar and saxophone, a quadcopter build, and cybersecurity.</p>
           </div>
         </div>
     </div>
@@ -1669,7 +1683,7 @@ setTimeout(function(){
 </footer>
 
 <!-- Lightbox — always in DOM, animated via .open class -->
-<div id="lightbox" onclick="closeLightbox()">
+<div id="lightbox" onclick="closeLightbox()" role="dialog" aria-modal="true" aria-label="Enlarged figure" tabindex="-1" inert>
   <div id="lightbox-inner" style="position:relative;">
     <button type="button" id="lb-close" class="lb-close" aria-label="Close">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -1843,7 +1857,7 @@ const PROJECTS = [
       { k: 'Written in', v: 'C++' }
     ],
     views: [
-      { label: 'Slats & ailerons moving', video: 'figures/wing/demo.mp4', caption: 'The rig running — slats and ailerons driven from the control interface on the stand' },
+      { label: 'Slats & ailerons moving', video: 'figures/wing/demo.mp4', poster: 'figures/wing/demo-poster.jpg', caption: 'The rig running — slats and ailerons driven from the control interface on the stand' },
       { label: 'Section on its stand', src: 'figures/wing/section-profile.jpg', caption: 'The finished section in profile, mounted on its presentation stand' },
       { label: 'Servo bay open', src: 'figures/wing/servo-bay.jpg', caption: 'Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back' },
       { label: 'Servo control bench', src: 'figures/wing/arduino-bench.jpg', caption: 'Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section' }
@@ -1875,7 +1889,8 @@ function mediaTag(view, styleStr, opts) {
   if (view.video) {
     const autoplay = (opts.autoplay === false || reducedMotion) ? '' : 'autoplay';
     const preload = opts.autoplay === false ? ' preload="metadata"' : '';
-    return `<video src="${view.video}" ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
+    const poster = view.poster ? ` poster="${view.poster}"` : '';
+    return `<video src="${view.video}"${poster} ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
   }
   const alt = (view.caption || view.label || '').replace(/"/g, '&quot;');
   // Safari has a known bug where loading="lazy" on an <img> inserted via
@@ -1908,8 +1923,11 @@ function leadMediaMarkup(view) {
   // content (mesh gridlines, machined edges) to a colour wash.
   const backdropStyle = 'position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);transform:scale(1.2);';
   if (view.video) {
-    const autoplay = reducedMotion ? '' : 'autoplay';
-    const backdrop = `<video src="${view.video}" ${autoplay} loop muted playsinline aria-hidden="true" style="${backdropStyle}"></video>`;
+    // A still frame is enough under a 64px blur, and it spares a second
+    // full download of the clip. Falls back to the clip if no poster.
+    const backdrop = view.poster
+      ? `<img src="${view.poster}" alt="" aria-hidden="true" loading="eager" decoding="async" style="${backdropStyle}">`
+      : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="${backdropStyle}"></video>`;
     return backdrop + mediaTag(view, fgStyle, { eager: true });
   }
   const backdrop = `<img src="${view.src}" alt="" aria-hidden="true" loading="eager" decoding="async" style="${backdropStyle}">`;
@@ -1971,6 +1989,12 @@ function selectView(pi, vi) {
   }
 }
 
+// While the viewer is open the page behind it is frozen (html.lb-open), the
+// dialog takes focus, and Tab cannot leave it; closing hands focus back to
+// the figure that opened it. When closed it is `inert`, so screen readers
+// and Tab skip the invisible overlay. Focus goes to the dialog itself, not
+// the close button, which is hidden on desktop (click anywhere closes).
+let lbReturnFocus = null;
 function openLightbox(pi) {
   const v = PROJECTS[pi].views[viewIndex[pi]];
   const stage = document.getElementById('lightbox-media');
@@ -1983,18 +2007,36 @@ function openLightbox(pi) {
   if (el) el.classList.add('lb-media-el');
   lbResetZoom(false);
   document.getElementById('lightbox-caption').textContent = v.caption;
-  document.getElementById('lightbox').classList.add('open');
+  const lb = document.getElementById('lightbox');
+  lbReturnFocus = document.activeElement;
+  lb.inert = false;
+  lb.classList.add('open');
+  document.documentElement.classList.add('lb-open');
+  lb.focus({ preventScroll: true });
   document.addEventListener('keydown', onLbKey);
 }
 
 function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lightbox').classList.remove('is-zoomed');
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
+  lb.classList.remove('is-zoomed');
+  lb.inert = true;
+  document.documentElement.classList.remove('lb-open');
   lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
   document.removeEventListener('keydown', onLbKey);
+  if (lbReturnFocus && lbReturnFocus.focus) lbReturnFocus.focus({ preventScroll: true });
+  lbReturnFocus = null;
 }
 
-function onLbKey(e) { if (e.key === 'Escape') closeLightbox(); }
+function onLbKey(e) {
+  if (e.key === 'Escape') closeLightbox();
+  else if (e.key === 'Tab') {
+    // Keep focus inside: the close button when shown (touch), else the dialog.
+    e.preventDefault();
+    const btn = document.getElementById('lb-close');
+    (btn && btn.offsetParent ? btn : document.getElementById('lightbox')).focus({ preventScroll: true });
+  }
+}
 
 // A value is data (mono) when it is a number with an optional unit, e.g.
 // "896.3 MPa", "Ø 71.10 in", "78° → 24°". Text values such as
@@ -2050,7 +2092,7 @@ function buildProjectGrid() {
     <section class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
       <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:clamp(24px,3vw,40px);">
         <div>
-          <div style="font-family:var(--font-sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">All six projects</div>
+          <div style="font-family:var(--font-sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">All seven projects</div>
           <h2 style="font-family:var(--font-sans);font-size:clamp(22px,2.4vw,32px);font-weight:600;color:var(--ink);margin:0;line-height:1.2;">The work</h2>
         </div>
         <span id="grid-hint" style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Scroll for detail ↓</span>
