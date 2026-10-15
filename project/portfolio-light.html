@@ -147,8 +147,16 @@ body {
   overscroll-behavior-x: contain;
 }
 .nav-scroll::-webkit-scrollbar { display: none; }
-/* Home: same round outline as the theme toggle, pinned at the left. */
+/* Home: same round outline as the theme toggle, centred between the bar's
+   left edge and "01 Bracket". With P the nav's side padding (the inline
+   clamp on <nav>) and G the old 8-14px gap, the links keep their place and
+   the button gets (P + G) / 2 of air on each side: margin-left pulls it
+   back into the padding by (P - G) / 2. Past ~1350px the bar content is a
+   centred 1240px column, so the gaps are measured from that column's
+   gutter rather than the screen edge. */
 .nav-home {
+  --nav-pad: clamp(18px, 4vw, 56px);
+  --home-gap: clamp(8px, 1.2vw, 14px);
   position: relative;
   display: flex;
   align-items: center;
@@ -156,7 +164,8 @@ body {
   flex: none;
   width: 30px;
   height: 30px;
-  margin-right: clamp(8px, 1.2vw, 14px);
+  margin-left: calc((var(--home-gap) - var(--nav-pad)) / 2);
+  margin-right: calc((var(--nav-pad) + var(--home-gap)) / 2);
   border: 1px solid var(--border);
   border-radius: 50%;
   color: var(--muted-2);
