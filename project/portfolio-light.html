@@ -81,18 +81,22 @@
   --nav-active-fg: #8A3A17;
 }
 
+/* Dark palette: ink blue, blue-charcoal cards, muted copper accent, warm
+   ivory secondary. Contrast (WCAG): ink 15.9:1 on --bg / 13.8:1 on
+   --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
+   text pairs clear AA (4.5:1). */
 [data-theme="dark"] {
-  --rust: #38BDF8;
-  --rust-dim: #0EA5E9;
-  --ink: #F8FAFC;
-  --muted: #94A3B8;
-  --muted-2: #8593A9;  /* was #64748B: 3.07:1 on --surface, under WCAG AA. Now 4.70:1 / 5.73:1 on --bg */
-  --border: #334155;
-  --border-light: #1E3A5F;
-  --surface: #1E293B;
-  --bg: #0F172A;
-  --nav-active-bg: rgba(56, 189, 248, 0.16);
-  --nav-active-fg: #7DD3FC;
+  --rust: #D68A63;          /* primary accent: muted copper */
+  --rust-dim: #C07752;
+  --ink: #F3F2EE;           /* main text: soft white */
+  --muted: #A0A9B6;         /* muted text: dusty blue-gray */
+  --muted-2: #8E97A5;       /* one step quieter than --muted, still 5.2:1 on cards */
+  --border: #303B4A;        /* desaturated blue */
+  --border-light: #253041;
+  --surface: #1A2535;       /* cards: blue-charcoal */
+  --bg: #101827;            /* background: ink blue */
+  --nav-active-bg: rgba(214, 138, 99, 0.16);
+  --nav-active-fg: #DCD4C5; /* secondary accent: warm ivory */
 }
 [data-theme="dark"] body { background-color: var(--bg); }
 
@@ -163,7 +167,7 @@ body {
 
 a { color: var(--rust); text-decoration: none; transition: color 150ms ease; }
 ::selection { background: var(--rust-tint); color: var(--ink); }
-[data-theme="dark"] ::selection { background: rgba(56, 189, 248, 0.22); color: var(--ink); }
+[data-theme="dark"] ::selection { background: rgba(214, 138, 99, 0.3); color: var(--ink); }
 button { font-family: inherit; }
 
 /* A number and its unit in the mono face, kept on one line. Size and weight
@@ -1013,20 +1017,20 @@ holo-bay:defined .holo-fallback { display: none; }
 
 /* ── Dark mode: hardcoded-colour overrides ───────────── */
 [data-theme="dark"] nav {
-  background: rgba(15, 23, 42, 0.92) !important;
+  background: rgba(16, 24, 39, 0.92) !important;
 }
 [data-theme="dark"] #lightbox {
-  background: rgba(15, 23, 42, 0.93);
+  background: rgba(16, 24, 39, 0.93);
 }
 [data-theme="dark"] .beyond-graph {
   background-image:
-    linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
 }
 [data-theme="dark"] .header-wrap {
   background-image:
-    linear-gradient(rgba(248,250,252,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(248,250,252,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
 }
 
 /* ── Theme swap ──────────────────────────────────────────
@@ -1285,7 +1289,7 @@ var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme:d
 var dark=(t==='dark'||(!t&&d));
 if(dark)document.documentElement.dataset.theme='dark';
 var m=document.getElementById('theme-color');
-if(m)m.setAttribute('content',dark?'#1E293B':'#FFFFFF');
+if(m)m.setAttribute('content',dark?'#1A2535':'#FFFFFF');
 // Arm the scroll-reveal styles before first paint so nothing flashes in and
 // back out, then withdraw them if initReveal() never signals ready.
 document.documentElement.classList.add('js-reveal');
@@ -1649,9 +1653,9 @@ const HOLO_ATTRS = {
   light: { line:'#96401A', fill:'#E6D3C5', ring:'#DCD2C6', hover:'#171310',
            'legend-fg':'#6E6862', 'legend-bg':'#FFFFFF', 'legend-border':'#E2DAD0',
            'legend-active':'#171310', 'legend-active-border':'#B4491B' },
-  dark:  { line:'#38BDF8', fill:'#0D2847', ring:'#1E3A5F', hover:'#7DD3FC',
-           'legend-fg':'#64748B', 'legend-bg':'#0F172A', 'legend-border':'#334155',
-           'legend-active':'#F8FAFC', 'legend-active-border':'#38BDF8' }
+  dark:  { line:'#D68A63', fill:'#342D32', ring:'#303B4A', hover:'#DCD4C5',
+           'legend-fg':'#8E97A5', 'legend-bg':'#101827', 'legend-border':'#303B4A',
+           'legend-active':'#F3F2EE', 'legend-active-border':'#D68A63' }
 };
 (function(){
   const bay = document.querySelector('holo-bay');
@@ -2158,7 +2162,7 @@ const TOOL_ICONS = {
   excel: `<svg viewBox="0 0 24 24" width="16" height="16"><rect width="24" height="24" rx="5" fill="#217346"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">X</text></svg>`,
   powerbi: `<svg viewBox="0 0 24 24" width="16" height="16"><rect width="24" height="24" rx="5" fill="#F2C811"/><rect x="6" y="13" width="3" height="6" fill="#000"/><rect x="10.5" y="9" width="3" height="10" fill="#000"/><rect x="15" y="5" width="3" height="14" fill="#000"/></svg>`,
   msproject: `<svg viewBox="0 0 24 24" width="16" height="16"><rect width="24" height="24" rx="5" fill="#31752F"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">P</text></svg>`,
-  office365: `<svg viewBox="0 0 24 24" width="16" height="16"><rect width="24" height="24" rx="5" fill="#D83B01"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">O</text></svg>`,
+  m365: `<svg viewBox="0 0 24 24" width="16" height="16"><rect width="24" height="24" rx="5" fill="#D83B01"/><text x="12" y="17" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">M</text></svg>`,
 };
 
 // User-supplied vendor logo images (project/logos/*). Sized to a fixed
@@ -2205,7 +2209,7 @@ const TOOLS = [
   { name: 'OriginLab', cat: 'code', raster: 'originlab' },
   { name: 'Git', cat: 'code', icon: 'git' },
   { name: 'MS Project', cat: 'pm', icon: 'msproject' },
-  { name: 'Office 365', cat: 'pm', icon: 'office365' },
+  { name: 'Microsoft 365', cat: 'pm', icon: 'm365' },
   { name: 'Excel', cat: 'pm', icon: 'excel' },
   { name: 'Power BI', cat: 'pm', icon: 'powerbi' },
 ];
@@ -3110,7 +3114,7 @@ function applyTheme(dark) {
   else root.removeAttribute('data-theme');
   localStorage.setItem('theme', dark ? 'dark' : 'light');
   const meta = document.getElementById('theme-color');
-  if (meta) meta.setAttribute('content', dark ? '#1E293B' : '#FFFFFF');
+  if (meta) meta.setAttribute('content', dark ? '#1A2535' : '#FFFFFF');
   // holo-bay takes its colours as attributes, so it has to be torn down and
   // rebooted — which resets the scene to its opening camera position. Inside a
   // view transition the crossfade covers that jump; it used to be visible.
