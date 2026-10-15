@@ -520,6 +520,15 @@ holo-bay:defined .holo-fallback { display: none; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+/* A hairline between the contact lines and the copyright, with equal air
+   either side (2px margin + 8px grid gap above, 10px padding below). It
+   runs only as wide as the copyright text, not across the whole column. */
+.footer-copy {
+  justify-self: start;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
 @media (max-width: 640px) {
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1612,7 +1621,7 @@ setTimeout(function(){
     <div class="footer-info">
       <div><span style="white-space:nowrap;">+81-70-3276-7554</span> <span style="white-space:nowrap;">· Tsukuba, Ibaraki, Japan</span></div>
       <div><span style="white-space:nowrap;">+63-933-665-1535</span> <span style="white-space:nowrap;">· Angeles, Pampanga, Philippines</span></div>
-      <div>© 2026 Mark Lorenz Yamanaka · All rights reserved</div>
+      <div class="footer-copy">© 2026 Mark Lorenz Yamanaka · All rights reserved</div>
     </div>
   </div>
 </footer>
