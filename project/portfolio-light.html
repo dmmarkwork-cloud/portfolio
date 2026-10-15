@@ -2305,19 +2305,29 @@ function initNav() {
   let raf = null;
   const syncNav = () => {
     const mid = window.innerHeight * 0.42;
-    let best = null, bestScore = -Infinity;
+    let best = null, bestScore = -Infinity, firstTop = Infinity;
     document.querySelectorAll('[data-section]').forEach(s => {
       const r = s.getBoundingClientRect();
+      firstTop = Math.min(firstTop, r.top);
       const score = (r.top <= mid && r.bottom >= mid) ? Infinity : -Math.abs(r.top - mid);
       if (score > bestScore) { bestScore = score; best = s.getAttribute('data-section'); }
     });
+    // Above the first section (the hero and the project grid, which is where
+    // the home button lands) nothing is current, so no chip is lit. Without
+    // this the nearest section, 01 Bracket, stayed highlighted on the hero.
+    if (mid < firstTop) best = null;
     let activeEl = null;
     document.querySelectorAll('[data-nav]').forEach(a => {
       const on = a.getAttribute('data-nav') === best;
       a.classList.toggle('active', on);
       if (on) activeEl = a;
     });
-    if (best !== lastActive) { lastActive = best; revealActive(activeEl); }
+    if (best !== lastActive) {
+      lastActive = best;
+      // Back on the hero: return the strip to its start so 01 is in view.
+      if (best === null && navScroll) navScroll.scrollLeft = 0;
+      else revealActive(activeEl);
+    }
   };
   const onScroll = () => {
     if (raf) return;
