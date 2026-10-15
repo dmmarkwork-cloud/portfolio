@@ -152,8 +152,8 @@ body {
    clamp on <nav>) and G the old 8-14px gap, the links keep their place and
    the button gets (P + G) / 2 of air on each side: margin-left pulls it
    back into the padding by (P - G) / 2. Past ~1350px the bar content is a
-   centred 1240px column, so the gaps are measured from that column's
-   gutter rather than the screen edge. */
+   centred 1240px column; initNavHome() then shifts the button to the true
+   midpoint between the bar's left edge and the chip. */
 .nav-home {
   --nav-pad: clamp(18px, 4vw, 56px);
   --home-gap: clamp(8px, 1.2vw, 14px);
@@ -2542,6 +2542,32 @@ function initHashTarget() {
 // works against a ~7,000px jump from project 01 to About. The nav is the
 // control people use most here, so past three viewports go straight there
 // rather than animating the whole page past them.
+// Home button: its centre sits on the midpoint between the nav bar's left
+// edge and the left edge of the "01 Bracket" chip, measured live. The CSS
+// margins already give that on screens up to ~1350px, where the bar's edge
+// is the screen edge; wider, the links sit in a centred 1240px column and
+// this shift is what carries the button to the true midpoint. Uses the
+// `translate` property, not `transform`, so the :active press scale still
+// applies. The chip's resting position is used (scrollLeft added back), so
+// swiping the link strip on a phone does not drag the button.
+function initNavHome() {
+  const nav = document.querySelector('nav');
+  const home = document.getElementById('nav-home');
+  const strip = document.getElementById('nav-scroll');
+  const first = strip && strip.querySelector('.nav-link');
+  if (!nav || !home || !first) return;
+  const place = () => {
+    home.style.translate = '';
+    const edge = nav.getBoundingClientRect().left;
+    const chip = first.getBoundingClientRect().left + strip.scrollLeft;
+    const h = home.getBoundingClientRect();
+    const dx = (edge + chip) / 2 - (h.left + h.width / 2);
+    if (Math.abs(dx) > 0.25) home.style.translate = `${dx.toFixed(2)}px 0`;
+  };
+  new ResizeObserver(place).observe(nav);
+  place();
+}
+
 function initNavJumpDistance() {
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
@@ -3195,6 +3221,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildProjects();
   buildSoftware();
   initNav();
+  initNavHome();
   initReveal();
   initLightboxZoom();
   initHashTarget();
