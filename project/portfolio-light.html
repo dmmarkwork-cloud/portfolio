@@ -25,7 +25,12 @@
 <meta name="twitter:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets. Two are published as failures.">
 <meta name="twitter:image" content="https://www.mlyamanaka.com/og-card.png">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23B4491B'/%3E%3Cpath d='M7 23V9h3.1l5.9 8.4L21.9 9H25v14h-3.2v-8.7L16.6 22h-1.2L10.2 14.3V23z' fill='%23fff'/%3E%3C/svg%3E">
+<!-- MLY grid monogram. favicon.svg is the bold small-size cut and follows the
+     browser's light/dark scheme; the PNGs are fallbacks (Safari, iOS home screen).
+     Relative paths, like the fonts: the Pages mirror serves under /portfolio/. -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <!-- Kept in sync by the head script below and by applyTheme(). A media-query
      pair would not work here: the theme defaults to light and is set by the
      toggle, so it has to track the resolved theme, not the OS preference. The values
@@ -147,6 +152,11 @@ body {
   overscroll-behavior-x: contain;
 }
 .nav-scroll::-webkit-scrollbar { display: none; }
+/* Brand: the MLY grid monogram beside the name in the top bar. Drawn without
+   its grid at this size (the hairlines turn to noise under ~32px tall) and
+   coloured by the theme tokens, so it follows light and dark. */
+.brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); }
+.brand-mark { height: 18px; width: auto; flex: none; display: block; }
 /* Home: same round outline as the theme toggle, centred between the bar's
    left edge and "01 Bracket". With P the nav's side padding (the inline
    clamp on <nav>) and G the old 8-14px gap, the links keep their place and
@@ -1470,7 +1480,7 @@ setTimeout(function(){
      id="top" is the home button's target: the page's first pixel, so the
      whole landing (top bar and hero) is back in view. -->
 <header id="top" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
-  <span style="color:var(--ink);">Mark Lorenz Yamanaka</span>
+  <span class="brand"><svg viewBox="0 0 552 316" class="brand-mark" aria-hidden="true" focusable="false"><clipPath id="hdr-mly-clip"><rect x="0" y="0" width="552" height="316"/></clipPath><g fill="var(--ink)" clip-path="url(#hdr-mly-clip)"><rect x="0" y="0" width="21" height="316"/><rect x="245" y="0" width="21" height="316"/><rect x="122.5" y="182.5" width="21" height="133.5"/><rect x="278" y="0" width="21" height="316"/><rect x="278" y="293.5" width="274" height="22.5"/><rect x="414.5" y="168" width="21" height="125.5"/><polygon points="-27.83,-26.95 125.04,188.16 140.96,176.84 -11.91,-38.26"/><polygon points="277.57,-38.28 125.03,176.85 140.97,188.15 293.5,-26.98"/><polygon points="276.02,-27.12 417.01,173.61 432.99,162.39 292,-38.35"/><polygon points="558,-38.35 417.01,162.39 432.99,173.61 573.98,-27.12"/></g><rect x="414.5" y="293.5" width="21" height="22.5" fill="var(--rust)"/></svg><span>Mark Lorenz Yamanaka</span></span>
   <a href="#contact" class="top-bar-link" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
 </header>
 
