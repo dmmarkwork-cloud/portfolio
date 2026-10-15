@@ -27,8 +27,8 @@
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23B4491B'/%3E%3Cpath d='M7 23V9h3.1l5.9 8.4L21.9 9H25v14h-3.2v-8.7L16.6 22h-1.2L10.2 14.3V23z' fill='%23fff'/%3E%3C/svg%3E">
 <!-- Kept in sync by the head script below and by applyTheme(). A media-query
-     pair would not work here: the theme is user-overridable via localStorage,
-     so it has to track the resolved theme, not the OS preference. The values
+     pair would not work here: the theme defaults to light and is set by the
+     toggle, so it has to track the resolved theme, not the OS preference. The values
      are --surface, not --bg: the browser chrome abuts the top bar, which
      paints --surface. --bg only starts below it. -->
 <meta name="theme-color" id="theme-color" content="#FFFFFF">
@@ -147,6 +147,23 @@ body {
   overscroll-behavior-x: contain;
 }
 .nav-scroll::-webkit-scrollbar { display: none; }
+/* Home: same round outline as the theme toggle, pinned at the left. */
+.nav-home {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-right: clamp(8px, 1.2vw, 14px);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted-2);
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+}
+.nav-home:active { transform: scale(0.93); }
 .nav-actions {
   display: flex;
   align-items: center;
@@ -553,6 +570,7 @@ holo-bay:defined .holo-fallback { display: none; }
   .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
   .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
+  .nav-home:hover { border-color: var(--rust); color: var(--rust); }
   .hero-cta-link:hover { transform: translateX(3px); }
 }
 
@@ -1155,6 +1173,7 @@ holo-bay:defined .holo-fallback { display: none; }
   .carousel-arrow.arrow-next { right: 6px; }
   .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
   .theme-toggle { width: 40px; height: 40px; }
+  .nav-home { width: 40px; height: 40px; }
 
   /* Inline text links sit in running copy, so they can't grow a box without
      shifting the paragraph. Pad the tap area vertically only. */
@@ -1285,8 +1304,13 @@ holo-bay:defined .holo-fallback { display: none; }
 
 </style>
 <script>(function(){
-var t=localStorage.getItem('theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;
-var dark=(t==='dark'||(!t&&d));
+// Light is the default for every visit, whatever the OS setting. A dark
+// choice made with the toggle lasts for this tab only (sessionStorage), so a
+// reload or a hop to the résumé and back keeps it, but a new visit starts
+// light. The old localStorage key is cleared so it cannot resurface.
+var t=null;
+try{t=sessionStorage.getItem('theme');localStorage.removeItem('theme');}catch(e){}
+var dark=(t==='dark');
 if(dark)document.documentElement.dataset.theme='dark';
 var m=document.getElementById('theme-color');
 if(m)m.setAttribute('content',dark?'#1A2535':'#FFFFFF');
@@ -1300,8 +1324,9 @@ setTimeout(function(){
 </head>
 <body>
 
-<!-- Top bar -->
-<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
+<!-- Top bar. id="top" is the home button's target: the page's first pixel,
+     so the whole landing (top bar and hero) is back in view. -->
+<div id="top" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
   <span style="color:var(--ink);">Mark Lorenz Yamanaka</span>
   <a href="#contact" class="top-bar-link" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
 </div>
@@ -1363,6 +1388,10 @@ setTimeout(function(){
 <!-- Sticky nav -->
 <nav style="position:sticky;top:0;z-index:40;background:rgba(247,243,237,0.92);backdrop-filter:blur(10px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 clamp(18px,4vw,56px);">
   <div class="nav-inner">
+    <!-- Pinned outside the scrolling strip so it is always in reach. -->
+    <a href="#top" class="nav-home" id="nav-home" aria-label="Back to top" title="Back to top">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg>
+    </a>
     <div class="nav-scroll" id="nav-scroll">
     <a href="#p-bracket" data-nav="p-bracket" class="nav-link">01 Bracket</a>
     <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">02 Nozzle</a>
@@ -3112,7 +3141,7 @@ function applyTheme(dark) {
   const root = document.documentElement;
   if (dark) root.dataset.theme = 'dark';
   else root.removeAttribute('data-theme');
-  localStorage.setItem('theme', dark ? 'dark' : 'light');
+  try { sessionStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
   const meta = document.getElementById('theme-color');
   if (meta) meta.setAttribute('content', dark ? '#1A2535' : '#FFFFFF');
   // holo-bay takes its colours as attributes, so it has to be torn down and
