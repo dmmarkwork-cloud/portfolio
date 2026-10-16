@@ -1991,12 +1991,16 @@ const PROJECTS = [
     title: 'Wooden Rotor Blade Design',
     story: 'A <span class="data">Ø71.10\u00a0in</span> two-blade rotor traced in orthographic projection on tracing paper before it was ever parametric. The twist falls from <span class="data">78°</span> inboard to <span class="data">24°</span> at the tip because blade element theory asks for it, so that angle of attack stays roughly constant as local velocity climbs with radius.',
     repo: 'https://github.com/dmmarkwork-cloud/rotor-blade-helicopter-design',
+    // Overview card crops the portrait lead photo to landscape; aim the crop
+    // at the hub and blade roots instead of the paper above them.
+    gridFocus: '50% 62%',
     values: [
       { k: 'Rotor diameter', v: 'Ø\u00a071.10\u00a0in' },
       { k: 'Solidity', v: '0.095' },
       { k: 'Twist, root to tip', v: '78°\u00a0→\u00a024°' }
     ],
     views: [
+      { label: 'Carved rotor', src: 'figures/rotor/carved-rotor.jpg', caption: 'The finished two-blade rotor, carved and sanded, held over the drafting table and the orthographic sheets it was drawn on' },
       { label: 'Prop on drawing', src: 'figures/rotor/prop-on-drawing.jpg', caption: 'Carved wooden two-blade rotor laid on the printed orthographic drawing sheet — front and top views' },
       { label: 'CAD four-view', src: 'figures/rotor/cad-four-view.jpg', caption: 'SolidWorks four-view drawing — top, front, isometric and right views with key dimensions' },
       { label: 'Planform detail', src: 'figures/rotor/planform-detail.jpg', caption: 'Chord station table — blade width at each radial station from root to tip' },
@@ -2227,7 +2231,7 @@ function buildProjectGrid() {
     const isPng = media && media.src && media.src.toLowerCase().endsWith('.png');
     const imgStyle = isPng
       ? 'width:100%;height:100%;object-fit:contain;object-position:center center;display:block;padding:10px;'
-      : 'width:100%;height:100%;object-fit:cover;display:block;';
+      : `width:100%;height:100%;object-fit:cover;object-position:${p.gridFocus || 'center'};display:block;`;
     const thumb = media
       ? (media.type === 'video'
           ? `<video src="${media.src}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
