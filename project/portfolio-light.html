@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mark Lorenz Yamanaka — Engineering Portfolio</title>
-<meta name="description" content="Engineering portfolio of Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer. Six documented CFD, FEA and GD&amp;T projects, two of them published as failures.">
+<meta name="description" content="Engineering portfolio of Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer. Six documented CFD, FEA and GD&amp;T projects, with revisions published alongside the results.">
 <meta name="author" content="Mark Lorenz Yamanaka">
 <!-- www, not the apex: mlyamanaka.com 308-redirects to www, and a scraper
      that does not follow redirects would never reach og-card.png. -->
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Mark Lorenz Yamanaka">
 <meta property="og:url" content="https://www.mlyamanaka.com/">
 <meta property="og:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
-<meta property="og:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets. Two are published as failures, because the numbers came back short.">
+<meta property="og:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
 <meta property="og:image" content="https://www.mlyamanaka.com/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,7 +22,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
-<meta name="twitter:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets. Two are published as failures.">
+<meta name="twitter:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
 <meta name="twitter:image" content="https://www.mlyamanaka.com/og-card.png">
 
 <!-- MLY grid monogram. favicon.svg is the bold small-size cut and follows the
@@ -151,6 +151,15 @@ body {
   scroll-padding-inline: 20px;
   overscroll-behavior-x: contain;
 }
+/* Touch: a swipe that starts on the nav bar moves the link strip sideways
+   and never the page. A thumb swipe is never perfectly level, and with the
+   default touch-action the vertical part of it scrolled the page, carrying
+   the bar (and the hero, when not yet stuck) up out of view. pan-x keeps
+   taps working; the page still scrolls from anywhere below the bar. The
+   strip needs its own declaration: touch-action is resolved only up to the
+   nearest scroll container, and .nav-scroll is one, so nav's would not
+   reach a swipe that starts on a link. */
+nav, .nav-scroll { touch-action: pan-x; }
 .nav-scroll::-webkit-scrollbar { display: none; }
 /* Brand: the MLY grid monogram beside the name in the top bar. Drawn without
    its grid at this size (the hairlines turn to noise under ~32px tall) and
@@ -984,10 +993,10 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .tools-title {
   font-family: var(--font-sans);
-  font-size: clamp(22px, 2.2vw, 30px);
+  font-size: clamp(22px, 2.4vw, 32px);   /* same as "The work" */
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  letter-spacing: 0;
+  line-height: 1.2;
   color: var(--ink);
   margin: 0 0 10px;
 }
@@ -1491,7 +1500,7 @@ setTimeout(function(){
     <div>
       <div class="hero-s1" style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">01 — ENGINEERING PORTFOLIO</div>
       <h1 class="hero-s2" style="font-family:var(--font-sans);font-weight:600;font-size:clamp(38px,5.6vw,64px);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
-      <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Two are published as failures, because the numbers came back short. The full working is in the repositories.</p>
+      <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Where a result was revised, both versions are published. The full working is in the repositories.</p>
       <a href="#p-bracket" class="hero-cta-link hero-s4" style="display:inline-block;font-family:var(--font-sans);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the seven projects ↓</a>
       <div class="hero-s5" style="display:flex;flex-wrap:wrap;gap:8px;">
         <span style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
@@ -1569,6 +1578,15 @@ setTimeout(function(){
 
 <!-- Main -->
 <main style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,56px) clamp(40px,6vw,88px);">
+
+  <!-- Tools: what the work below was done with. Sits between the hero and
+       "The work", headed the same way (small label, then the h2). -->
+  <section id="tools" class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
+    <div style="font-family:var(--font-sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">Tools</div>
+    <h2 class="tools-title">What I bring to a project</h2>
+    <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
+    <div class="tools-grid" id="software-list"></div>
+  </section>
 
   <!-- Project overview grid — rendered by JS -->
   <div id="project-grid-container"></div>
@@ -1671,7 +1689,7 @@ setTimeout(function(){
           <div style="display:grid;gap:14px;">
             <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I studied aeronautical engineering at Holy Angel University from 2020 to 2024, graduating on the Dean's List with a GPA of 1.58, where 1.00 is the highest mark, or about 3.54 out of 4.0. My coursework spanned aircraft structures, aircraft/helicopter/UAV design and systems, aerodynamics, powerplant, and reliability engineering, and I was licensed as a PRC Professional Aeronautical Engineer that same year. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
             <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">The hangar came first, though. It is hard to over-report a factor of safety once you have seen what an aircraft actually looks like at 40,000 cycles.</p>
-            <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I am based in Tsukuba, Japan. I'm happy to walk through any of these end to end, including the two that failed.</p>
+            <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I am based in Tsukuba, Japan. I'm happy to walk through any of these end to end, including what changed between revisions.</p>
           </div>
           <dl class="about-facts">
             <div><dt>License</dt><dd>PRC Professional Aeronautical Engineer, 2024</dd></div>
@@ -1681,24 +1699,13 @@ setTimeout(function(){
         </div>
     </div>
 
-    <!-- Row 2 — tools, full width so the four groups sit side by side -->
+    <!-- Row 2 — beyond the desk -->
     <div class="about-row">
-        <!-- 02 — Tools -->
-        <div>
-          <div style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">02 — Tools</div>
-          <h3 class="tools-title">What I bring to a project</h3>
-          <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
-          <div class="tools-grid" id="software-list"></div>
-        </div>
-    </div>
-
-    <!-- Row 3 — beyond the desk -->
-    <div class="about-row">
-        <!-- 03 — Beyond the desk: graph over carousel, short note beside -->
+        <!-- 02 — Beyond the desk: graph over carousel, short note beside -->
         <div class="beyond-layout">
           <div class="beyond-media">
                     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
-            <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">03 — Beyond the desk</span>
+            <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">02 — Beyond the desk</span>
           </div>
 
           <div class="beyond-row">
@@ -1770,8 +1777,8 @@ setTimeout(function(){
               </li>
               <li>
                 <div class="learning-row"><span class="learning-name">CFRP</span><span class="learning-pill">In progress</span></div>
-                <p class="learning-why">The material that theory is for: how carbon plies behave and fail.</p>
-                <p class="learning-note">Properties, failure modes, Tsai-Wu and Hashin criteria</p>
+                <p class="learning-why">The material that theory is for: how carbon plies carry load.</p>
+                <p class="learning-note">Properties, damage mechanisms, Tsai-Wu and Hashin criteria</p>
               </li>
               <li>
                 <div class="learning-row"><span class="learning-name">Japanese</span><span class="learning-pill">In progress</span></div>
@@ -1895,8 +1902,8 @@ const PROJECTS = [
       { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
       { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75\u00a0in pin bore cantilevered off a swept web, lightened through the center and flared into the mounting plate' },
       { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375\u00a0in bolt holes on the corners, clevis centered between them' },
-      { label: 'Sandbox \u00b7 Free-free modal', video: 'figures/bracket/sandbox-free-free.mp4', caption: 'Workbench sandbox \u2014 free-free modal at 1999.2\u00a0Hz. Arbitrary material and damping, run to learn the interface and check the rigid-body count.' },
-      { label: 'Sandbox \u00b7 Constrained modal', video: 'figures/bracket/sandbox-modal.mp4', caption: 'Workbench sandbox \u2014 constrained modal at 3307\u00a0Hz. Minimum deformation falls to zero at the restraints, against 0.043\u00a0mm free-free.' }
+      { label: 'Sandbox \u00b7 Free-free modal', video: 'figures/bracket/sandbox-free-free.mp4', poster: 'figures/bracket/sandbox-free-free-poster.jpg', caption: 'Workbench sandbox \u2014 free-free modal at 1999.2\u00a0Hz. Arbitrary material and damping, run to learn the interface and check the rigid-body count.' },
+      { label: 'Sandbox \u00b7 Constrained modal', video: 'figures/bracket/sandbox-modal.mp4', poster: 'figures/bracket/sandbox-modal-poster.jpg', caption: 'Workbench sandbox \u2014 constrained modal at 3307\u00a0Hz. Minimum deformation falls to zero at the restraints, against 0.043\u00a0mm free-free.' }
     ]
   },
   {
@@ -1930,7 +1937,7 @@ const PROJECTS = [
     anchor: 'p-tank', num: '03',
     kicker: ['Pressure Vessel', 'FEA'],
     title: 'Al6061 Gas Vessel Propellant',
-    story: 'A <span class="data">3\u00a0mm</span> aluminum tank with hemispherical caps at <span class="data">32.5\u00a0bar</span>. Hand calculation set the baseline, a three-level mesh study proved convergence, and the answer came back short of the safety target at the cylinder-to-cap junction. The factor of safety came out to <span class="data">1.91</span> against a target of <span class="data">2.00</span>. A documented boundary-condition correction is part of the record; fixable with about <span class="data">0.2\u00a0mm</span> of extra wall.',
+    story: 'A <span class="data">3\u00a0mm</span> aluminum tank with hemispherical caps at <span class="data">32.5\u00a0bar</span>. Hand calculation set the baseline, a three-level mesh study proved convergence, and the governing stress sits at the cylinder-to-cap junction: a factor of safety of <span class="data">1.91</span> against a <span class="data">2.00</span> target. The record includes a documented boundary-condition correction and sizes the next revision: about <span class="data">0.2\u00a0mm</span> of extra wall brings it to target.',
     repo: 'https://github.com/dmmarkwork-cloud/gas-vessel-fea',
     values: [
       { k: 'Factor of safety', v: '1.91' },
