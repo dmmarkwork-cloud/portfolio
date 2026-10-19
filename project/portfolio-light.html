@@ -1407,12 +1407,46 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
    so the image tracks the finger exactly. */
 .lb-media-el.settling { transition: transform 260ms var(--ease-out); }
 
+/* Stepping through 13 nozzle figures used to mean closing the overlay,
+   scrolling a 380px rail holding 1323px of thumbnails, and reopening. These
+   sit at the edges of the stage instead. 44px, because this is the control
+   the visitor will press most while they are in here. */
+.lb-step {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.55);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(-50%);
+  transition: background 150ms ease, transform 120ms var(--ease-out), opacity 150ms ease;
+}
+.lb-step-prev { left: 8px; }
+.lb-step-next { right: 8px; }
+.lb-step:active { transform: translateY(-50%) scale(0.9); }
+.lb-step[hidden] { display: none; }
+/* Out of the way while the figure is magnified: at that point the drag is
+   panning, and an arrow sitting over the detail is the thing in the way. */
+#lightbox.is-zoomed .lb-step { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) {
+  .lb-step:hover { background: rgba(23,19,16,0.75); }
+}
+
 .lb-close {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 2;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -1430,7 +1464,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 
 @media (max-width: 640px), (pointer: coarse) {
   #lightbox { padding: 8px; }
-  .lb-close { display: flex; }
   /* Side by side, a long figure caption wrapped to six lines against the
      hint. Stack, and let the caption have the width. */
   .lb-caption-row { flex-direction: column; gap: 6px !important; }
@@ -1851,15 +1884,21 @@ setTimeout(function(){
 </footer>
 
 <!-- Lightbox — always in DOM, animated via .open class -->
-<div id="lightbox" onclick="closeLightbox()" role="dialog" aria-modal="true" aria-label="Enlarged figure" tabindex="-1" inert>
+<div id="lightbox" onclick="lbBackdrop(event)" role="dialog" aria-modal="true" aria-label="Enlarged figure" tabindex="-1" inert>
   <div id="lightbox-inner" style="position:relative;">
     <button type="button" id="lb-close" class="lb-close" aria-label="Close">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
+    <button type="button" id="lb-prev" class="lb-step lb-step-prev" aria-label="Previous figure">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" id="lb-next" class="lb-step lb-step-next" aria-label="Next figure">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
     <div id="lightbox-media"></div>
     <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
       <span id="lightbox-caption"></span>
-      <span style="flex:none;"><span class="hover-only">Click anywhere to close</span><span class="touch-only">Pinch to zoom · ✕ to close</span></span>
+      <span id="lb-count" style="flex:none;font-variant-numeric:tabular-nums;"></span>
     </div>
   </div>
 </div>
@@ -2169,18 +2208,56 @@ function selectView(pi, vi) {
 // and Tab skip the invisible overlay. Focus goes to the dialog itself, not
 // the close button, which is hidden on desktop (click anywhere closes).
 let lbReturnFocus = null;
-function openLightbox(pi) {
-  const v = PROJECTS[pi].views[viewIndex[pi]];
+// Which project the overlay is showing, so the arrows and the arrow keys
+// know what they are stepping through. null when closed.
+let lbProject = null;
+
+// Repaints the stage, caption, counter and arrows from viewIndex. Separate
+// from openLightbox so stepping does not re-run the focus and inert handling.
+function lbRender() {
+  if (lbProject === null) return;
+  const p = PROJECTS[lbProject];
+  const i = viewIndex[lbProject];
+  const v = p.views[i];
   const stage = document.getElementById('lightbox-media');
-  // Sizing moved to .lb-media-el so the mobile stage can take a definite
-  // height (panning needs somewhere to pan to) without touching the desktop
-  // layout, where the container still hugs the image. eager, because this
-  // element is inserted at the exact moment it is needed.
   stage.innerHTML = mediaTag(v, '', { eager: true });
   const el = stage.firstElementChild;
   if (el) el.classList.add('lb-media-el');
   lbResetZoom(false);
   document.getElementById('lightbox-caption').textContent = v.caption;
+  const many = p.views.length > 1;
+  document.getElementById('lb-count').textContent = many ? `${i + 1} / ${p.views.length}` : '';
+  document.getElementById('lb-prev').hidden = !many;
+  document.getElementById('lb-next').hidden = !many;
+}
+
+// Wraps, so holding one arrow cycles rather than dead-ending. Also moves the
+// gallery underneath, so closing leaves the page on the figure last looked at
+// instead of snapping back to wherever it was opened from.
+function lbStep(d) {
+  if (lbProject === null) return;
+  const p = PROJECTS[lbProject];
+  if (p.views.length < 2) return;
+  viewIndex[lbProject] = (viewIndex[lbProject] + d + p.views.length) % p.views.length;
+  lbRender();
+  renderGallery(lbProject);
+}
+
+// Only the backdrop closes. The frame itself used to close on any click, which
+// was fine when there was nothing in here to press; with arrows over the image
+// a near-miss would have thrown away your place in a 13-figure set.
+function lbBackdrop(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function openLightbox(pi) {
+  lbProject = pi;
+  const stage = document.getElementById('lightbox-media');
+  // Sizing moved to .lb-media-el so the mobile stage can take a definite
+  // height (panning needs somewhere to pan to) without touching the desktop
+  // layout, where the container still hugs the image. eager, because this
+  // element is inserted at the exact moment it is needed.
+  lbRender();
   const lb = document.getElementById('lightbox');
   lbReturnFocus = document.activeElement;
   lb.inert = false;
@@ -2198,12 +2275,18 @@ function closeLightbox() {
   document.documentElement.classList.remove('lb-open');
   lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
   document.removeEventListener('keydown', onLbKey);
+  lbProject = null;
   if (lbReturnFocus && lbReturnFocus.focus) lbReturnFocus.focus({ preventScroll: true });
   lbReturnFocus = null;
 }
 
 function onLbKey(e) {
   if (e.key === 'Escape') closeLightbox();
+  // No animation on the step. A visitor comparing figures presses these
+  // dozens of times in one sitting, and anything that takes time to settle
+  // would be felt on every press.
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); lbStep(-1); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); lbStep(1); }
   else if (e.key === 'Tab') {
     // Keep focus inside: the close button when shown (touch), else the dialog.
     e.preventDefault();
@@ -2361,7 +2444,7 @@ function buildProjects() {
           <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
           <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
             <span id="lead-cap-${pi}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;"></span>
-            <span style="flex:none;">⤢ Enlarge</span>
+            <span style="flex:none;">⤢ Enlarge${p.views.length > 1 ? ` · ${p.views.length} figures` : ''}</span>
           </div>
         </button>
         ${thumbsHtml}
@@ -2659,6 +2742,10 @@ function initLightboxZoom() {
   const stage = document.getElementById('lightbox-media');
   const closeBtn = document.getElementById('lb-close');
   if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+  [['lb-prev', -1], ['lb-next', 1]].forEach(([id, d]) => {
+    const b = document.getElementById(id);
+    if (b) b.addEventListener('click', (e) => { e.stopPropagation(); lbStep(d); });
+  });
   if (!stage || !window.PointerEvent) return;
 
   const coarse = window.matchMedia('(pointer: coarse)');
@@ -2688,7 +2775,7 @@ function initLightboxZoom() {
     try { stage.setPointerCapture(e.pointerId); } catch (_) {}
     base = (pts.size === 2)
       ? { d: spread(), s: lbZoom.scale, pinch: true }
-      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e) };
+      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e), t: e.timeStamp };
   });
 
   stage.addEventListener('pointermove', (e) => {
@@ -2704,6 +2791,13 @@ function initLightboxZoom() {
       lbZoom.ty = base.ty + (q.y - base.p.y);
       lbClamp();
       if (Math.abs(q.x - base.p.x) + Math.abs(q.y - base.p.y) > 6) dragged = true;
+    } else if (pts.size === 1) {
+      // Not zoomed: the same drag means "next figure" rather than "pan".
+      // Tracked here only so the release knows it was a drag and not a tap;
+      // nothing moves under the finger, because the step itself is instant.
+      const q = local(e);
+      if (Math.abs(q.x - base.p.x) > 10) dragged = true;
+      return;
     } else {
       return;
     }
@@ -2720,8 +2814,17 @@ function initLightboxZoom() {
       return;
     }
     if (pts.size) return;
+    const start = base;
     base = null;
     if (lbZoom.scale < 1.02) lbResetZoom(true);
+
+    // Same thresholds as attachSwipe elsewhere on the page: distance OR
+    // velocity, so a flick does not have to cross the whole figure.
+    if (dragged && start && start.p && lbZoom.scale < 1.02) {
+      const dx = local(e).x - start.p.x;
+      const v = Math.abs(dx) / Math.max(1, e.timeStamp - (start.t || e.timeStamp));
+      if (Math.abs(dx) > 45 || v > 0.11) { lbStep(dx < 0 ? 1 : -1); return; }
+    }
 
     if (!dragged) {
       const now = e.timeStamp;
@@ -2800,7 +2903,9 @@ function initNavHome() {
 // Reduced motion keeps the browser default, which is then an instant jump.
 function initAnchorScroll() {
   let run = 0;
-  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  // ease-out, not ease-in-out. The in half of a cubic holds the page still
+  // through the opening frames, which is exactly when the eye is on it.
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
   const stop = () => { run++; };
   ['wheel', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, stop, { passive: true }));
   document.addEventListener('click', (e) => {
@@ -2823,7 +2928,12 @@ function initAnchorScroll() {
       return Math.max(0, Math.min(max, y - margin));
     };
     const from = window.scrollY;
-    const dur = Math.min(900, 300 + Math.abs(targetY() - from) * 0.06);
+    // Was min(900, 300 + dist * 0.06), which put About 856ms away and made
+    // the furthest targets the slowest to arrive — backwards, since those are
+    // the ones a lost visitor reaches for. Navigation is the most repeated
+    // action on the page, so it stays inside the 300ms-ish band and the
+    // distance term only breaks the tie between a short hop and a long one.
+    const dur = Math.min(400, 240 + Math.abs(targetY() - from) * 0.02);
     const id = ++run;
     const t0 = performance.now();
     const frame = (now) => {
