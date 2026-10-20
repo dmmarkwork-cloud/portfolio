@@ -5,7 +5,9 @@
    where the navigation actually happens. */
 @media (max-width: 640px) {
   .cta-long { display: none; }
-  .nav-cta { font-size: var(--fs-micro); letter-spacing: 0.1em; padding: 6px 9px; }
+  /* 32px tall here; the hit area reaches 44px without moving the bar. */
+  .nav-cta.btn { position: relative; }
+  .nav-cta.btn::after { content: ''; position: absolute; inset: -6px -2px; }
   .nav-actions { gap: 8px; padding-left: 12px; }
   .nav-scroll { gap: 4px; }
 }
