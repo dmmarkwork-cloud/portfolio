@@ -18,9 +18,28 @@
       "destination": "/",
       "permanent": true
     }
+ ,
+    {
+      "source": "/projects.html",
+      "destination": "/projects",
+      "permanent": true
+    },
+    {
+      "source": "/internships.html",
+      "destination": "/internships",
+      "permanent": true
+    },
+    {
+      "source": "/about.html",
+      "destination": "/about",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/portfolio-light.html" }
+    { "source": "/", "destination": "/portfolio-light.html" },
+    { "source": "/projects", "destination": "/projects.html" },
+    { "source": "/internships", "destination": "/internships.html" },
+    { "source": "/about", "destination": "/about.html" }
   ],
   "headers": [
     {

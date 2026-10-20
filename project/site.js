@@ -565,7 +565,7 @@ function buildProjectGrid() {
   // reviewer comparing candidates side by side reads results, not tags.
   const flagships = PROJECTS.filter(p => p.group === 'flagship');
   // The chapters live on the projects page; from anywhere else, link there.
-  const chapterPage = document.getElementById('projects-container') ? '' : 'projects.html';
+  const chapterPage = document.getElementById('projects-container') ? '' : 'projects';
   container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
     const isPng = media && media.src && media.src.toLowerCase().endsWith('.png');
