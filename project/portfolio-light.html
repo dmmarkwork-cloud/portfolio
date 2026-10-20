@@ -79,9 +79,26 @@
   --surface: #FFFFFF;
   --bg: #F7F3ED;
 
-  /* The two type families. Sizes, weights and spacing stay per element. */
+  /* The two type families. Weights and spacing stay per element. */
   --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ── The type scale ──────────────────────────────────
+     Seven steps, and nothing off them. The page had grown to eighteen
+     distinct sizes (8, 9, 9.5, 10, 10.5, 11, 11.5, 12, 13, 14, 15, 15.5,
+     16.5 and five display clamps), which is what makes a dense page read as
+     busy: at that resolution a size difference stops signalling rank and
+     becomes noise. Everything that was 8-13px is now one `micro` step, and
+     the four near-identical heading clamps (42, 42, 44, 46) are one `h2`.
+     `micro` sits at 13px rather than the 9.5-11.5px it replaces, because
+     nothing meant to be read belongs below 13. */
+  --fs-display: clamp(38px, 5.6vw, 64px);   /* the page title, once */
+  --fs-h2: clamp(27px, 3.3vw, 44px);        /* section and project headings */
+  --fs-h3: clamp(22px, 2.3vw, 30px);        /* sub-headings, pull quotes */
+  --fs-lead: clamp(19px, 1.8vw, 25px);      /* metric values */
+  --fs-body: clamp(16px, 1.2vw, 17.5px);    /* running text */
+  --fs-small: 15px;                          /* secondary notes */
+  --fs-micro: 13px;                          /* labels, chips, captions */
   --nav-active-bg: #F0E2D8;
   --nav-active-fg: #8A3A17;
 }
@@ -238,7 +255,7 @@ button { font-family: inherit; }
   transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
   text-decoration: none;
   font-family: var(--font-sans);
-  font-size: 11.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.08em;
   white-space: nowrap;
 }
@@ -251,7 +268,7 @@ button { font-family: inherit; }
 .nav-cta {
   flex-shrink: 0;
   font-family: var(--font-sans);
-  font-size: 10.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust);
@@ -342,7 +359,7 @@ button { font-family: inherit; }
 }
 .holo-fallback-chip {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -373,7 +390,7 @@ holo-bay:defined .holo-fallback { display: none; }
 .kicker-chips { display: flex; flex-wrap: wrap; gap: 5px; }
 .kicker-chip {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -397,7 +414,7 @@ holo-bay:defined .holo-fallback { display: none; }
   align-items: center;
   gap: 7px;
   font-family: var(--font-sans);
-  font-size: 10.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust);
@@ -496,6 +513,34 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   }
 }
 
+/* The figure's caption. One line with an ellipsis where there is room for
+   one, and a wrapped second line where there is not: at 13px several of
+   these captions no longer fit a tablet's width, and a caption truncated to
+   "The finished airframe — foam b…" has lost the half that says what the
+   picture shows. */
+.lead-cap { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+@media (max-width: 860px) {
+  .lead-cap { white-space: normal; overflow: visible; line-height: 1.35; }
+}
+
+/* Above the stacking width, `is-wide` gives every other project the same
+   shape the phone layout already uses: one full-width figure, thumbnails in a
+   strip beneath it. Taller than the side-rail variant, so the two alternate
+   as a rhythm rather than reading as two sizes of the same block. */
+@media (min-width: 641px) {
+  .gallery-split.is-wide { grid-template-columns: minmax(0, 1fr); }
+  .gallery-split.is-wide .lead-btn { height: 460px; }
+  .gallery-split.is-wide .thumb-rail {
+    grid-auto-flow: column;
+    grid-auto-columns: 152px;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 4px;
+  }
+}
+
 /* ── Scroll reveals ──────────────────────────────────────
    Every rule here is gated behind .js-reveal, which an inline head script
    sets and a failsafe removes if initReveal() never finishes. Page content
@@ -543,7 +588,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background: var(--bg);
   color: var(--ink);
   text-decoration: none;
-  font-size: 13px;
+  font-size: var(--fs-micro);
   transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), background 180ms var(--ease-out), transform 140ms var(--ease-out);
 }
 .footer-cta-btn:active { transform: scale(0.98); }
@@ -572,7 +617,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   display: grid;
   gap: 8px;
   color: var(--muted-2);
-  font-size: 10.5px;
+  font-size: var(--fs-micro);
   line-height: 1.25;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -650,7 +695,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .about-facts div { min-width: 0; }
 .about-facts dt {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -659,7 +704,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .about-facts dd {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--ink);
 }
@@ -686,7 +731,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   top: 10px;
   right: 12px;
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -694,7 +739,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .beyond-text { padding-top: 32px; }
 .beyond-text p {
-  font-size: 16.5px;
+  font-size: var(--fs-body);
   line-height: 1.68;
   color: var(--muted);
   margin: 0;
@@ -733,7 +778,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .learning-head h3 {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: var(--fs-small);
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -741,7 +786,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .learning-date {
   flex: none;
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -761,7 +806,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .learning-name {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-micro);
   font-weight: 600;
   color: var(--ink);
 }
@@ -772,14 +817,14 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background: var(--bg);
   border: 1px solid var(--border);
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.06em;
   color: var(--muted);
 }
 .learning-why {
   margin: 2px 0 0;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--fs-micro);
   line-height: 1.4;
   color: var(--muted);
   text-wrap: pretty;
@@ -787,7 +832,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .learning-note {
   margin: 1px 0 0;
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   line-height: 1.35;
   color: var(--muted-2);
 }
@@ -884,7 +929,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   padding: 28px 12px 10px;
   background: linear-gradient(transparent, rgba(0,0,0,0.62));
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.82);
@@ -942,7 +987,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   top: 10px;
   left: 10px;
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.88);
@@ -965,7 +1010,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .proj-card-kicker {
   font-family: var(--font-sans);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -975,7 +1020,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .proj-card-title {
   font-family: var(--font-sans);
-  font-size: clamp(14px, 1.1vw, 16px);
+  font-size: var(--fs-small);
   font-weight: 600;
   color: var(--ink);
   margin: 0 0 6px;
@@ -983,7 +1028,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .proj-card-metric {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   font-weight: 500;
   color: var(--rust);
   letter-spacing: 0.04em;
@@ -993,7 +1038,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .tools-title {
   font-family: var(--font-sans);
-  font-size: clamp(22px, 2.4vw, 32px);   /* same as "The work" */
+  font-size: var(--fs-h3);   /* same as "The work" */
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.2;
@@ -1001,7 +1046,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   margin: 0 0 10px;
 }
 .tools-lede {
-  font-size: 15.5px;
+  font-size: var(--fs-small);
   line-height: 1.55;
   color: var(--muted);
   margin: 0 0 28px;
@@ -1016,7 +1061,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .tool-group-label {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1029,7 +1074,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   align-items: center;
   gap: 8px;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--fs-micro);
   padding: 6px 14px 6px 7px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -1309,12 +1354,97 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
    where the navigation actually happens. */
 @media (max-width: 640px) {
   .cta-long { display: none; }
-  .nav-cta { font-size: 10px; letter-spacing: 0.1em; padding: 6px 9px; }
+  .nav-cta { font-size: var(--fs-micro); letter-spacing: 0.1em; padding: 6px 9px; }
   .nav-actions { gap: 8px; padding-left: 12px; }
   .nav-scroll { gap: 4px; }
 }
 .cta-short { display: none; }
 @media (max-width: 640px) { .cta-short { display: inline; } }
+
+/* ── Mobile: the whole set of destinations ───────────────
+   Handing the CTA and the toggle their space back still left the strip about
+   two links wide, so a phone showed 2 of 10 destinations: enough to move
+   between neighbours, never enough to see the set or your place in it. Below
+   640px the strip becomes a panel instead — one tap, all ten, two columns —
+   and the bar carries the name of the section you are in, which the strip
+   never actually stated. `.nav-collapsed` is added by script, so with no JS
+   the horizontal strip stays exactly as it was and stays usable. */
+/* At 13px the banner's name and its one link no longer fit a 390px row at
+   0.16em of tracking, and wrapped onto two. Tracking is the thing to give up
+   here, not the name: the labels are set in caps and read better tight. The
+   value lives here rather than on the element, so the query can win. */
+header#top { letter-spacing: 0.16em; }
+@media (max-width: 640px) {
+  header#top { letter-spacing: 0.04em; }
+}
+
+.nav-menu-btn { display: none; }
+@media (max-width: 640px) {
+  /* The button carries the bar's height now, so the row's own padding comes
+     back down and the bar stays the height it already was. */
+  nav.nav-collapsed .nav-inner { padding: 6px 0; }
+  nav.nav-collapsed .nav-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 6px;
+    border: 0;
+    background: none;
+    font-family: var(--font-sans);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+  }
+  nav.nav-collapsed .nav-menu-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  nav.nav-collapsed .nav-menu-btn svg {
+    flex: none;
+    transition: transform 180ms var(--ease-out);
+  }
+  nav.nav-collapsed.nav-open .nav-menu-btn svg { transform: rotate(180deg); }
+
+  nav.nav-collapsed .nav-scroll {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px 8px;
+    padding: 10px clamp(18px, 4vw, 56px) 14px;
+    max-height: 62vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    touch-action: pan-y;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  nav.nav-collapsed.nav-open .nav-scroll { display: grid; }
+  /* In the strip the 44px tap area comes from a ::after reaching 8px past
+     the link on each side, which is free when the links sit in one row. In a
+     stacked panel those areas would overlap by 14px and a tap near a
+     boundary would land on the neighbour, so here the row is a real 44px box
+     instead and the overlapping hit area is dropped. */
+  nav.nav-collapsed .nav-scroll .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+  nav.nav-collapsed .nav-scroll .nav-link::after { content: none; }
+}
 
 /* ── Mobile: touch targets ───────────────────────────────
    37 of the page's 89 interactive elements measured under 44px on a 390px
@@ -1521,9 +1651,16 @@ setTimeout(function(){
 <!-- Top bar: the site banner (name + contact), so it is the page's <header>.
      id="top" is the home button's target: the page's first pixel, so the
      whole landing (top bar and hero) is back in view. -->
-<header id="top" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px clamp(18px,4vw,56px);border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
+<header id="top" style="padding:14px 0;border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
+  <!-- The bar's rule runs the full width; its contents sit on the same
+       centred 1240px column as the hero and every section below, so the
+       wordmark starts level with the headline. Without this the banner kept
+       its own inset and the page measured 100px of margin on the left
+       against 156px on the right. -->
+  <div style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,56px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;">
   <span class="brand"><svg viewBox="0 0 552 316" class="brand-mark" aria-hidden="true" focusable="false"><clipPath id="hdr-mly-clip"><rect x="0" y="0" width="552" height="316"/></clipPath><g fill="var(--ink)" clip-path="url(#hdr-mly-clip)"><rect x="0" y="0" width="21" height="316"/><rect x="245" y="0" width="21" height="316"/><rect x="122.5" y="182.5" width="21" height="133.5"/><rect x="278" y="0" width="21" height="316"/><rect x="278" y="293.5" width="274" height="22.5"/><rect x="414.5" y="168" width="21" height="125.5"/><polygon points="-27.83,-26.95 125.04,188.16 140.96,176.84 -11.91,-38.26"/><polygon points="277.57,-38.28 125.03,176.85 140.97,188.15 293.5,-26.98"/><polygon points="276.02,-27.12 417.01,173.61 432.99,162.39 292,-38.35"/><polygon points="558,-38.35 417.01,162.39 432.99,173.61 573.98,-27.12"/></g><rect x="414.5" y="293.5" width="21" height="22.5" fill="var(--rust)"/></svg><span>Mark Lorenz Yamanaka</span></span>
-  <a href="#contact" class="top-bar-link" style="letter-spacing:0.16em;color:var(--muted-2);">Get in touch</a>
+  <a href="#contact" class="top-bar-link" style="color:var(--muted-2);">Get in touch</a>
+  </div>
 </header>
 
 <!-- Header -->
@@ -1531,14 +1668,14 @@ setTimeout(function(){
 <section aria-label="Introduction" style="max-width:1240px;margin:0 auto;padding:clamp(44px,7vw,104px) clamp(18px,4vw,56px) clamp(32px,5vw,64px);">
   <div class="hero-grid" style="gap:clamp(28px,4vw,64px);">
     <div>
-      <div class="hero-s1" style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">01 — ENGINEERING PORTFOLIO</div>
-      <h1 class="hero-s2" style="font-family:var(--font-sans);font-weight:600;font-size:clamp(38px,5.6vw,64px);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
-      <p class="hero-s3" style="font-size:clamp(16px,1.3vw,19px);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Where a result was revised, both versions are published. The full working is in the repositories.</p>
-      <a href="#p-bracket" class="hero-cta-link hero-s4" style="display:inline-block;font-family:var(--font-sans);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the seven projects ↓</a>
+      <div class="hero-s1" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:22px;">ENGINEERING PORTFOLIO</div>
+      <h1 class="hero-s2" style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-display);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
+      <p class="hero-s3" style="font-size:var(--fs-body);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Where a result was revised, both versions are published. The full working is in the repositories.</p>
+      <a href="#p-bracket" class="hero-cta-link hero-s4" style="display:inline-block;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);margin-bottom:28px;">See the seven projects ↓</a>
       <div class="hero-s5" style="display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
-        <span style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">ASME Y14.5-2018</span>
-        <span style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">FAR Part 23 / 27 / 29</span>
+        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
+        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">ASME Y14.5-2018</span>
+        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">FAR Part 23 / 27 / 29</span>
       </div>
       <div class="status-badge hero-s5" style="margin-top:16px;">
         <span class="status-dot"></span>
@@ -1546,7 +1683,7 @@ setTimeout(function(){
       </div>
     </div>
     <div style="min-width:0;background:var(--surface);border:1px solid var(--border);align-self:center;">
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
+      <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
         <span>Six of seven, in the round</span>
         <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
       </div>
@@ -1564,7 +1701,7 @@ setTimeout(function(){
           legend-active="#171310"
           legend-active-border="#B4491B"
         ><div class="holo-fallback">
-            <span style="font-family:var(--font-sans);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">Interactive view unavailable — the six projects</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">Interactive view unavailable — the six projects</span>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;">
               <span class="holo-fallback-chip">CD Nozzle</span>
               <span class="holo-fallback-chip">Propellant Tank</span>
@@ -1615,7 +1752,7 @@ setTimeout(function(){
   <!-- Tools: what the work below was done with. Sits between the hero and
        "The work", headed the same way (small label, then the h2). -->
   <section id="tools" class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
-    <div style="font-family:var(--font-sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">Tools</div>
+    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">Tools</div>
     <h2 class="tools-title">What I bring to a project</h2>
     <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
     <div class="tools-grid" id="software-list"></div>
@@ -1629,16 +1766,16 @@ setTimeout(function(){
 
   <!-- Internships -->
   <section id="hangar" data-section="hangar" class="section-reveal" style="padding:clamp(56px,7vw,100px) 0 clamp(20px,3vw,36px);border-bottom:1px solid var(--border);">
-    <div style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">Hangar time</div>
-    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:clamp(27px,3.4vw,46px);line-height:1.05;letter-spacing:-0.03em;margin:0 0 clamp(32px,4vw,54px);max-width:26ch;text-wrap:balance;">Internships</h2>
+    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">Hangar time</div>
+    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.05;letter-spacing:-0.03em;margin:0 0 clamp(32px,4vw,54px);max-width:26ch;text-wrap:balance;">Internships</h2>
     <div style="display:grid;gap:clamp(36px,5vw,64px);">
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
         <div>
-          <div style="font-family:var(--font-sans);font-weight:600;font-size:clamp(22px,2.2vw,30px);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Dornier Technology Inc.</div>
-          <div style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Fifteen-plus pre- and post-flight inspections across A320, ATR-72 and B737 during line maintenance, then an A320 engine overhaul in base maintenance, including a torque-controlled fastener installation on a wing leading-edge de-icing boot under a licensed mechanic's sign-off. The last rotation was technical records: reviewing NRC, service-bulletin and airworthiness-directive compliance.</p>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">Also where I learned to safety-wire properly. It is a small, unglamorous detail, but it tells you whether a job was done by someone paying attention.</p>
+          <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Dornier Technology Inc.</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Fifteen-plus pre- and post-flight inspections across A320, ATR-72 and B737 during line maintenance, then an A320 engine overhaul in base maintenance, including a torque-controlled fastener installation on a wing leading-edge de-icing boot under a licensed mechanic's sign-off. The last rotation was technical records: reviewing NRC, service-bulletin and airworthiness-directive compliance.</p>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">Also where I learned to safety-wire properly. It is a small, unglamorous detail, but it tells you whether a job was done by someone paying attention.</p>
         </div>
         <div id="dornier-carousel" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);aspect-ratio:4/3;">
           <div id="dornier-track" style="position:relative;width:100%;height:100%;">
@@ -1680,19 +1817,19 @@ setTimeout(function(){
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
         <div>
-          <div style="font-family:var(--font-sans);font-weight:600;font-size:clamp(22px,2.2vw,30px);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Alpha Aviation Group Philippines</div>
-          <div style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Flight simulation sessions on a Cessna 172 and an A320, trainer aircraft external inspection and cockpit prep, and one supervised engine run-up and taxi on the Cessna, working through the function checks and fault indications that go with it.</p>
-          <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">A fault indication reads differently once you have sat in the seat that shows it to you.</p>
+          <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Alpha Aviation Group Philippines</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Flight simulation sessions on a Cessna 172 and an A320, trainer aircraft external inspection and cockpit prep, and one supervised engine run-up and taxi on the Cessna, working through the function checks and fault indications that go with it.</p>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">A fault indication reads differently once you have sat in the seat that shows it to you.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;">
           <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
             <img src="figures/internship/a320-sim.jpg" alt="Seated in an A320 full-flight simulator flight deck" loading="lazy" style="display:block;width:100%;height:190px;object-fit:cover;">
-            <figcaption style="font-family:var(--font-sans);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">A320 full-flight simulator</figcaption>
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">A320 full-flight simulator</figcaption>
           </figure>
           <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
             <img src="figures/internship/cessna-flight-deck.jpg" alt="Seated at the controls of a light single-engine aircraft" loading="lazy" style="display:block;width:100%;height:190px;object-fit:contain;">
-            <figcaption style="font-family:var(--font-sans);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">Light single flight deck</figcaption>
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">Light single flight deck</figcaption>
           </figure>
         </div>
       </div>
@@ -1704,11 +1841,11 @@ setTimeout(function(){
   <section id="about" data-section="about" class="section-reveal" style="padding:clamp(56px,7vw,104px) 0 clamp(40px,5vw,64px);">
 
     <!-- Terminal prompt -->
-    <div style="font-family:var(--font-mono);font-size:13px;letter-spacing:0.04em;color:var(--muted-2);margin-bottom:clamp(24px,3.5vw,40px);">
+    <div style="font-family:var(--font-mono);font-size:var(--fs-micro);letter-spacing:0.04em;color:var(--muted-2);margin-bottom:clamp(24px,3.5vw,40px);">
       <span style="color:var(--rust);">mark@portfolio</span><span style="color:var(--border);margin:0 10px;">—</span><span>~/about</span>
     </div>
 
-    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:clamp(27px,3.2vw,42px);line-height:1.06;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,52px);max-width:32ch;text-wrap:balance;">The best I could do that week. Not yet the best I'll do.</h2>
+    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.06;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,52px);max-width:32ch;text-wrap:balance;">The best I could do that week. Not yet the best I'll do.</h2>
 
     <!-- Row 1 — introduction: photo beside the story -->
     <div class="about-intro">
@@ -1716,13 +1853,13 @@ setTimeout(function(){
         <div style="position:relative;aspect-ratio:4/5;background:var(--bg);border:1px solid var(--border);overflow:hidden;">
           <img src="figures/profile.png" alt="Mark Lorenz Yamanaka" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center top;">
         </div>
-        <!-- 01 — Background -->
+        <!-- Background -->
         <div>
-          <div style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">01 — Background</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:20px;">Background</div>
           <div style="display:grid;gap:14px;">
-            <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I studied aeronautical engineering at Holy Angel University from 2020 to 2024, graduating on the Dean's List with a GPA of 1.58, where 1.00 is the highest mark, or about 3.54 out of 4.0. My coursework spanned aircraft structures, aircraft/helicopter/UAV design and systems, aerodynamics, powerplant, and reliability engineering, and I was licensed as a PRC Professional Aeronautical Engineer that same year. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
-            <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">The hangar came first, though. It is hard to over-report a factor of safety once you have seen what an aircraft actually looks like at 40,000 cycles.</p>
-            <p style="font-size:16.5px;line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I am based in Tsukuba, Japan. I'm happy to walk through any of these end to end, including what changed between revisions.</p>
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I studied aeronautical engineering at Holy Angel University from 2020 to 2024, graduating on the Dean's List with a GPA of 1.58, where 1.00 is the highest mark, or about 3.54 out of 4.0. My coursework spanned aircraft structures, aircraft/helicopter/UAV design and systems, aerodynamics, powerplant, and reliability engineering, and I was licensed as a PRC Professional Aeronautical Engineer that same year. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">The hangar came first, though. It is hard to over-report a factor of safety once you have seen what an aircraft actually looks like at 40,000 cycles.</p>
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I am based in Tsukuba, Japan. I'm happy to walk through any of these end to end, including what changed between revisions.</p>
           </div>
           <dl class="about-facts">
             <div><dt>License</dt><dd>PRC Professional Aeronautical Engineer, 2024</dd></div>
@@ -1734,11 +1871,11 @@ setTimeout(function(){
 
     <!-- Row 2 — beyond the desk -->
     <div class="about-row">
-        <!-- 02 — Beyond the desk: graph over carousel, short note beside -->
+        <!-- Beyond the desk: graph over carousel, short note beside -->
         <div class="beyond-layout">
           <div class="beyond-media">
                     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
-            <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">02 — Beyond the desk</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">Beyond the desk</span>
           </div>
 
           <div class="beyond-row">
@@ -1838,8 +1975,8 @@ setTimeout(function(){
 <footer id="contact" style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(44px,6vw,88px) clamp(18px,4vw,56px);">
   <div class="footer-grid">
     <div class="footer-head">
-      <div style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--rust);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
-      <div style="font-family:var(--font-sans);font-size:clamp(26px,3.2vw,42px);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Feel free to reach out!</div>
+      <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.18em;text-transform:uppercase;color:var(--rust);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
+      <div style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Feel free to reach out!</div>
     </div>
     <div class="footer-cta">
       <!-- Résumé -->
@@ -1896,7 +2033,7 @@ setTimeout(function(){
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
     <div id="lightbox-media"></div>
-    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
+    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
       <span id="lightbox-caption"></span>
       <span id="lb-count" style="flex:none;font-variant-numeric:tabular-nums;"></span>
     </div>
@@ -2134,17 +2271,25 @@ function leadMediaMarkup(view) {
   // duplicate of itself behind the sharp image, reading as a ghosted
   // second copy rather than ambient colour. 64px reduces even hard-edged
   // content (mesh gridlines, machined edges) to a colour wash.
-  const backdropStyle = 'position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);transform:scale(1.2);';
+  // Painted as a background rather than an <img> scaled past its own box.
+  // `object-fit:cover` + `transform:scale(1.2)` gave the element a bounding
+  // box 20% wider than the frame that clips it: invisible on the page, but
+  // a real box reaching ~56px outside the page's 1240px column, which any
+  // measurement of the page's margins reads as content sitting off-centre.
+  // `background-size:120%` overscans the painting by the same amount and
+  // leaves the box exactly on its parent. The aspect distortion that costs
+  // is undetectable under a 64px blur, which is a colour wash by design.
+  const backdropStyle = 'position:absolute;inset:0;display:block;background-position:center;background-repeat:no-repeat;background-size:120% 120%;filter:blur(64px) brightness(0.8);';
+  const backdropDiv = (src) => `<div aria-hidden="true" style="${backdropStyle}background-image:url('${src}');"></div>`;
   if (view.video) {
     // A still frame is enough under a 64px blur, and it spares a second
     // full download of the clip. Falls back to the clip if no poster.
     const backdrop = view.poster
-      ? `<img src="${view.poster}" alt="" aria-hidden="true" loading="eager" decoding="async" style="${backdropStyle}">`
-      : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="${backdropStyle}"></video>`;
+      ? backdropDiv(view.poster)
+      : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);"></video>`;
     return backdrop + mediaTag(view, fgStyle, { eager: true });
   }
-  const backdrop = `<img src="${view.src}" alt="" aria-hidden="true" loading="eager" decoding="async" style="${backdropStyle}">`;
-  return backdrop + mediaTag(view, fgStyle, { eager: true });
+  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true });
 }
 
 // Update gallery state in-place — no innerHTML rebuild on thumb strip
@@ -2349,10 +2494,10 @@ function buildProjectGrid() {
     <section class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
       <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:clamp(24px,3vw,40px);">
         <div>
-          <div style="font-family:var(--font-sans);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">All seven projects</div>
-          <h2 style="font-family:var(--font-sans);font-size:clamp(22px,2.4vw,32px);font-weight:600;color:var(--ink);margin:0;line-height:1.2;">The work</h2>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">All seven projects</div>
+          <h2 style="font-family:var(--font-sans);font-size:var(--fs-h3);font-weight:600;color:var(--ink);margin:0;line-height:1.2;">The work</h2>
         </div>
-        <span id="grid-hint" style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Scroll for detail ↓</span>
+        <span id="grid-hint" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Scroll for detail ↓</span>
       </div>
       <div class="proj-grid">${cards}</div>
     </section>`;
@@ -2403,7 +2548,15 @@ function buildProjects() {
   const container = document.getElementById('projects-container');
   container.innerHTML = PROJECTS.map((p, pi) => {
     const hasThumbs = p.views.length > 1;
-    const splitClass = hasThumbs ? 'gallery-split' : 'gallery-split no-thumbs';
+    // Every other project runs its figure the full width of the column with
+    // the thumbnails as a strip underneath, instead of the 172px side rail.
+    // Seven sections of one composition read as a template however good the
+    // composition is, and this is the one variation that changes the shape of
+    // the section without moving the heading, the prose or the metric table,
+    // so nothing the reader is hunting for shifts between projects.
+    const splitClass = hasThumbs
+      ? (pi % 2 ? 'gallery-split is-wide' : 'gallery-split')
+      : 'gallery-split no-thumbs';
     const kickerHtml = p.kicker.map(k => `<span class="kicker-chip">${k}</span>`).join('');
 
     const thumbsHtml = hasThumbs ? `
@@ -2413,7 +2566,7 @@ function buildProjects() {
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
               ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
             </div>
-            <span style="font-family:var(--font-sans);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);line-height:1.3;">${v.label}</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);line-height:1.3;">${v.label}</span>
           </button>`).join('')}
       </div>` : '';
 
@@ -2423,18 +2576,18 @@ function buildProjects() {
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,3vw,40px);align-items:end;margin-bottom:clamp(18px,2.5vw,30px);">
         <div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <span style="font-family:var(--font-sans);font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">${p.num}</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--rust);">${p.num}</span>
             <div class="kicker-chips">${p.wip ? '<span class="kicker-chip is-wip">In progress</span>' : ''}${kickerHtml}</div>
           </div>
-          <h2 style="font-family:var(--font-sans);font-weight:600;font-size:clamp(26px,3.2vw,44px);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
-          <p style="font-size:clamp(15.5px,1.2vw,17.5px);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
-          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:var(--font-sans);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : `<span style="font-family:var(--font-sans);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
+          <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
+          <p style="font-size:var(--fs-body);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
+          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--rust);">Full working on GitHub →</a>` : `<span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
         </div>
         <div style="display:grid;gap:0;align-content:end;justify-items:stretch;">
           ${p.values.map((v, ri) => `
             <div class="metric-row" style="--ri:${ri};display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:10px 0;border-top:1px solid var(--border);">
-              <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">${v.k}</span>
-              <span style="font-family:var(--font-sans);font-size:clamp(19px,1.8vw,25px);font-weight:600;letter-spacing:-0.02em;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;">${dataValue(v.v)}</span>
+              <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">${v.k}</span>
+              <span style="font-family:var(--font-sans);font-size:var(--fs-lead);font-weight:600;letter-spacing:-0.02em;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;">${dataValue(v.v)}</span>
             </div>`).join('')}
         </div>
       </div>
@@ -2442,8 +2595,8 @@ function buildProjects() {
       <div class="${splitClass}">
         <button type="button" class="lead-btn" onclick="openLightbox(${pi})" title="Click to enlarge">
           <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
-          <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
-            <span id="lead-cap-${pi}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;"></span>
+          <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
+            <span id="lead-cap-${pi}" class="lead-cap"></span>
             <span style="flex:none;">⤢ Enlarge${p.views.length > 1 ? ` · ${p.views.length} figures` : ''}</span>
           </div>
         </button>
@@ -2559,7 +2712,7 @@ function toolChip(t) {
   } else if (t.icon) {
     icon = TOOL_ICONS[t.icon];
   } else {
-    icon = `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 3px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-family:var(--font-sans);font-size:8px;font-weight:600;letter-spacing:0.02em;color:var(--muted-2);flex-shrink:0;">${t.initials}</span>`;
+    icon = `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 3px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);font-weight:600;letter-spacing:0.02em;color:var(--muted-2);flex-shrink:0;">${t.initials}</span>`;
   }
   return `<span class="tool-pill">${icon}${t.name}</span>`;
 }
@@ -2574,6 +2727,46 @@ function buildSoftware() {
 
 function initNav() {
   const navScroll = document.getElementById('nav-scroll');
+
+  // ── The phone's section menu ───────────────────────────
+  // The button is built here rather than written into the markup so a page
+  // whose script never runs keeps the horizontal strip it has always had,
+  // rather than a dead control over a hidden panel.
+  const nav = navScroll ? navScroll.closest('nav') : null;
+  let menuBtn = null, menuLabel = null;
+  const closeMenu = () => {
+    if (!nav) return;
+    nav.classList.remove('nav-open');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+  };
+  if (nav && navScroll) {
+    menuBtn = document.createElement('button');
+    menuBtn.type = 'button';
+    menuBtn.className = 'nav-menu-btn';
+    menuBtn.setAttribute('aria-controls', 'nav-scroll');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.innerHTML = '<span class="nav-menu-label">Jump to a section</span>'
+      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+      + ' stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+      + '<path d="m6 9 6 6 6-6"/></svg>';
+    navScroll.parentNode.insertBefore(menuBtn, navScroll);
+    menuLabel = menuBtn.querySelector('.nav-menu-label');
+    nav.classList.add('nav-collapsed');
+
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = nav.classList.toggle('nav-open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Closed by choosing a destination, tapping away, or Escape.
+    navScroll.addEventListener('click', (e) => { if (e.target.closest('a')) closeMenu(); });
+    document.addEventListener('click', (e) => {
+      if (nav.classList.contains('nav-open') && !nav.contains(e.target)) closeMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('nav-open')) { closeMenu(); menuBtn.focus(); }
+    });
+  }
 
   // Fade only the side that actually has more content. A permanent right-hand
   // fade dims a fully-visible last link, and keeps promising more once you
@@ -2621,6 +2814,12 @@ function initNav() {
       a.classList.toggle('active', on);
       if (on) activeEl = a;
     });
+    // On a phone the bar is the only thing naming where you are, so it says so
+    // in words instead of relying on a chip that may be off-screen.
+    if (menuLabel) {
+      const next = activeEl ? activeEl.textContent.trim() : 'Jump to a section';
+      if (menuLabel.textContent !== next) menuLabel.textContent = next;
+    }
     if (best !== lastActive) {
       lastActive = best;
       // Back on the hero: return the strip to its start so 01 is in view.
@@ -2883,6 +3082,10 @@ function initNavHome() {
   if (!nav || !home || !first) return;
   const place = () => {
     home.style.translate = '';
+    // Below 640px the strip is a closed panel (display:none), so the first
+    // chip has no box and the midpoint arithmetic would resolve against zero
+    // and throw the button across the bar. Nothing to centre against: leave it.
+    if (!first.getClientRects().length) return;
     const edge = nav.getBoundingClientRect().left;
     const chip = first.getBoundingClientRect().left + strip.scrollLeft;
     const h = home.getBoundingClientRect();

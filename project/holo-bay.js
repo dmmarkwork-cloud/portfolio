@@ -42,7 +42,7 @@
       holder.appendChild(canvas);
 
       const legend = document.createElement('div');
-      legend.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px 0;font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;";
+      legend.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;padding:10px 2px 0;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;";
       this.appendChild(holder);
       this.appendChild(legend);
 
@@ -275,7 +275,10 @@
       const chips = items.map((it) => {
         const el = document.createElement('span');
         el.style.cssText = 'padding:4px 8px;border:1px solid ' + legendBd + ';color:' + legendFg + ';background:' + legendBg + ';transition:color 180ms,border-color 180ms;';
-        el.textContent = it.spec.id + ' ' + it.spec.name;
+        // Name only. The ids here counted six subjects from the nozzle, while
+        // the page's navigation counts seven from the bracket, so the same
+        // project carried two different numbers in one viewport.
+        el.textContent = it.spec.name;
         legend.appendChild(el);
         return el;
       });
