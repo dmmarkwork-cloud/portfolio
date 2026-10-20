@@ -1,0 +1,1685 @@
+/* ── Type: two self-hosted variable families ─────────────
+   Latin subset only: every character the page renders is in it except the
+   arrows (→ ↓) and the ✕ ⤢ icon glyphs, which neither family draws in any
+   subset, so the browser takes those from the system font either way.
+   No italic files: nothing on the page is set in italic. */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("fonts/atkinson-next-latin-wght.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  src: url("fonts/atkinson-mono-latin-wght.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --rust: #B4491B;
+  --rust-dim: #96401A;
+  --rust-tint: #E6D3C5;
+  --ink: #171310;
+  --muted: #5F5852;
+  --muted-2: #6E6862;
+  --label: #6E6862;          /* section labels: quiet, so rust is left to results and links */
+  --link: #B4491B;           /* text links */
+  --focus: #B4491B;          /* focus ring */
+  --on-accent: #FFFFFF;      /* text on a rust fill */
+  --border: #E2DAD0;
+  --border-light: #EFE9E1;
+  --surface: #FFFFFF;
+  --bg: #F7F3ED;
+  --nav-bg: rgba(247, 243, 237, 0.92);
+
+  /* The two type families. Weights and spacing stay per element. */
+  --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ── The type scale ──────────────────────────────────
+     Seven steps, and nothing off them. The page had grown to eighteen
+     distinct sizes (8, 9, 9.5, 10, 10.5, 11, 11.5, 12, 13, 14, 15, 15.5,
+     16.5 and five display clamps), which is what makes a dense page read as
+     busy: at that resolution a size difference stops signalling rank and
+     becomes noise. Everything that was 8-13px is now one `micro` step, and
+     the four near-identical heading clamps (42, 42, 44, 46) are one `h2`.
+     `micro` sits at 13px rather than the 9.5-11.5px it replaces, because
+     nothing meant to be read belongs below 13. */
+  --fs-display: clamp(38px, 5.6vw, 64px);   /* the page title, once */
+  --fs-h2: clamp(27px, 3.3vw, 44px);        /* section and project headings */
+  --fs-h3: clamp(22px, 2.3vw, 30px);        /* sub-headings, pull quotes */
+  --fs-lead: clamp(19px, 1.8vw, 25px);      /* metric values */
+  --fs-body: clamp(16px, 1.2vw, 17.5px);    /* running text */
+  --fs-small: 15px;                          /* secondary notes */
+  --fs-micro: 13px;                          /* labels, chips, captions */
+  --nav-active-bg: #F0E2D8;
+  --nav-active-fg: #8A3A17;
+}
+
+/* Dark palette: ink blue, blue-charcoal cards, muted copper accent, warm
+   ivory secondary. Contrast (WCAG): ink 15.9:1 on --bg / 13.8:1 on
+   --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
+   text pairs clear AA (4.5:1). */
+[data-theme="dark"] {
+  --rust: #D68A63;          /* primary accent: muted copper */
+  --rust-dim: #C07752;
+  --ink: #F3F2EE;           /* main text: soft white */
+  --muted: #A0A9B6;         /* muted text: dusty blue-gray */
+  --muted-2: #8E97A5;       /* one step quieter than --muted, still 5.2:1 on cards */
+  --border: #303B4A;        /* desaturated blue */
+  --border-light: #253041;
+  --surface: #1A2535;       /* cards: blue-charcoal */
+  --bg: #101827;            /* background: ink blue */
+  --nav-active-bg: rgba(214, 138, 99, 0.16);
+  --nav-active-fg: #DCD4C5; /* secondary accent: warm ivory */
+  --label: #8E97A5;         /* section labels: quiet, so copper is left to results and links */
+  --link: #D68A63;
+  --focus: #D68A63;
+  --on-accent: #101827;
+  --nav-bg: rgba(16, 24, 39, 0.92);
+}
+[data-theme="dark"] body { background-color: var(--bg); }
+
+html { scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Offset anchor scroll targets below the sticky nav */
+[data-section] { scroll-margin-top: 56px; }
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background-color: var(--surface);
+  transition: background-color 280ms ease, color 280ms ease;
+}
+
+/* ── Nav inner row ────────────────────────────────────
+   Two tracks. `.nav-scroll` holds the section links and is the only part
+   that scrolls; `.nav-actions` holds Get-in-touch and the theme toggle and
+   never scrolls out of reach. At 390px the link strip is 853px wide, so
+   with a single scrolling row the CTA and the toggle sat ~500px off the
+   right edge of a sticky bar — effectively absent on every phone. */
+.nav-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding: 12px 0;
+}
+.nav-scroll {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 14px);
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* Deliberately not `scroll-behavior: smooth`. The strip is nudged by page
+     scrolling, and animating the side effect of a continuous gesture always
+     lags the gesture — flick past four sections and you would watch the
+     chips slide for a second after you stopped. Instant reads as part of
+     the scroll instead of as a second, late event. */
+  scroll-padding-inline: 20px;
+  overscroll-behavior-x: contain;
+}
+/* Touch: a swipe that starts on the nav bar moves the link strip sideways
+   and never the page. A thumb swipe is never perfectly level, and with the
+   default touch-action the vertical part of it scrolled the page, carrying
+   the bar (and the hero, when not yet stuck) up out of view. pan-x keeps
+   taps working; the page still scrolls from anywhere below the bar. The
+   strip needs its own declaration: touch-action is resolved only up to the
+   nearest scroll container, and .nav-scroll is one, so nav's would not
+   reach a swipe that starts on a link. */
+nav, .nav-scroll { touch-action: pan-x; }
+.nav-scroll::-webkit-scrollbar { display: none; }
+/* Brand: the MLY grid monogram beside the name in the top bar. Drawn without
+   its grid at this size (the hairlines turn to noise under ~32px tall) and
+   coloured by the theme tokens, so it follows light and dark. */
+.brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); }
+.brand-mark { height: 18px; width: auto; flex: none; display: block; }
+/* Home: same round outline as the theme toggle, centred between the bar's
+   left edge and "01 Bracket". With P the nav's side padding (the inline
+   clamp on <nav>) and G the old 8-14px gap, the links keep their place and
+   the button gets (P + G) / 2 of air on each side: margin-left pulls it
+   back into the padding by (P - G) / 2. Past ~1350px the bar content is a
+   centred 1240px column; initNavHome() then shifts the button to the true
+   midpoint between the bar's left edge and the chip. */
+.nav-home {
+  --nav-pad: clamp(18px, 4vw, 56px);
+  --home-gap: clamp(8px, 1.2vw, 14px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-left: calc((var(--home-gap) - var(--nav-pad)) / 2);
+  margin-right: calc((var(--nav-pad) + var(--home-gap)) / 2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted-2);
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+}
+.nav-home:active { transform: scale(0.93); }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6vw, 18px);
+  flex: none;
+  margin-left: auto;
+  padding-left: clamp(12px, 2vw, 24px);
+}
+/* Edge fades, applied by JS only on the side that actually has more content.
+   A static right-hand fade would dim a fully-visible last link for no reason,
+   and would lie about there being more to the right once you reach the end. */
+.nav-scroll.fade-r { -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); }
+.nav-scroll.fade-l { -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); }
+.nav-scroll.fade-l.fade-r {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
+}
+
+a { color: var(--link); text-decoration: none; transition: color 150ms ease; }
+::selection { background: var(--rust-tint); color: var(--ink); }
+[data-theme="dark"] ::selection { background: rgba(214, 138, 99, 0.3); color: var(--ink); }
+button { font-family: inherit; }
+
+/* A number and its unit in the mono face, kept on one line. Size and weight
+   inherit from wherever it sits. A mono space is a 0.632em cell against the
+   sans's 0.280em, so "2&nbsp;MPa" would read as two spaces without the
+   word-spacing pull-back. */
+.data {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+  white-space: nowrap;
+  word-spacing: -0.35em;
+}
+
+/* ── Nav ─────────────────────────────────────────────── */
+.nav-link {
+  /* The active section was a 1px underline on muted-2 text, easy to miss.
+     Now: darker resting text, and a filled chip plus a 2px rule for the
+     section you are in. Type size, weight and tracking are unchanged. */
+  color: var(--muted);
+  padding: 6px 8px 4px;
+  border-radius: 3px;
+  border-bottom: 2px solid transparent;
+  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.nav-link.active {
+  color: var(--nav-active-fg);
+  background-color: var(--nav-active-bg);
+  border-bottom-color: var(--rust);
+}
+
+.nav-cta {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--rust);
+  border: 1px solid var(--rust);
+  padding: 4px 11px;
+  transition: background 150ms var(--ease-out), color 150ms var(--ease-out), transform 120ms var(--ease-out);
+  text-decoration: none;
+}
+.nav-cta:active { transform: scale(0.97); }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.lead-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: zoom-in;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding: 0;
+  height: 380px;
+  transition: border-color 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.lead-btn:active { transform: scale(0.985); }
+
+.lead-media-area {
+  /* opacity transition managed by JS for directional easing */
+  position: relative;
+  /* Safari bug: an absolutely-positioned child with height:100% inside a
+     grid item sized by `fr` (this row is `minmax(0,1fr)` in .lead-btn)
+     doesn't resolve — the child collapses to nothing. Chrome/Firefox
+     handle it fine via grid stretch alone. Explicit height/min-height
+     here gives Safari a definite value to anchor percentage heights to. */
+  height: 100%;
+  min-height: 100%;
+}
+
+.thumb-btn {
+  appearance: none;
+  cursor: pointer;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  transition: border-color 150ms var(--ease-out), transform 100ms var(--ease-out);
+}
+.thumb-btn:active { transform: scale(0.95); }
+
+/* ── Header full-bleed wrapper ──────────────────────── */
+.header-wrap {
+  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Hero two-column grid ────────────────────────────── */
+.hero {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 88px) clamp(18px, 4vw, 56px) clamp(32px, 5vw, 64px);
+}
+.hero-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-display);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  margin: 0 0 clamp(24px, 3vw, 40px);
+  max-width: 26ch;
+  text-wrap: balance;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .hero-grid { grid-template-columns: 1fr; }
+}
+.hero-lede {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  max-width: 46ch;
+  margin: 0 0 26px;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--rust);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background-color 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.hero-btn:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .hero-btn:hover { background: var(--ink); color: var(--surface); }
+}
+.hero-creds { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.hero-creds span {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+.hero-fig {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: clamp(12px, 1.6vw, 20px);
+}
+.hero-fig figcaption {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ── Drawing callouts ──────────────────────────────────
+   Leader, dot and numbered balloon, as on a drawing sheet. The balloons
+   are HTML so they stay round and legible at any figure size; the leaders
+   are one SVG stretched over the image, drawn at a constant stroke. */
+.callout-fig { position: relative; display: block; }
+.callout-fig img { display: block; width: 100%; height: auto; }
+.callouts { position: absolute; inset: 0; pointer-events: none; }
+.callouts svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.callouts line { stroke: var(--rust); stroke-width: 1.5; }
+.callout-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--rust);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.callout-balloon {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--rust);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--rust);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  line-height: 1;
+}
+.callout-key {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.callout-key li { display: flex; align-items: center; gap: 10px; }
+.callout-key .callout-balloon { position: static; margin: 0; flex: none; }
+.callout-key .data { color: var(--rust); font-weight: 600; }
+.callout-key s.data { color: var(--muted-2); font-weight: 400; text-decoration-thickness: 2px; }
+.proj-stage .callout-key { margin-top: 12px; }
+
+/* ── The work ──────────────────────────────────────────
+   Four analysis cards, two by two, with the hand builds and the turntable
+   of models beside them. The section reads as an index: result first,
+   then the chapter for anyone who wants the proof. */
+.work {
+  padding: clamp(48px, 6vw, 80px) 0 clamp(32px, 4vw, 56px);
+  border-bottom: 1px solid var(--border);
+}
+.work-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+.section-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+}
+.section-lede {
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 52ch;
+  margin: 12px 0 0;
+}
+.grid-hint { font-size: var(--fs-micro); color: var(--muted); white-space: nowrap; }
+.work-layout { display: grid; gap: clamp(24px, 3vw, 40px); }
+@media (min-width: 1000px) {
+  .work-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+}
+.work-side { display: grid; gap: clamp(24px, 3vw, 32px); min-width: 0; }
+.built-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+.built-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+}
+.built-row img, .built-row > span:first-child {
+  width: 88px;
+  height: 66px;
+  object-fit: cover;
+  display: block;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+}
+.built-row strong { display: block; font-size: var(--fs-small); font-weight: 600; color: var(--ink); line-height: 1.3; }
+.built-row strong + span { display: block; font-size: var(--fs-small); color: var(--muted); line-height: 1.4; margin-top: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .built-row:hover strong { color: var(--link); }
+}
+.holo-panel { min-width: 0; background: var(--surface); border: 1px solid var(--border); }
+.holo-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+}
+.built-head { padding: clamp(56px, 7vw, 96px) 0 clamp(8px, 1vw, 16px); scroll-margin-top: 56px; }
+
+/* ── Holo-bay static fallback ─────────────────────────
+   holo-bay is an unknown element until holo-bay.js loads and registers it;
+   until then (or if the script never loads at all — CDN down, blocked,
+   offline) the fallback below stays visible via :not(:defined). No JS
+   needed for this half; rebootHoloBay() guards the other half so a theme
+   toggle can't wipe this out while the component is still unregistered. */
+.holo-fallback {
+  height: 358px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.holo-fallback-chip {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+holo-bay:defined .holo-fallback { display: none; }
+
+/* ── Hero CTA link ───────────────────────────────────── */
+.hero-cta-link {
+  transition: color 150ms ease, transform 180ms var(--ease-out);
+}
+.hero-cta-link:active { transform: scale(0.97); }
+
+/* ── Hero entry stagger ──────────────────────────────── */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-s1 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 0ms; }
+.hero-s2 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 80ms; }
+.hero-s3 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 160ms; }
+.hero-s4 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 220ms; }
+.hero-s5 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 280ms; }
+
+/* ── Kicker discipline chips ─────────────────────────── */
+.kicker-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.kicker-chip {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* A status chip, not a discipline one, so it carries the rust the rest of the
+   page uses for "this is live information" — the availability dot, the section
+   kickers — rather than the grey of the taxonomy chips beside it. */
+.kicker-chip.is-wip,
+.proj-card-kicker.is-wip {
+  color: var(--label);
+  border-color: var(--label);
+}
+
+/* ── Availability badge ──────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--label);
+  margin-top: 16px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rust);
+  flex-shrink: 0;
+  animation: dot-pulse 2.4s ease-in-out infinite;
+}
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.35; }
+}
+
+/* ── Lightbox (class-driven, always in DOM) ──────────── */
+/* Base = closed state; transition here fires on CLOSE (ease-in: accelerates to gone) */
+/* Page frozen behind the open viewer. scrollbar-gutter keeps the space the
+   scrollbar used, so nothing shifts sideways when it disappears. touch-action
+   and overscroll-behavior stop a swipe on the backdrop scrolling the page
+   on touch browsers that ignore overflow on <html>. */
+html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
+#lightbox:focus { outline: none; }
+#lightbox {
+  touch-action: none;
+  overscroll-behavior: contain;
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(23, 19, 16, 0.86);
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 52px);
+  cursor: zoom-out;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-in);
+}
+/* .open state; transition here fires on OPEN (ease-out: instant start) */
+#lightbox.open {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 200ms var(--ease-out);
+}
+
+/* Inner content: base = closed (ease-in on close), .open = ease-out on open */
+#lightbox-inner {
+  max-width: 1440px;
+  width: 100%;
+  transform: scale(0.96);
+  opacity: 0;
+  transition: transform 180ms var(--ease-in), opacity 180ms var(--ease-in);
+}
+#lightbox.open #lightbox-inner {
+  transform: none;
+  opacity: 1;
+  transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
+}
+
+/* ── Project gallery split ───────────────────────────── */
+.gallery-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 172px;
+  gap: 12px;
+  align-items: start;
+}
+.gallery-split.no-thumbs { grid-template-columns: minmax(0, 1fr); }
+
+.thumb-rail {
+  display: grid;
+  gap: 6px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+}
+
+/* Below ~640px a fixed 172px rail eats nearly half the width and leaves the
+   lead image a narrow sliver of a 380px-tall box. Stack instead, and run the
+   thumbnails as a horizontal rail underneath. */
+@media (max-width: 640px) {
+  .gallery-split { grid-template-columns: minmax(0, 1fr); }
+  .lead-btn { height: 300px; }
+  .thumb-rail {
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 4px;
+  }
+}
+
+/* The figure's caption. One line with an ellipsis where there is room for
+   one, and a wrapped second line where there is not: at 13px several of
+   these captions no longer fit a tablet's width, and a caption truncated to
+   "The finished airframe — foam b…" has lost the half that says what the
+   picture shows. */
+.lead-cap { flex: 1 1 240px; min-width: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
+
+/* ── The stage ──────────────────────────────────────────
+   Every project is one figure and its numbers. On a desktop the figure takes
+   the left column on a white stage and holds still (sticky) while the
+   reading column beside it carries the heading, the prose and the metric
+   table, so a figure and the claim it supports are on screen together.
+   Inside the stage the thumbnails always run as a strip under the figure:
+   the 172px side rail would leave a ~400px figure in a ~600px column.
+
+   Below 1000px there is not room for both side by side, and two things
+   cannot share a 390px screen and stay readable, so the section stacks the
+   way it always did: reading column first, figure after it. */
+.proj-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 2.5vw, 30px);
+}
+.proj-read { order: -1; display: flex; flex-direction: column; min-width: 0; }
+@media (max-width: 999.98px) {
+  .proj-split { display: flex; flex-direction: column; gap: 0; }
+  .proj-read { display: contents; }
+  .proj-read > * { order: 1; }
+  .proj-stage { order: 2; margin-top: 26px; min-width: 0; }
+  .proj-read > .rev,
+  .proj-read > .proj-layers,
+  .proj-read > .proj-story,
+  .proj-read > .proj-story ~ .proj-metrics,
+  .proj-read > .proj-repo,
+  .proj-read > .proj-repo-note { order: 3; }
+  .proj-read > .proj-story { margin-top: 26px; }
+  .proj-read > .proj-repo, .proj-read > .proj-repo-note { margin-top: 4px; }
+}
+.proj-metrics { display: grid; margin-top: 22px; }
+.proj-section {
+  padding: clamp(32px, 4.5vw, 68px) 0 clamp(24px, 3vw, 44px);
+  border-bottom: 1px solid var(--border);
+}
+.proj-tags { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted-2); }
+.proj-status { color: var(--rust); font-weight: 600; }
+.proj-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+/* The result, as a sentence, directly under the name: a reader who reads
+   only the headings still leaves with the finding. */
+.proj-result {
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+.proj-story {
+  font-size: var(--fs-body);
+  line-height: 1.58;
+  color: var(--muted);
+  margin: 18px 0 0;
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.metric-k { font-size: var(--fs-small); color: var(--muted-2); }
+.metric-v {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+}
+.metric-v.is-num {
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--rust);
+  font-variant-numeric: tabular-nums;
+}
+.rev.is-superseded .metric-v.is-num { color: var(--muted-2); }
+/* Problem, approach, verification, lesson: a report's order, with labels a
+   skimmer can read down on their own. */
+.proj-layers {
+  display: grid;
+  grid-template-columns: 7.2em minmax(0, 1fr);
+  gap: 12px 18px;
+  margin: 30px 0 24px;
+}
+.proj-layers dt { font-size: var(--fs-small); font-weight: 600; color: var(--ink); padding-top: 2px; }
+.proj-layers dd { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+@media (max-width: 520px) {
+  .proj-layers { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .proj-layers dd { margin-bottom: 12px; }
+}
+.proj-repo {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.proj-repo-note { margin: 6px 0 0; font-size: var(--fs-small); color: var(--muted-2); }
+.proj-read > .proj-metrics:last-child, .proj-story + .proj-metrics { margin-bottom: 18px; }
+.lead-cap-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  border-top: 1px solid var(--border-light);
+  padding: 12px clamp(14px, 2vw, 22px);
+  font-family: var(--font-sans);
+  text-align: left;
+}
+.lead-enlarge { flex: none; font-size: var(--fs-micro); color: var(--muted-2); }
+.proj-stage .gallery-split { grid-template-columns: minmax(0, 1fr); }
+.proj-stage .thumb-rail {
+  grid-auto-flow: column;
+  grid-auto-columns: 132px;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Sideways only: contained on both axes, a vertical wheel that reached
+     the end of the strip could not hand over to the page. */
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  padding-right: 0;
+  padding-bottom: 4px;
+}
+@media (min-width: 1000px) {
+  .proj-split {
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    gap: clamp(36px, 4vw, 64px);
+  }
+  .proj-stage { position: sticky; top: 76px; align-self: start; }
+  .proj-read { order: 0; }
+  /* Heading and prose at the top, numbers at the foot: the column reads as
+     a spec sheet the height of the figure beside it. */
+  .proj-metrics { margin-top: 26px; }
+  .proj-stage .lead-btn { height: clamp(340px, 56svh, 560px); }
+}
+
+/* ── The revision record ───────────────────────────────── */
+.rev { margin-top: 30px; }
+.rev-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 6px;
+}
+.rev-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--label);
+}
+.rev-toggle { display: inline-flex; border: 1px solid var(--ink); }
+.rev-toggle button {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  min-height: 36px;
+  padding: 6px 13px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.rev-toggle button + button { border-left: 1px solid var(--ink); }
+.rev-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.rev-toggle button:active { transform: scale(0.97); }
+.rev-note {
+  margin: 12px 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+/* The superseded number is struck through, so a glance at the table says
+   "this was wrong" before the note says why. */
+.rev.is-superseded .metric-row:first-child span:last-child { text-decoration: line-through; text-decoration-thickness: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .rev-toggle button[aria-pressed="false"]:hover { background: var(--border-light); }
+}
+@media (max-width: 640px), (pointer: coarse) {
+  .rev-toggle button { min-height: 44px; }
+}
+
+/* ── Scroll reveals ──────────────────────────────────────
+   Every rule here is gated behind .js-reveal, which an inline head script
+   sets and a failsafe removes if initReveal() never finishes. Page content
+   must never be invisible because a script failed to run: with no JS, a
+   thrown exception, or a blocked stylesheet-adjacent resource, the class is
+   absent or withdrawn and the sections render normally. */
+.js-reveal .section-reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms var(--ease-out), transform 260ms var(--ease-out);
+}
+.js-reveal .section-reveal.visible { opacity: 1; transform: none; }
+
+.js-reveal .section-reveal .metric-row {
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 240ms var(--ease-out), transform 200ms var(--ease-out);
+  transition-delay: calc(var(--ri, 0) * 40ms + 80ms);
+}
+.js-reveal .section-reveal.visible .metric-row { opacity: 1; transform: none; }
+
+.js-reveal .section-reveal .proj-card {
+  opacity: 0;
+  transition: opacity 300ms var(--ease-out), transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.js-reveal .section-reveal.visible .proj-card { opacity: 1; }
+
+/* ── Footer links ────────────────────────────────────── */
+.footer-link {
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  display: block;
+  transition: color 150ms var(--ease-out), transform 100ms var(--ease-out);
+}
+.footer-link:active { transform: scale(0.98); }
+
+/* ── Footer contact CTA buttons ─────────────────────── */
+.footer-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--fs-micro);
+  transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), background 180ms var(--ease-out), transform 140ms var(--ease-out);
+}
+.footer-cta-btn:active { transform: scale(0.98); }
+
+/* ── Footer layout ──────────────────────────────────────
+   Left column: the heading at the top, numbers and copyright pinned to the
+   bottom, so it starts level with the first button and ends level with the
+   last. Right column: the buttons alone. The three small lines share one
+   gap. On a phone it stacks heading, buttons, then the small print, so the
+   copyright stays last. 640px is where the old auto-fit grid collapsed. */
+.footer-grid {
+  /* Same column as the banner, the hero and main: 1240px with the page's
+     inline padding inside it. With the padding on <footer> instead, the
+     grid sat on the column's outer edge, 56px left of every other block. */
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(18px, 4vw, 56px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "head cta" "info cta";
+  column-gap: clamp(26px, 4vw, 60px);
+  row-gap: 24px;
+}
+.footer-head { grid-area: head; }
+.footer-cta { grid-area: cta; display: grid; gap: 10px; font-family: var(--font-sans); }
+.footer-info {
+  grid-area: info;
+  align-self: end;
+  display: grid;
+  gap: 8px;
+  color: var(--muted-2);
+  font-size: var(--fs-micro);
+  line-height: 1.25;
+}
+/* A hairline between the contact lines and the copyright, with equal air
+   either side (2px margin + 8px grid gap above, 10px padding below). It
+   runs only as wide as the copyright text, not across the whole column. */
+.footer-copy {
+  justify-self: start;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "head" "cta" "info";
+    row-gap: 28px;
+  }
+  .footer-info { align-self: start; }
+}
+
+/* ── Hover states (pointer-device only) ─────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .lead-btn:hover { border-color: var(--muted); }
+  .thumb-btn:hover { border-color: var(--rust); }
+  .nav-link:hover { color: var(--ink); background-color: var(--nav-active-bg); }
+  .nav-cta:hover { background: var(--rust); color: var(--surface); }
+  .footer-link:hover { color: var(--rust); }
+  .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
+  a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
+  .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
+  .nav-home:hover { border-color: var(--rust); color: var(--rust); }
+  .hero-cta-link:hover { transform: translateX(3px); }
+}
+
+/* ── Focus visible (keyboard navigation) ────────────── */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.nav-link:focus-visible,
+.nav-cta:focus-visible {
+  outline-offset: 4px;
+}
+.lead-btn:focus-visible,
+.thumb-btn:focus-visible {
+  outline-offset: 2px;
+}
+
+/* ── About two-column grid ───────────────────────────── */
+/* Three rows, one job each: who (photo + story), what (tools), and who
+   outside work. Reads top to bottom on every width, so the 01-03 numbering
+   is the order on screen and on a phone. */
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(200px, 320px) minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 64px);
+  align-items: start;
+}
+.about-row {
+  margin-top: clamp(44px, 6vw, 80px);
+  padding-top: clamp(32px, 4vw, 52px);
+  border-top: 1px solid var(--border-light);
+}
+.about-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px 28px;
+  margin: 26px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+.about-facts div { min-width: 0; }
+.about-facts dt {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+  margin-bottom: 6px;
+}
+.about-facts dd {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink);
+}
+/* Graph wide, carousel landscape beside it, one shared height so the
+   personal row stays a strip rather than a second column of its own. */
+.beyond-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+.beyond-media { display: grid; gap: 18px; }
+.beyond-media > :first-child { margin-bottom: -4px !important; }
+/* Carousel then graph on one line. The carousel is a fixed 9:16 frame
+   (auto column); the graph takes the remaining width. */
+.beyond-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.graph-hint {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+  pointer-events: none;
+}
+.beyond-text { padding-top: 32px; }
+.beyond-text p {
+  font-size: var(--fs-body);
+  line-height: 1.68;
+  color: var(--muted);
+  margin: 0;
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+/* Graph above, learning panel below; together they run exactly the
+   carousel's height. The panel takes what its text needs and the graph
+   absorbs the rest (min 240px), so neither column ends early. Phones stack
+   everything, so the fixed graph heights below 821px still apply. */
+.beyond-side {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+@media (min-width: 821px) {
+  .beyond-side > .beyond-graph { flex: 1 1 0; height: auto; min-height: 240px; }
+}
+.learning {
+  flex: none;
+  padding: 12px 16px 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.learning-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--border);
+}
+.learning-head h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.learning-date {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+}
+.learning-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.learning-list li { padding: 7px 0; }
+.learning-list li + li { border-top: 1px solid var(--border-light); }
+.learning-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.learning-name {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink);
+}
+.learning-pill {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.learning-why {
+  margin: 2px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.learning-note {
+  margin: 1px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  line-height: 1.35;
+  color: var(--muted-2);
+}
+.beyond-graph {
+  height: 300px;
+  background-color: var(--surface);
+  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
+  background-size: 28px 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+/* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
+   too, and contain shows the whole image; a blurred copy of the same
+   photo fills whatever edge is left instead of flat bars. */
+/* The carousel is the lead on this line. Every frame uses the backpack
+   travel photo's own ratio (1536 x 2730, 9:16). The other two 9:16 items
+   fill it within 1%; the two 3:4 photos are trimmed at the sides, with
+   their subjects kept in frame by object-position. */
+.beyond-carousel { height: 540px; aspect-ratio: 1536 / 2730; border-radius: 4px; }
+.beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
+.beyond-carousel .hobby-slide::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  background: var(--bg-img, none) center / cover;
+  filter: blur(18px) brightness(0.7);
+}
+.beyond-carousel .hobby-slide > img,
+.beyond-carousel .hobby-slide > video { position: relative; object-fit: cover !important; }
+/* Wide screens: one grid for the whole row, so the learning panel can run
+   under both the graph and the note. The wrapper divs step aside
+   (display: contents) and their children take named areas:
+
+     label  label  .
+     car    graph  text
+     car    learn  learn
+
+   The carousel spans the last two rows at its fixed 540px, the panel takes
+   its text height, and the graph row flexes to fill the rest (min 240px),
+   so the carousel, the panel and the note column all end level. The
+   column gap is 16px; the note's left padding restores its old wider gap.
+   From 1200px: narrower, the graph would drop under the ~432px its
+   two-sided layout needs. The canvas is absolutely positioned (inline), so
+   its pixel size never feeds back into the row height. */
+@media (min-width: 1200px) {
+  .beyond-layout {
+    /* note column: its 280px measure plus the wider gap it used to have */
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, calc(280px + clamp(32px, 5vw, 72px) - 16px));
+    grid-template-rows: auto minmax(240px, 1fr) auto;
+    grid-template-areas: "label label ." "car graph text" "car learn learn";
+    gap: 16px;
+    align-items: stretch;
+  }
+  .beyond-media, .beyond-row, .beyond-side { display: contents; }
+  .beyond-media > :first-child { grid-area: label; margin-bottom: -2px !important; }
+  .beyond-carousel { grid-area: car; }
+  .beyond-side > .beyond-graph { grid-area: graph; height: auto; min-height: 240px; }
+  .learning { grid-area: learn; }
+  .beyond-text { grid-area: text; padding-top: 0; padding-left: calc(clamp(32px, 5vw, 72px) - 16px); }
+}
+/* Below 1200px the note drops under the media so the graph keeps room. */
+@media (max-width: 1199px) {
+  .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
+  .beyond-text { padding-top: 0; }
+}
+@media (max-width: 820px) {
+  .about-intro { grid-template-columns: 1fr; }
+  .about-intro > :first-child { max-width: 360px; }
+  .beyond-row { grid-template-columns: 1fr; }
+  .beyond-graph { height: 320px; }
+  .beyond-carousel { height: auto; width: min(100%, 320px); justify-self: center; }
+  .beyond-text { padding-top: 0; }
+}
+
+/* ── Hobby carousel ──────────────────────────────────── */
+.hobby-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: blur(4px);
+  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
+  pointer-events: none;
+}
+.hobby-slide.active {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+}
+/* The caption reserves the bottom 40px for the slide dots, which sit in that
+   row beneath the text. They used to float 36px up, over the caption, which
+   held while every caption fit one line; at 13px the longer ones wrap, and
+   the second line ran straight into the dots. Reserving the row means the
+   two cannot meet however many lines a caption takes, and the scrim covers
+   both, so the dots read on any photograph. */
+.hobby-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 14px 40px;
+  line-height: 1.35;
+  background: linear-gradient(transparent, rgba(0,0,0,0.62));
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: rgba(255,255,255,0.82);
+  pointer-events: none;
+}
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+}
+.proj-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .proj-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--rust);
+    box-shadow: 0 6px 24px rgba(23,19,16,0.08);
+  }
+}
+.proj-card:active {
+  transform: scale(0.99) translateY(-1px);
+}
+.proj-card-thumb {
+  position: relative;
+  aspect-ratio: 3/2;
+  overflow: hidden;
+  background: var(--bg);
+}
+.proj-card-thumb img,
+.proj-card-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 300ms var(--ease-out);
+}
+/* Behind a contained render that leaves a gap (see fitBackdrop). The same
+   treatment as the project figures, scaled to a card: a smaller frame needs
+   less blur to turn the copy into a wash, and a wider overscan so its crop
+   never lines up with the sharp image in front of it. */
+.thumb-backdrop {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 135% 135%;
+  filter: blur(36px) brightness(0.8);
+}
+.proj-card-thumb.is-letterboxed img {
+  position: relative;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
+}
+@media (hover: hover) and (pointer: fine) {
+  .proj-card:hover .proj-card-thumb img,
+  .proj-card:hover .proj-card-thumb video {
+    transform: scale(1.03);
+  }
+}
+.proj-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.proj-card-kickers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 9px;
+}
+.proj-card-kicker {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted);
+  border: 1px solid var(--border-light);
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.proj-card-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.proj-card-result {
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0 0 16px;
+  text-wrap: pretty;
+}
+/* The number to remember, pinned to the foot of the card so the numbers
+   line up across a row however many lines the sentences above them take. */
+.proj-card-key {
+  margin-top: auto;
+  font-size: var(--fs-small);
+  color: var(--muted);
+  line-height: 1.35;
+}
+.proj-card-num { font-size: var(--fs-lead); font-weight: 600; color: var(--rust); letter-spacing: -0.02em; }
+.proj-card-status { display: block; color: var(--rust); font-weight: 600; margin-bottom: 2px; }
+.proj-card-check { margin-top: 6px; font-size: var(--fs-micro); color: var(--muted-2); }
+.tools-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-h2);   /* a section heading, like "Internships" */
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.tools-lede {
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 28px;
+  max-width: 54ch;
+}
+/* auto-fit: one column in the narrow about column today, three or four
+   across once the block is given full width. */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 26px clamp(24px, 3vw, 48px);
+}
+.tool-group-label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.tool-group-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.tool-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  padding: 6px 14px 6px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.hobby-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: var(--border);
+  padding: 0;
+  cursor: pointer;
+  transition: background 200ms ease, transform 120ms var(--ease-out);
+}
+.hobby-dot.active {
+  background: var(--rust);
+  transform: scale(1.25);
+}
+.hobby-dot:active { transform: scale(0.75); }
+@media (hover: hover) and (pointer: fine) {
+  .hobby-dot:hover { background: var(--muted-2); }
+  .hobby-dot.active:hover { background: var(--rust); }
+}
+
+/* ── Internship carousel (shares slide + dot styles) ──── */
+.internship-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: blur(4px);
+  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
+  pointer-events: none;
+}
+.internship-slide.active {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+}
+/* Hit area: the painted dot stays 6px, its ::after grows the target to
+   24x24 (WCAG 2.2 minimum), taller still on touch below. The 18px gap in
+   .carousel-dots is exactly two 9px margins, so neighbours never overlap. */
+.hobby-dot, .internship-dot { position: relative; }
+.hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -9px; }
+.internship-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: var(--border);
+  padding: 0;
+  cursor: pointer;
+  transition: background 200ms ease, transform 120ms var(--ease-out);
+}
+.internship-dot.active {
+  background: var(--rust);
+  transform: scale(1.25);
+}
+.internship-dot:active { transform: scale(0.75); }
+@media (hover: hover) and (pointer: fine) {
+  .internship-dot:hover { background: var(--muted-2); }
+  .internship-dot.active:hover { background: var(--rust); }
+}
+
+/* ── Carousel play/pause control ──────────────────────
+   Touch-only visitors have no hover/focus to pause on, so both auto-
+   advancing carousels need a real, always-visible control, not just the
+   existing mouseenter/focusin pause. */
+.carousel-playpause {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.52);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.88);
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.carousel-playpause:active { transform: scale(0.9); }
+@media (hover: hover) and (pointer: fine) {
+  .carousel-playpause:hover { background: rgba(23,19,16,0.72); }
+}
+.carousel-playpause .icon-pause,
+.carousel-playpause .icon-play {
+  position: absolute;
+  display: flex;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.carousel-playpause .icon-pause { opacity: 1; transform: scale(1); }
+.carousel-playpause .icon-play  { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-pause { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-play  { opacity: 1; transform: scale(1); }
+
+/* ── Carousel prev/next arrows ─────────────────────────
+   The dot strip is precise (6px targets) but not a comfortable click
+   target. Large always-visible arrows let a visitor step through slides
+   without having to aim at a dot. */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.52);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(-50%);
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.carousel-arrow.arrow-prev { left: 10px; }
+.carousel-arrow.arrow-next { right: 10px; }
+.carousel-arrow:active { transform: translateY(-50%) scale(0.9); }
+@media (hover: hover) and (pointer: fine) {
+  .carousel-arrow:hover { background: rgba(23,19,16,0.72); }
+}
+
+/* ── Theme toggle button ─────────────────────────────── */
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted-2);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+}
+.theme-toggle:active { transform: scale(0.93); }
+.theme-toggle .icon-moon,
+.theme-toggle .icon-sun {
+  position: absolute;
+  /* Same 220ms as the page swap: the icon finishing first was part of why the
+     switch felt unresolved. */
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+.theme-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.6); }
+[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+[data-theme="dark"] .theme-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+
+/* ── Dark mode: hardcoded-colour overrides ───────────── */
+[data-theme="dark"] #lightbox {
+  background: rgba(16, 24, 39, 0.93);
+}
+[data-theme="dark"] .beyond-graph {
+  background-image:
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
+}
+[data-theme="dark"] .header-wrap {
+  background-image:
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
+}
+
+/* ── Theme swap ──────────────────────────────────────────
+   A census of the toggle found 228 elements painting a themed colour across
+   18 different transition timings: 132 of them snapped instantly (no
+   transition declared), ~90 rippled over 150/160/180/200ms on five easing
+   curves, and the page background landed last at 280ms. The main thread cost
+   was only 7-10ms, so this was never performance — the page was changing in
+   about seven waves instead of once, and the eye reads that as tearing.
+
+   The fix is to stop animating the parts at all and animate the page. A view
+   transition snapshots before and after and crossfades the two on the
+   compositor, so the whole page changes as one object, on one curve, at one
+   duration — which is what the rest of this design does.
+
+   220ms and `ease`: under the 300ms ceiling, and `ease` is the curve for a
+   colour change. Nothing is entering, exiting or moving here, so `ease-out`
+   would be the wrong shape. */
+.theme-swap *,
+.theme-swap *::before,
+.theme-swap *::after {
+  /* Without this the per-element colour transitions still run underneath the
+     live `::view-transition-new` snapshot and the whole cascade survives
+     inside the crossfade. */
+  transition: none !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: ease;
+}
+
+/* No View Transitions support: collapse the 18 timings into one rather than
+   removing them. Carried on a class that is added for the swap and taken off
+   straight after, so it never touches hover or any other state change. */
+.theme-swap-fallback *,
+.theme-swap-fallback *::before,
+.theme-swap-fallback *::after {
+  transition: background-color 220ms ease, border-color 220ms ease,
+              color 220ms ease, fill 220ms ease !important;
+}
+/* The blanket above would otherwise strip the sun/moon crossfade, which is
+   the one thing on screen that should still move. */
+.theme-swap-fallback .theme-toggle .icon-moon,
+.theme-swap-fallback .theme-toggle .icon-sun {
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out) !important;
+}
+
+/* ── Reduced motion ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .js-reveal .section-reveal,
+  .js-reveal .section-reveal .metric-row,
+  .js-reveal .section-reveal .proj-card,
+  .proj-card {
+    opacity: 1;
+    transform: none;
+  }
+  html { scroll-behavior: auto; }
+  .hobby-slide { transition: none; }
+  .status-dot { animation: none; }
+  .hero-s1, .hero-s2, .hero-s3, .hero-s4, .hero-s5 { animation: none; opacity: 1; transform: none; }
+}
+
+/* ── Two pages ──────────────────────────────────────────
+   The nav opens with the page switch, Home and Projects, ahead of the
+   sections of the page you are on. The current page is underlined; the
+   section you are in keeps the filled chip. */
+.nav-link.nav-page { color: var(--ink); font-weight: 600; }
+.nav-link.nav-page[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-color: var(--rust);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+.nav-sep { flex: none; align-self: center; width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+.page-head { padding-bottom: clamp(28px, 4vw, 48px); }
+.page-head .hero-title { margin-bottom: 18px; }
+.page-head .hero-lede { max-width: 60ch; margin: 0; }
+.work-more { display: inline-block; margin-top: 14px; }
+/* The footer brings its own top rule, so the last section drops its own. */
+main > section:last-child { border-bottom: 0 !important; }

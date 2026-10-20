@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 //
-// check-mobile.mjs — guardrails for the mobile build of portfolio-light.html
+// check-mobile.mjs — guardrails for the mobile build of the site's pages
 //
 // Zero dependencies, no build step, runs in well under a second:
 //
 //     node tools/check-mobile.mjs
+//
+// With no argument it checks both pages, portfolio-light.html (home) and
+// projects.html, one after the other. Each page is checked with the local
+// stylesheets and site script it links pasted in where the tags stand, so
+// the rules see what the browser sees, in the order it sees it; line
+// numbers in a report are lines of that expanded source.
 //
 // It exists because every mobile regression this page has had was silent.
 // Nothing threw, nothing looked wrong on the laptop the edit was made on,
@@ -17,15 +23,34 @@
 //
 // Exit code 0 = pass, 1 = at least one FAIL. WARNs never fail the run.
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+if (!process.argv[2]) {
+  let status = 0;
+  for (const page of ['portfolio-light.html', 'projects.html']) {
+    const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), join(root, 'project', page)], { stdio: 'inherit' });
+    status = status || r.status;
+  }
+  process.exit(status);
+}
 // An explicit path is accepted so the checks can be run against a deliberately
 // broken copy — a guardrail nobody has watched fail is not a guardrail.
-const file = process.argv[2] || join(root, 'project', 'portfolio-light.html');
-const src = readFileSync(file, 'utf8');
+const file = process.argv[2];
+const dir = dirname(file);
+const local = (href) => { const p = join(dir, href); return existsSync(p) ? readFileSync(p, 'utf8') : null; };
+const src = readFileSync(file, 'utf8')
+  .replace(/<link rel="stylesheet" href="([^"]+)"(?: id="([^"]+)")?>/g, (m, href, id) => {
+    const css = local(href);
+    return css === null ? m : `<style${id ? ` id="${id}"` : ''}>${css}</style>`;
+  })
+  .replace(/<script src="(site[^"]*\.js)"><\/script>/g, (m, href) => {
+    const js = local(href);
+    return js === null ? m : `<script>${js}</script>`;
+  });
 const lineOf = (i) => src.slice(0, i).split('\n').length;
 
 // Blank out HTML comments before scanning for tags, keeping every byte offset

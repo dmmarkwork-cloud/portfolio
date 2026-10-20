@@ -1,0 +1,283 @@
+/* ── Mobile: the pinned nav actions ──────────────────────
+   Pinning the CTA and the toggle costs the link strip whatever they take:
+   at full size they left it 157px of a 375px bar, roughly two links. A
+   shorter label and tighter padding hand ~90px back to the links, which is
+   where the navigation actually happens. */
+@media (max-width: 640px) {
+  .cta-long { display: none; }
+  .nav-cta { font-size: var(--fs-micro); letter-spacing: 0.1em; padding: 6px 9px; }
+  .nav-actions { gap: 8px; padding-left: 12px; }
+  .nav-scroll { gap: 4px; }
+}
+.cta-short { display: none; }
+@media (max-width: 640px) { .cta-short { display: inline; } }
+
+/* ── Mobile: the whole set of destinations ───────────────
+   Handing the CTA and the toggle their space back still left the strip about
+   two links wide, so a phone showed 2 of 10 destinations: enough to move
+   between neighbours, never enough to see the set or your place in it. Below
+   640px the strip becomes a panel instead — one tap, all ten, two columns —
+   and the bar carries the name of the section you are in, which the strip
+   never actually stated. `.nav-collapsed` is added by script, so with no JS
+   the horizontal strip stays exactly as it was and stays usable. */
+/* At 13px the banner's name and its one link no longer fit a 390px row at
+   0.16em of tracking, and wrapped onto two. Tracking is the thing to give up
+   here, not the name: the labels are set in caps and read better tight. The
+   value lives here rather than on the element, so the query can win. */
+header#top { letter-spacing: 0.16em; }
+@media (max-width: 640px) {
+  header#top { letter-spacing: 0.04em; }
+}
+
+.nav-menu-btn { display: none; }
+@media (max-width: 640px) {
+  /* The button carries the bar's height now, so the row's own padding comes
+     back down and the bar stays the height it already was. */
+  nav.nav-collapsed .nav-inner { padding: 6px 0; }
+  nav.nav-collapsed .nav-menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 6px;
+    border: 0;
+    background: none;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+  }
+  nav.nav-collapsed .nav-menu-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  nav.nav-collapsed .nav-menu-btn svg {
+    flex: none;
+    transition: transform 180ms var(--ease-out);
+  }
+  nav.nav-collapsed.nav-open .nav-menu-btn svg { transform: rotate(180deg); }
+
+  nav.nav-collapsed .nav-scroll {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px 8px;
+    padding: 10px clamp(18px, 4vw, 56px) 14px;
+    max-height: 62vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    touch-action: pan-y;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  nav.nav-collapsed.nav-open .nav-scroll { display: grid; }
+  /* In the strip the 44px tap area comes from a ::after reaching 8px past
+     the link on each side, which is free when the links sit in one row. In a
+     stacked panel those areas would overlap by 14px and a tap near a
+     boundary would land on the neighbour, so here the row is a real 44px box
+     instead and the overlapping hit area is dropped. */
+  nav.nav-collapsed .nav-scroll .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+  nav.nav-collapsed .nav-scroll .nav-link::after { content: none; }
+}
+
+/* ── Mobile: touch targets ───────────────────────────────
+   37 of the page's 89 interactive elements measured under 44px on a 390px
+   viewport — the carousel dots were 6x6. Every fix below grows the HIT AREA
+   with a positioned ::after and leaves the painted pixel exactly where it
+   was, so the desktop composition is untouched. Keyed on width OR coarse
+   pointer, so touch laptops and tablets get it too. */
+@media (max-width: 640px), (pointer: coarse) {
+  .nav-link { position: relative; }
+  .nav-link::after { content: ''; position: absolute; inset: -8px -2px; }
+
+  .hobby-dot::after, .internship-dot::after { inset: -19px -9px; }
+  .carousel-dots { gap: 18px !important; }
+
+  .carousel-arrow { width: 44px; height: 44px; }
+  .carousel-arrow.arrow-prev { left: 6px; }
+  .carousel-arrow.arrow-next { right: 6px; }
+  .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
+  .theme-toggle { width: 40px; height: 40px; }
+  .nav-home { width: 40px; height: 40px; }
+
+  /* Inline text links sit in running copy, so they can't grow a box without
+     shifting the paragraph. Pad the tap area vertically only. */
+  .hero-cta-link, .top-bar-link { position: relative; }
+  .hero-cta-link::after, .top-bar-link::after { content: ''; position: absolute; inset: -13px -6px; }
+}
+
+/* ── Mobile: the six-project overview ────────────────────
+   On desktop `.proj-grid` is a 4-across gallery you take in at a glance:
+   853px tall, one screenful, survey-then-choose. Stacked to one column on a
+   phone it became 2,737px — 3.2 viewports of queue, in front of the six full
+   sections that say the same thing. A snap rail keeps the original job
+   (all six are peers; see them, pick one) and gives back ~1,900px of scroll.
+   Cards are 78% wide so the next one is always half-visible: the affordance
+   is the layout, not an arrow. */
+@media (max-width: 640px) {
+  .proj-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    /* Bleed to the screen edges so a card can scroll flush to the bezel,
+       then re-inset the content — otherwise the first card starts in the
+       middle of nowhere and the last one can't reach the edge. */
+    margin-inline: calc(-1 * clamp(18px, 4vw, 56px));
+    padding-inline: clamp(18px, 4vw, 56px);
+    scroll-padding-inline: clamp(18px, 4vw, 56px);
+    padding-bottom: 4px;
+  }
+  .proj-grid::-webkit-scrollbar { display: none; }
+  .proj-card { scroll-snap-align: start; }
+}
+
+/* ── Mobile: thumbnail rail scroll hint ─────────────────
+   Mirrors the nav strip: a fade only on the side with more to see. */
+@media (max-width: 640px) {
+  .thumb-rail.fade-r { -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); mask-image: linear-gradient(to right, black calc(100% - 24px), transparent); }
+  .thumb-rail.fade-l { -webkit-mask-image: linear-gradient(to left, black calc(100% - 24px), transparent); mask-image: linear-gradient(to left, black calc(100% - 24px), transparent); }
+  .thumb-rail.fade-l.fade-r {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+}
+
+/* ── Lightbox: pan and zoom stage ────────────────────────
+   The reason this page exists is Mach contours and toleranced drawings, and
+   on a phone "⤢ Enlarge" was handing the image 329px where the inline figure
+   already had 337px — a gain factor of 0.98. It opened a black screen and
+   made the drawing slightly smaller. The stage below is pinch-, double-tap-
+   and drag-driven so the enlarge actually enlarges. */
+#lightbox-media {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
+.lb-media-el {
+  display: block;
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  background: var(--surface);
+  padding: 16px;
+  box-sizing: border-box;
+  transform-origin: 0 0;
+}
+/* Snaps back to fit on double-tap/release; the drag itself is untransitioned
+   so the image tracks the finger exactly. */
+.lb-media-el.settling { transition: transform 260ms var(--ease-out); }
+
+/* Stepping through 13 nozzle figures used to mean closing the overlay,
+   scrolling a 380px rail holding 1323px of thumbnails, and reopening. These
+   sit at the edges of the stage instead. 44px, because this is the control
+   the visitor will press most while they are in here. */
+.lb-step {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.55);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transform: translateY(-50%);
+  transition: background 150ms ease, transform 120ms var(--ease-out), opacity 150ms ease;
+}
+.lb-step-prev { left: 8px; }
+.lb-step-next { right: 8px; }
+.lb-step:active { transform: translateY(-50%) scale(0.9); }
+.lb-step[hidden] { display: none; }
+/* Out of the way while the figure is magnified: at that point the drag is
+   panning, and an arrow sitting over the detail is the thing in the way. */
+#lightbox.is-zoomed .lb-step { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) {
+  .lb-step:hover { background: rgba(23,19,16,0.75); }
+}
+
+.lb-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23,19,16,0.55);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease, transform 120ms var(--ease-out);
+}
+.lb-close:active { transform: scale(0.9); }
+
+@media (max-width: 640px), (pointer: coarse) {
+  #lightbox { padding: 8px; }
+  /* Side by side, a long figure caption wrapped to six lines against the
+     hint. Stack, and let the caption have the width. */
+  .lb-caption-row { flex-direction: column; gap: 6px !important; }
+  .lb-caption-row > span { flex: none !important; }
+  /* A definite stage height is what makes panning mean anything — with the
+     container hugging a wide figure there is nowhere to pan to. Desktop
+     keeps its auto height so the caption stays tucked under the image. */
+  #lightbox-media { height: 76vh; height: 76dvh; }
+  .lb-media-el { height: 100%; max-height: none; padding: 6px; }
+}
+
+/* ── Touch: hover-driven widgets ─────────────────────────
+   holo-bay and the interests graph both track a pointer. holo-bay already
+   listens on pointermove so touch reaches it; the graph listened on
+   mousemove only (fixed in JS). Both need pan-y: a vertical drag must still
+   scroll the page, a horizontal one drives the widget. Without this the
+   holo-bay swallows nothing and the graph swallows everything. */
+@media (pointer: coarse) {
+  holo-bay > div:first-of-type, #hobby-graph { touch-action: pan-y; }
+}
+
+/* Swipe surfaces: the gesture is horizontal, the page scroll is vertical. */
+.swipe-x { touch-action: pan-y; }
+
+/* ── Pointer-aware copy ──────────────────────────────────
+   "Hover to identify" is a lie on a phone. */
+.touch-only { display: none; }
+@media (hover: none), (pointer: coarse) {
+  .hover-only { display: none; }
+  .touch-only { display: inline; }
+}
+
+
+/* The page switch fills the panel's first row; the rule under it spans both
+   columns, so the two pages read as a pair above the sections. */
+@media (max-width: 640px) {
+  nav.nav-collapsed .nav-sep { grid-column: 1 / -1; width: auto; height: 1px; margin: 4px 0; }
+}

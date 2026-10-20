@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects and experience — Mark Lorenz Yamanaka</title>
+<meta name="description" content="Projects, internships and background of Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer: four stress and CFD analyses with their results and checks, three hand builds, and hangar time on A320, ATR-72 and B737.">
+<meta name="author" content="Mark Lorenz Yamanaka">
+<!-- www, not the apex: mlyamanaka.com 308-redirects to www, and a scraper
+     that does not follow redirects would never reach og-card.png. -->
+<link rel="canonical" href="https://www.mlyamanaka.com/projects.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Mark Lorenz Yamanaka">
+<meta property="og:url" content="https://www.mlyamanaka.com/projects.html">
+<meta property="og:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
+<meta property="og:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
+<meta property="og:image" content="https://www.mlyamanaka.com/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mark Lorenz Yamanaka, PRC Professional Aeronautical Engineer — portfolio card showing a CFD Mach contour of a converging-diverging nozzle.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
+<meta name="twitter:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
+<meta name="twitter:image" content="https://www.mlyamanaka.com/og-card.png">
+
+<!-- MLY grid monogram. favicon.svg is the bold small-size cut and follows the
+     browser's light/dark scheme; the PNGs are fallbacks (Safari, iOS home screen).
+     Relative paths, like the fonts: the Pages mirror serves under /portfolio/. -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Kept in sync by the head script below and by applyTheme(). A media-query
+     pair would not work here: the theme defaults to light and is set by the
+     toggle, so it has to track the resolved theme, not the OS preference. The values
+     are --surface, not --bg: the browser chrome abuts the top bar, which
+     paints --surface. --bg only starts below it. -->
+<meta name="theme-color" id="theme-color" content="#FFFFFF">
+<!-- Self-hosted type: Atkinson Hyperlegible Next (prose) and Mono (data).
+     Relative paths, not /fonts/: the GitHub Pages mirror serves this page
+     under /portfolio/, where a root-absolute URL would 404. The preload
+     href must match the @font-face src exactly or the file downloads twice. -->
+<link rel="preload" href="fonts/atkinson-next-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site.css">
+<!-- ─────────────────────────────────────────────────────────
+     MOBILE OVERRIDES — deliberately a separate stylesheet.
+
+     These rules have to outrank the desktop ones, and CSS breaks ties on
+     source order. While they lived at the bottom of the main <style> that
+     held, until the next rule was appended below them: an override written
+     here is beaten by a same-specificity rule added later in the file, with
+     no error and nothing to see. It happened once already while this block
+     was being written — a 44px arrow silently rendered at 34px because the
+     base rule came 400 lines later. A second stylesheet ends the race:
+     anything appended to the main <style> is still above this one.
+
+     Three more mobile traps this file cannot enforce on its own — run
+     `node tools/check-mobile.mjs` after editing, which fails on all three:
+
+       1. A `:hover` rule outside `@media (hover: hover) and (pointer: fine)`
+          sticks after a tap. It left the six project cards frozen lifted.
+       2. `mousemove` / `mouseenter` never fire on touch. Use `pointer*`
+          unless the behaviour is a genuine mouse-only enhancement that
+          already has a touch path.
+       3. A fixed px width in an inline `style=` beats every media query
+          here. There are ~150 inline styles in this file.
+     ───────────────────────────────────────────────────────── -->
+<link rel="stylesheet" href="site-mobile.css" id="mobile-overrides">
+<script>(function(){
+// Light is the default for every visit, whatever the OS setting. A dark
+// choice made with the toggle lasts for this tab only (sessionStorage), so a
+// reload or a hop to the résumé and back keeps it, but a new visit starts
+// light. The old localStorage key is cleared so it cannot resurface.
+var t=null;
+try{t=sessionStorage.getItem('theme');localStorage.removeItem('theme');}catch(e){}
+var dark=(t==='dark');
+if(dark)document.documentElement.dataset.theme='dark';
+var m=document.getElementById('theme-color');
+if(m)m.setAttribute('content',dark ? '#1A2535' : '#FFFFFF');
+// Arm the scroll-reveal styles before first paint so nothing flashes in and
+// back out, then withdraw them if initReveal() never signals ready.
+document.documentElement.classList.add('js-reveal');
+setTimeout(function(){
+  if(!window.__revealReady)document.documentElement.classList.remove('js-reveal');
+},3000);
+})();</script>
+</head>
+<body>
+<!-- Top bar: the site banner (name + contact), so it is the page's <header>.
+     id="top" is the home button's target: the page's first pixel, so the
+     whole landing (top bar and hero) is back in view. -->
+<header id="top" style="padding:14px 0;border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
+  <!-- The bar's rule runs the full width; its contents sit on the same
+       centred 1240px column as the hero and every section below, so the
+       wordmark starts level with the headline. Without this the banner kept
+       its own inset and the page measured 100px of margin on the left
+       against 156px on the right. -->
+  <div style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,56px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;">
+  <span class="brand"><svg viewBox="0 0 552 316" class="brand-mark" aria-hidden="true" focusable="false"><clipPath id="hdr-mly-clip"><rect x="0" y="0" width="552" height="316"/></clipPath><g fill="var(--ink)" clip-path="url(#hdr-mly-clip)"><rect x="0" y="0" width="21" height="316"/><rect x="245" y="0" width="21" height="316"/><rect x="122.5" y="182.5" width="21" height="133.5"/><rect x="278" y="0" width="21" height="316"/><rect x="278" y="293.5" width="274" height="22.5"/><rect x="414.5" y="168" width="21" height="125.5"/><polygon points="-27.83,-26.95 125.04,188.16 140.96,176.84 -11.91,-38.26"/><polygon points="277.57,-38.28 125.03,176.85 140.97,188.15 293.5,-26.98"/><polygon points="276.02,-27.12 417.01,173.61 432.99,162.39 292,-38.35"/><polygon points="558,-38.35 417.01,162.39 432.99,173.61 573.98,-27.12"/></g><rect x="414.5" y="293.5" width="21" height="22.5" fill="var(--rust)"/></svg><span>Mark Lorenz Yamanaka</span></span>
+  <a href="#contact" class="top-bar-link" style="color:var(--muted-2);">Get in touch</a>
+  </div>
+</header>
+
+<!-- Header -->
+<div class="header-wrap">
+<section aria-label="Introduction" class="hero page-head">
+  <h1 class="hero-title hero-s1">Projects and experience</h1>
+  <p class="hero-lede hero-s2">Four analyses with their numbers and how each was checked, three things built by hand, two internships, and the background behind them.</p>
+</section>
+</div>
+
+<!-- Sticky nav -->
+<nav style="position:sticky;top:0;z-index:40;background:var(--nav-bg);backdrop-filter:blur(10px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 clamp(18px,4vw,56px);">
+  <div class="nav-inner">
+    <!-- Pinned outside the scrolling strip so it is always in reach. -->
+    <a href="#top" class="nav-home" id="nav-home" aria-label="Back to top" title="Back to top">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg>
+    </a>
+    <div class="nav-scroll" id="nav-scroll">
+    <a href="./" class="nav-link nav-page">Home</a>
+    <a href="projects.html" class="nav-link nav-page" aria-current="page">Projects</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">Nozzle</a>
+    <a href="#p-tank" data-nav="p-tank" class="nav-link">Tank</a>
+    <a href="#p-mk10" data-nav="p-mk10" class="nav-link">MK-10</a>
+    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">Bracket</a>
+    <a href="#built" data-nav="built" class="nav-link">Built by hand</a>
+    <a href="#hangar" data-nav="hangar" class="nav-link">Internships</a>
+    <a href="#about" data-nav="about" class="nav-link">About</a>
+    <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="nav-link">Résumé</a>
+    </div>
+    <div class="nav-actions">
+    <a href="./#contact" class="nav-cta"><span class="cta-long">Get in touch</span><span class="cta-short">Contact</span></a>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    </div>
+  </div>
+</nav>
+
+<main style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,56px) clamp(40px,6vw,88px);">
+
+  <!-- Projects — rendered by JS -->
+  <div id="projects-container"></div>
+
+  <!-- Internships -->
+  <section id="hangar" data-section="hangar" class="section-reveal" style="padding:clamp(56px,7vw,100px) 0 clamp(20px,3vw,36px);border-bottom:1px solid var(--border);">
+    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:20px;">Hangar time</div>
+    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.05;letter-spacing:-0.03em;margin:0 0 clamp(32px,4vw,54px);max-width:26ch;text-wrap:balance;">Internships</h2>
+    <div style="display:grid;gap:clamp(36px,5vw,64px);">
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
+        <div>
+          <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Dornier Technology Inc.</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Fifteen-plus pre- and post-flight inspections across A320, ATR-72 and B737 during line maintenance, then an A320 engine overhaul in base maintenance, including a torque-controlled fastener installation on a wing leading-edge de-icing boot under a licensed mechanic's sign-off. The last rotation was technical records: reviewing NRC, service-bulletin and airworthiness-directive compliance.</p>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">Also where I learned to safety-wire properly. It is a small, unglamorous detail, but it tells you whether a job was done by someone paying attention.</p>
+        </div>
+        <div id="dornier-carousel" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);aspect-ratio:4/3;">
+          <div id="dornier-track" style="position:relative;width:100%;height:100%;">
+            <div class="internship-slide">
+              <img src="figures/internship/engine-cowl.jpg" alt="Opening a fan cowl door on an airliner engine" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+              <div class="hobby-caption">Fan cowl door · Airliner base check</div>
+            </div>
+            <div class="internship-slide">
+              <img src="figures/internship/safety-wire.jpg" alt="Hex plugs safety-wired in pairs on a wooden practice block" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+              <div class="hobby-caption">Safety-wire practice block</div>
+            </div>
+            <div class="internship-slide">
+              <video src="figures/internship/cebu-pacific-tow.mp4" muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+              <div class="hobby-caption">Cebu Pacific A320 · Hangar pushback</div>
+            </div>
+            <div class="internship-slide">
+              <img src="figures/internship/engine-intake.jpg" alt="Inside a CFM56 fan nacelle on a field trip" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block;">
+              <div class="hobby-caption">Inside a CFM56 fan nacelle</div>
+            </div>
+          </div>
+          <button type="button" id="dornier-playpause" class="carousel-playpause" aria-pressed="false" aria-label="Pause slideshow">
+            <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+            <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+          </button>
+          <button type="button" id="dornier-prev" class="carousel-arrow arrow-prev" aria-label="Previous slide">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" id="dornier-next" class="carousel-arrow arrow-next" aria-label="Next slide">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <div class="carousel-dots" style="position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
+            <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
+            <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
+            <button class="internship-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
+            <button class="internship-dot" aria-label="Slide 4" style="pointer-events:auto;"></button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
+        <div>
+          <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Alpha Aviation Group Philippines</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Flight simulation sessions on a Cessna 172 and an A320, trainer aircraft external inspection and cockpit prep, and one supervised engine run-up and taxi on the Cessna, working through the function checks and fault indications that go with it.</p>
+          <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">A fault indication reads differently once you have sat in the seat that shows it to you.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;">
+          <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
+            <img src="figures/internship/a320-sim.jpg" alt="Seated in an A320 full-flight simulator flight deck" loading="lazy" style="display:block;width:100%;height:190px;object-fit:cover;">
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">A320 full-flight simulator</figcaption>
+          </figure>
+          <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
+            <img src="figures/internship/cessna-flight-deck.jpg" alt="Seated at the controls of a light single-engine aircraft" loading="lazy" style="display:block;width:100%;height:190px;object-fit:contain;">
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">Light single flight deck</figcaption>
+          </figure>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" data-section="about" class="section-reveal" style="padding:clamp(56px,7vw,104px) 0 clamp(40px,5vw,64px);">
+
+    <!-- Terminal prompt -->
+    <div style="font-family:var(--font-mono);font-size:var(--fs-micro);letter-spacing:0.04em;color:var(--muted-2);margin-bottom:clamp(24px,3.5vw,40px);">
+      <span style="color:var(--label);">mark@portfolio</span><span style="color:var(--border);margin:0 10px;">—</span><span>~/about</span>
+    </div>
+
+    <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.06;letter-spacing:-0.03em;margin:0 0 clamp(36px,5vw,52px);max-width:32ch;text-wrap:balance;">The best I could do that week. Not yet the best I'll do.</h2>
+
+    <!-- Row 1 — introduction: photo beside the story -->
+    <div class="about-intro">
+        <!-- Profile photo -->
+        <div style="position:relative;aspect-ratio:4/5;background:var(--bg);border:1px solid var(--border);overflow:hidden;">
+          <img src="figures/profile.png" alt="Mark Lorenz Yamanaka" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center top;">
+        </div>
+        <!-- Background -->
+        <div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:20px;">Background</div>
+          <div style="display:grid;gap:14px;">
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I studied aeronautical engineering at Holy Angel University from 2020 to 2024, graduating on the Dean's List with a GPA of 1.58, where 1.00 is the highest mark, or about 3.54 out of 4.0. My coursework spanned aircraft structures, aircraft/helicopter/UAV design and systems, aerodynamics, powerplant, and reliability engineering, and I was licensed as a PRC Professional Aeronautical Engineer that same year. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">The hangar came first, though. It is hard to over-report a factor of safety once you have seen what an aircraft actually looks like at 40,000 cycles.</p>
+            <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I am based in Tsukuba, Japan. I'm happy to walk through any of these end to end, including what changed between revisions.</p>
+          </div>
+          <dl class="about-facts">
+            <div><dt>License</dt><dd>PRC Professional Aeronautical Engineer, 2024</dd></div>
+            <div><dt>Education</dt><dd>Holy Angel University, 2020–2024</dd></div>
+            <div><dt>Based in</dt><dd>Tsukuba, Japan · open to relocation</dd></div>
+          </dl>
+        </div>
+    </div>
+
+    <!-- Row 2 — beyond the desk -->
+    <div class="about-row">
+        <!-- Beyond the desk: graph over carousel, short note beside -->
+        <div class="beyond-layout">
+          <div class="beyond-media">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);">Beyond the desk</span>
+          </div>
+
+          <div class="beyond-row">
+          <!-- Image/video carousel -->
+          <div id="hobby-carousel" class="beyond-carousel" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);">
+            <div id="hobby-track" style="position:relative;width:100%;height:100%;">
+              <div class="hobby-slide ar-1" style="--bg-img:url('figures/about/bouldering.png')">
+                <img src="figures/about/bouldering.png" alt="Indoor bouldering" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+                <div class="hobby-caption">Bouldering · Laputa gym, Tsukuba</div>
+              </div>
+              <div class="hobby-slide ar-2" style="--bg-img:url('figures/about/travel-fuji.jpg')">
+                <img src="figures/about/travel-fuji.jpg" alt="Mt. Fuji from Oshima" style="width:100%;height:100%;object-fit:cover;object-position:center 65%;display:block;">
+                <div class="hobby-caption">Backpack travel · Oshima island, Japan</div>
+              </div>
+              <div class="hobby-slide ar-3" style="--bg-img:url('figures/about/rock-climbing.jpg')">
+                <img src="figures/about/rock-climbing.jpg" alt="Trail running on rocky terrain" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+                <div class="hobby-caption">Trail running · Mount Tsukuba, Japan</div>
+              </div>
+              <div class="hobby-slide ar-4" style="--bg-img:url('figures/about/aviation-navy.jpg')">
+                <img src="figures/about/aviation-navy.jpg" alt="US Air Force airshow at Osan AB" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+                <div class="hobby-caption">Osan AB · USAF Airshow, South Korea</div>
+              </div>
+              <div class="hobby-slide ar-5" style="--bg-img:url('figures/about/snowboard-poster.jpg')">
+                <video src="figures/about/snowboard.mp4" poster="figures/about/snowboard-poster.jpg" muted loop playsinline preload="none" style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+                <div class="hobby-caption">Snowboarding · Hakuba, Japan</div>
+              </div>
+            </div>
+            <button type="button" id="hobby-playpause" class="carousel-playpause" aria-pressed="false" aria-label="Pause slideshow">
+              <span class="icon-pause"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+              <span class="icon-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
+            <button type="button" id="hobby-prev" class="carousel-arrow arrow-prev" aria-label="Previous slide">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" id="hobby-next" class="carousel-arrow arrow-next" aria-label="Next slide">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <!-- Dot indicators -->
+            <div class="carousel-dots" style="position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
+              <button class="hobby-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
+              <button class="hobby-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
+              <button class="hobby-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
+              <button class="hobby-dot" aria-label="Slide 4" style="pointer-events:auto;"></button>
+              <button class="hobby-dot" aria-label="Slide 5" style="pointer-events:auto;"></button>
+            </div>
+          </div>
+
+          <div class="beyond-side">
+          <!-- Interests: category node graph -->
+          <div id="hobby-graph" class="beyond-graph" role="img" aria-label="Interests: Running, Tennis, Bouldering, Snowboarding, Piano, Guitar, Saxophone, Backpack travel, Hiking, Basketball, Quadcopter build, Cybersecurity, Gaming, Fragrance collecting, Dystopian films" style="position:relative;overflow:hidden;">
+            <canvas id="hobby-graph-canvas" style="position:absolute;inset:0;display:block;width:100%;height:100%;"></canvas>
+            <span class="graph-hint"><span class="hover-only">Hover a node to trace it</span><span class="touch-only">Tap a node to trace it</span></span>
+          </div>
+
+          <!-- Learning now: things in progress, not skills yet. Each has a
+               reason and an honest note on where it stands; an item moves
+               to Tools once it is solid. Progress notes are as stated by
+               Mark (Oct 2026), not inferred. -->
+          <section class="learning" aria-labelledby="learning-title">
+            <div class="learning-head">
+              <h3 id="learning-title">What I'm learning right now</h3>
+              <span class="learning-date">Updated Oct 2026</span>
+            </div>
+            <ul class="learning-list">
+              <li>
+                <div class="learning-row"><span class="learning-name">Composite laminate theory</span><span class="learning-pill">In progress</span></div>
+                <p class="learning-why">My structures work so far is all metal; airframes are going composite.</p>
+                <p class="learning-note">Lamina basics: ply stiffness, transformations, the ABD matrix</p>
+              </li>
+              <li>
+                <div class="learning-row"><span class="learning-name">CFRP</span><span class="learning-pill">In progress</span></div>
+                <p class="learning-why">The material that theory is for: how carbon plies carry load.</p>
+                <p class="learning-note">Properties, damage mechanisms, Tsai-Wu and Hashin criteria</p>
+              </li>
+              <li>
+                <div class="learning-row"><span class="learning-name">Japanese</span><span class="learning-pill">In progress</span></div>
+                <p class="learning-why">I'm based in Tsukuba and want to work in Japanese, not around it.</p>
+                <p class="learning-note">Studying for JLPT N2</p>
+              </li>
+            </ul>
+          </section>
+
+</main>
+
+<!-- Footer: the contact details live on the home page; this points there. -->
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(40px,5vw,72px) 0;">
+  <div class="footer-grid">
+    <div class="footer-head">
+      <div style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Questions about any of these?</div>
+    </div>
+    <div class="footer-cta">
+      <a href="./#contact" class="footer-cta-btn"><span>Get in touch</span></a>
+      <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="footer-cta-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>
+        <span>Download résumé (PDF)</span>
+      </a>
+    </div>
+    <div class="footer-info">
+      <div class="footer-copy">© 2026 Mark Lorenz Yamanaka · All rights reserved</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Lightbox — always in DOM, animated via .open class -->
+<div id="lightbox" onclick="lbBackdrop(event)" role="dialog" aria-modal="true" aria-label="Enlarged figure" tabindex="-1" inert>
+  <div id="lightbox-inner" style="position:relative;">
+    <button type="button" id="lb-close" class="lb-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <button type="button" id="lb-prev" class="lb-step lb-step-prev" aria-label="Previous figure">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" id="lb-next" class="lb-step lb-step-next" aria-label="Next figure">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div id="lightbox-media"></div>
+    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:var(--fs-micro);color:#E6DED5;">
+      <span id="lightbox-caption"></span>
+      <span id="lb-count" style="flex:none;font-variant-numeric:tabular-nums;"></span>
+    </div>
+  </div>
+</div>
+
+<script src="site.js"></script>
+</body>
+</html>
