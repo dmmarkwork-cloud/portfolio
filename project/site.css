@@ -290,7 +290,8 @@ button { font-family: inherit; }
 }
 @media (hover: hover) and (pointer: fine) {
   .btn-cta:hover { background: var(--rust); color: var(--surface); }
-  .btn-solid:hover { background: var(--ink); color: var(--surface); }
+  /* One shade deeper in the same hue; ink read as a different button. */
+  .btn-solid:hover { background: var(--rust-dim); color: var(--on-accent); }
   /* One tone step toward the border colour: darker on the light page,
      lighter on the dark one, as shadcn's outline hover is in each theme. */
   .btn:hover .icon-down { transform: translateY(2px); }
