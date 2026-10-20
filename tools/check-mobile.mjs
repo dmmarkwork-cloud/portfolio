@@ -28,7 +28,7 @@ import { dirname, join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const PAGES = ['portfolio-light.html', 'projects.html', 'internships.html', 'about.html', 'resume.html'];
+const PAGES = ['portfolio-light.html', 'projects.html', 'internships.html', 'about.html'];
 if (!process.argv[2]) {
   let status = 0;
   for (const page of PAGES) {

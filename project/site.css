@@ -1623,40 +1623,8 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 /* The footer brings its own top rule, so the last section drops its own. */
 main > section:last-child { border-bottom: 0 !important; }
 
-/* ── Internships, About and Résumé pages ──────────────── */
+/* ── Internships and About pages ──────────────────────── */
 .page-kicker { font-size: var(--fs-micro); color: var(--label); margin-bottom: 18px; }
-.cv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 26px; }
-.cv-note { font-size: var(--fs-small); color: var(--muted-2); }
-/* The résumé: section names in a narrow left column, read down like the
-   labels in a project's problem, approach and verification. */
-.cv { padding: clamp(36px, 5vw, 64px) 0 clamp(24px, 3vw, 40px); }
-.cv-section {
-  display: grid;
-  grid-template-columns: minmax(0, 12em) minmax(0, 1fr);
-  gap: 10px clamp(20px, 3vw, 48px);
-  padding: 28px 0;
-  border-top: 1px solid var(--border);
-}
-.cv-section:first-child { border-top: 0; padding-top: 0; }
-.cv-label { margin: 0; font-size: var(--fs-small); font-weight: 600; color: var(--ink); line-height: 1.5; }
-.cv-entry + .cv-entry { margin-top: 24px; }
-.cv-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 18px; }
-.cv-title { margin: 0; font-size: var(--fs-body); font-weight: 600; line-height: 1.35; color: var(--ink); }
-.cv-title a { color: inherit; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 4px; }
-.cv-when { font-size: var(--fs-small); color: var(--muted-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.cv-org { margin-top: 2px; font-size: var(--fs-small); color: var(--muted); }
-.cv p, .cv li { font-size: var(--fs-body); line-height: 1.55; color: var(--muted); max-width: 72ch; }
-.cv p { margin: 0; }
-.cv ul { margin: 10px 0 0; padding-left: 1.1em; display: grid; gap: 6px; }
-.cv li::marker { color: var(--muted-2); }
-.cv strong { color: var(--ink); font-weight: 600; }
-.cv-inline { padding-left: 0 !important; list-style: none; display: flex !important; flex-wrap: wrap; gap: 6px 24px !important; margin-top: 0 !important; }
-@media (hover: hover) and (pointer: fine) {
-  .cv-title a:hover { text-decoration-color: var(--rust); }
-}
-@media (max-width: 720px) {
-  .cv-section { grid-template-columns: minmax(0, 1fr); }
-}
 
 /* ── Scroll area (the thumbnail strips) ─────────────────
    After shadcn/ui's ScrollArea, which is Radix's: the platform scrollbar is
