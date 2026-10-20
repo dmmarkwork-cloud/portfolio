@@ -36,7 +36,7 @@
      toggle, so it has to track the resolved theme, not the OS preference. The values
      are --surface, not --bg: the browser chrome abuts the top bar, which
      paints --surface. --bg only starts below it. -->
-<meta name="theme-color" id="theme-color" content="#A9A9AB">
+<meta name="theme-color" id="theme-color" content="#FFFFFF">
 <!-- Self-hosted type: Atkinson Hyperlegible Next (prose) and Mono (data).
      Relative paths, not /fonts/: the GitHub Pages mirror serves this page
      under /portfolio/, where a root-absolute URL would 404. The preload
@@ -68,34 +68,21 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  /* ── Colour ──────────────────────────────────────────
-     A studio grey ground with white figure surfaces on it. Every figure on
-     this page is white or near-white (CAD renders, Fluent contours, drawing
-     sheets, tracing paper), and on the old cream ground they had no edge:
-     each lead image needed a blurred backdrop and a drop shadow to separate
-     at all. On a mid grey the white surface is the brightest thing on the
-     screen, which is the separation. The grey is the one a CAD viewport
-     defaults to, so a render sits in the light it was made in.
-
-     Rust measures 2.3:1 on this grey, so it is never text on the ground. It
-     fills the one action (white on rust is 5.4:1) and marks the active nav
-     item; labels and links are ink. Contrast on the ground: ink 8.2:1,
-     --muted 7.4:1, --muted-2 / --label 4.9:1. */
   --rust: #B4491B;
   --rust-dim: #96401A;
   --rust-tint: #E6D3C5;
-  --ink: #0E0E0E;
-  --muted: #1A1A1C;          /* running text: 7.4:1, near the full ink */
-  --muted-2: #3A3A3C;
-  --label: #3A3A3C;          /* section labels and kickers */
-  --link: #0E0E0E;           /* text links; the underline carries the rust */
-  --focus: #0E0E0E;          /* focus ring: rust would be 2.3:1 here */
+  --ink: #171310;
+  --muted: #5F5852;
+  --muted-2: #6E6862;
+  --label: #B4491B;          /* section labels and kickers */
+  --link: #B4491B;           /* text links */
+  --focus: #B4491B;          /* focus ring */
   --on-accent: #FFFFFF;      /* text on a rust fill */
-  --border: rgba(14, 14, 14, 0.18);
-  --border-light: rgba(14, 14, 14, 0.09);
+  --border: #E2DAD0;
+  --border-light: #EFE9E1;
   --surface: #FFFFFF;
-  --bg: #A9A9AB;
-  --nav-bg: rgba(169, 169, 171, 0.92);
+  --bg: #F7F3ED;
+  --nav-bg: rgba(247, 243, 237, 0.92);
 
   /* The two type families. Weights and spacing stay per element. */
   --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -156,7 +143,7 @@ body {
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-sans);
   color: var(--ink);
-  background-color: var(--bg);
+  background-color: var(--surface);
   transition: background-color 280ms ease, color 280ms ease;
 }
 
@@ -294,8 +281,7 @@ button { font-family: inherit; }
   font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--on-accent);
-  background: var(--rust);
+  color: var(--rust);
   border: 1px solid var(--rust);
   padding: 4px 11px;
   transition: background 150ms var(--ease-out), color 150ms var(--ease-out), transform 120ms var(--ease-out);
@@ -350,6 +336,8 @@ button { font-family: inherit; }
 
 /* ── Header full-bleed wrapper ──────────────────────── */
 .header-wrap {
+  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* ── Hero two-column grid ────────────────────────────── */
@@ -665,26 +653,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .js-reveal .section-reveal.visible .proj-card { opacity: 1; }
 
-/* ── The late field ─────────────────────────────────────
-   One near-black band closes the light page, so it ends on a change of
-   ground rather than a rule. Done by redefining the tokens inside the
-   footer, so every rule that already reads them re-themes with no rule of
-   its own. Dark mode already ends on a field of its own and is left alone. */
-html:not([data-theme="dark"]) .field-dark {
-  --ink: #F3F2EE;
-  --muted: #C9C9CB;
-  --muted-2: #B4B4B6;
-  --label: #B4B4B6;
-  --link: #F3F2EE;
-  --focus: #F3F2EE;
-  --surface: #1B1B1C;
-  --bg: #262628;
-  --border: rgba(243, 242, 238, 0.16);
-  --border-light: rgba(243, 242, 238, 0.08);
-  background: var(--surface) !important;
-  color: var(--ink);
-}
-
 /* ── Footer links ────────────────────────────────────── */
 .footer-link {
   color: var(--ink);
@@ -767,13 +735,12 @@ html:not([data-theme="dark"]) .field-dark {
   .lead-btn:hover { border-color: var(--muted); }
   .thumb-btn:hover { border-color: var(--rust); }
   .nav-link:hover { color: var(--ink); background-color: var(--nav-active-bg); }
-  .nav-cta:hover { background: var(--rust-dim); border-color: var(--rust-dim); color: var(--on-accent); }
-  .footer-link:hover { color: var(--ink); border-color: var(--rust); }
+  .nav-cta:hover { background: var(--rust); color: var(--surface); }
+  .footer-link:hover { color: var(--rust); }
   .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
-  html:not([data-theme="dark"]) .field-dark .footer-cta-btn:hover { color: var(--ink); }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
-  .theme-toggle:hover { border-color: var(--rust); color: var(--ink); }
-  .nav-home:hover { border-color: var(--rust); color: var(--ink); }
+  .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
+  .nav-home:hover { border-color: var(--rust); color: var(--rust); }
   .hero-cta-link:hover { transform: translateX(3px); }
 }
 
@@ -961,6 +928,8 @@ html:not([data-theme="dark"]) .field-dark {
 .beyond-graph {
   height: 300px;
   background-color: var(--surface);
+  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
+  background-size: 28px 28px;
   border: 1px solid var(--border);
   border-radius: 4px;
 }
@@ -1364,6 +1333,16 @@ html:not([data-theme="dark"]) .field-dark {
 [data-theme="dark"] #lightbox {
   background: rgba(16, 24, 39, 0.93);
 }
+[data-theme="dark"] .beyond-graph {
+  background-image:
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
+}
+[data-theme="dark"] .header-wrap {
+  background-image:
+    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
+}
 
 /* ── Theme swap ──────────────────────────────────────────
    A census of the toggle found 228 elements painting a themed colour across
@@ -1744,7 +1723,7 @@ try{t=sessionStorage.getItem('theme');localStorage.removeItem('theme');}catch(e)
 var dark=(t==='dark');
 if(dark)document.documentElement.dataset.theme='dark';
 var m=document.getElementById('theme-color');
-if(m)m.setAttribute('content',dark ? '#1A2535' : '#A9A9AB');
+if(m)m.setAttribute('content',dark ? '#1A2535' : '#FFFFFF');
 // Arm the scroll-reveal styles before first paint so nothing flashes in and
 // back out, then withdraw them if initReveal() never signals ready.
 document.documentElement.classList.add('js-reveal');
@@ -1758,7 +1737,7 @@ setTimeout(function(){
 <!-- Top bar: the site banner (name + contact), so it is the page's <header>.
      id="top" is the home button's target: the page's first pixel, so the
      whole landing (top bar and hero) is back in view. -->
-<header id="top" style="padding:14px 0;border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);text-transform:uppercase;color:var(--muted-2);background:var(--bg);">
+<header id="top" style="padding:14px 0;border-bottom:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);text-transform:uppercase;color:var(--muted-2);background:var(--surface);">
   <!-- The bar's rule runs the full width; its contents sit on the same
        centred 1240px column as the hero and every section below, so the
        wordmark starts level with the headline. Without this the banner kept
@@ -2082,7 +2061,7 @@ setTimeout(function(){
 </main>
 
 <!-- Footer -->
-<footer id="contact" class="field-dark" style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(44px,6vw,88px) 0;">
+<footer id="contact" style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(44px,6vw,88px) 0;">
   <div class="footer-grid">
     <div class="footer-head">
       <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.18em;text-transform:uppercase;color:var(--label);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
@@ -3907,7 +3886,7 @@ function applyTheme(dark) {
   else root.removeAttribute('data-theme');
   try { sessionStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
   const meta = document.getElementById('theme-color');
-  if (meta) meta.setAttribute('content', dark ? '#1A2535' : '#A9A9AB');
+  if (meta) meta.setAttribute('content', dark ? '#1A2535' : '#FFFFFF');
   // holo-bay takes its colours as attributes, so it has to be torn down and
   // rebooted — which resets the scene to its opening camera position. Inside a
   // view transition the crossfade covers that jump; it used to be visible.
