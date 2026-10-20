@@ -114,10 +114,6 @@ header#top { letter-spacing: 0.16em; }
   .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
   .theme-toggle { width: 40px; height: 40px; }
 
-  /* Inline text links sit in running copy, so they can't grow a box without
-     shifting the paragraph. Pad the tap area vertically only. */
-  .hero-cta-link { position: relative; }
-  .hero-cta-link::after { content: ''; position: absolute; inset: -13px -6px; }
 }
 
 /* ── Mobile: the six-project overview ────────────────────
@@ -210,7 +206,7 @@ header#top { letter-spacing: 0.16em; }
 }
 .lb-step-prev { left: 8px; }
 .lb-step-next { right: 8px; }
-.lb-step:active { transform: translateY(-50%) scale(0.9); }
+.lb-step:active { transform: translateY(-50%) scale(0.95); }
 .lb-step[hidden] { display: none; }
 /* Out of the way while the figure is magnified: at that point the drag is
    panning, and an arrow sitting over the detail is the thing in the way. */
@@ -238,7 +234,7 @@ header#top { letter-spacing: 0.16em; }
   padding: 0;
   transition: background 150ms ease, transform 120ms var(--ease-out);
 }
-.lb-close:active { transform: scale(0.9); }
+.lb-close:active { transform: scale(0.95); }
 
 @media (max-width: 640px), (pointer: coarse) {
   #lightbox { padding: 8px; }

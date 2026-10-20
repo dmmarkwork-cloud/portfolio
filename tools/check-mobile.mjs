@@ -33,7 +33,8 @@ if (!process.argv[2]) {
   let status = 0;
   for (const page of PAGES) {
     const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), join(root, 'project', page)], { stdio: 'inherit' });
-    status = status || r.status;
+    // A crashed or signalled child has status null: that is a failure too.
+    if (r.status !== 0) status = 1;
   }
   process.exit(status);
 }
@@ -57,7 +58,7 @@ const src = expand(readFileSync(file, 'utf8'), dir);
 // reads every page; the nav, the viewport and the lightbox are per page.
 const site = PAGES.map((p) => join(root, 'project', p)).filter(existsSync)
   .map((p) => expand(readFileSync(p, 'utf8'), dirname(p))).join('\n');
-const PER_PAGE = new Set(['nav split (pinned CTA + toggle)', 'nav link strip', 'lightbox close button', 'viewport meta']);
+const PER_PAGE = new Set(['nav split (pinned CTA + toggle)', 'nav link strip', 'viewport meta']);
 const lineOf = (i) => src.slice(0, i).split('\n').length;
 
 // Blank out HTML comments before scanning for tags, keeping every byte offset
@@ -177,7 +178,7 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
   const found = [...src.matchAll(/addEventListener\('(mouse[a-z]+)'/g)].map(
     (m) => `line ${lineOf(m.index)}: ${m[1]}`
   );
-  const EXPECTED = 8; // 2 video-preview pairs + 2 carousel hover-pause pairs
+  const EXPECTED = 6; // 2 video-preview pairs + the shared carousel's hover-pause pair
   if (found.length > EXPECTED) {
     warn(
       rule,
@@ -198,7 +199,7 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
     'nav split (pinned CTA + toggle)': /<div class="nav-actions">/,
     'nav link strip': /id="nav-scroll"/,
     'swipe helper': /function attachSwipe\(/,
-    'swipe wired (3 call sites)': /attachSwipe\(/g,
+    'swipe wired (2 call sites)': /attachSwipe\(/g,
     'lightbox pan/zoom': /function initLightboxZoom\(/,
     'lightbox zoom initialised': /initLightboxZoom\(\);/,
     'lightbox close button': /id="lb-close"/,
@@ -213,8 +214,8 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
   const swipeSites = (src.match(/attachSwipe\(/g) || []).length - 1; // minus the definition
   if (missing.length) {
     fail(rule, `missing: ${missing.join(', ')}`);
-  } else if (swipeSites < 3) {
-    fail(rule, `attachSwipe has ${swipeSites} call sites, expected 3 (gallery + 2 carousels)`);
+  } else if (swipeSites < 2) {
+    fail(rule, `attachSwipe has ${swipeSites} call sites, expected 2 (gallery + the shared carousel)`);
   } else {
     pass(rule, `all present; attachSwipe wired at ${swipeSites} sites`);
   }
@@ -239,6 +240,23 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
   } else {
     pass(rule, 'viewIndex is derived from PROJECTS');
   }
+}
+
+// ── 7. Balanced markup ──────────────────────────────────────────────────────
+// Splitting the site into pages once cut a section at the wrong closing tag:
+// About lost a paragraph and five closing tags, and nothing else noticed. The
+// browser repairs unbalanced markup silently, so count it here.
+{
+  const rule = '7/ balanced markup';
+  const body = code.slice(code.indexOf('<body'));
+  const off = [];
+  for (const tag of ['div', 'section', 'main', 'footer', 'nav', 'ul', 'figure']) {
+    const open = (body.match(new RegExp(`<${tag}[\\s>]`, 'g')) || []).length;
+    const close = (body.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+    if (open !== close) off.push(`<${tag}> ${open} opened, ${close} closed`);
+  }
+  if (off.length) fail(rule, off.join('; '));
+  else pass(rule, 'every div, section, main, footer, nav, ul and figure is closed');
 }
 
 // ── Report ──────────────────────────────────────────────────────────────────

@@ -12,6 +12,11 @@
       "has": [{ "type": "host", "value": "mark-yamanaka.vercel.app" }],
       "destination": "https://www.mlyamanaka.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/portfolio-light.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "rewrites": [

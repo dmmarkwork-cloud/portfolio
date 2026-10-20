@@ -385,16 +385,12 @@ function renderGallery(pi) {
 function selectView(pi, vi) {
   viewIndex[pi] = vi;
   const leadArea = document.getElementById(`lead-img-${pi}`);
-  if (leadArea && !reducedMotion) {
-    leadArea.style.transition = 'opacity 70ms cubic-bezier(0.4, 0, 1, 1)';
-    leadArea.style.opacity = '0';
-    setTimeout(() => {
-      renderGallery(pi);
-      leadArea.style.transition = 'opacity 100ms cubic-bezier(0.23, 1, 0.32, 1)';
-      leadArea.style.opacity = '1';
-    }, 70);
-  } else {
-    renderGallery(pi);
+  renderGallery(pi);
+  if (leadArea && !reducedMotion && leadArea.animate) {
+    leadArea.animate(
+      [{ opacity: 0.6, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0)' }],
+      { duration: 150, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+    );
   }
 }
 
@@ -952,7 +948,21 @@ function buildProjects() {
     </section>`;
   }).join('');
 
-  PROJECTS.forEach((_, pi) => renderGallery(pi));
+  // Seven lead figures (and their blurred backdrops) used to start loading
+  // together on arrival, competing with the one on screen. Each is now built
+  // when its section comes within 800px of the viewport. They are not lazy
+  // <img>s because Safari can skip the load of a lazy image inserted by script.
+  const leads = PROJECTS.map((_, pi) => document.getElementById(`lead-img-${pi}`));
+  if ('IntersectionObserver' in window) {
+    const seen = new IntersectionObserver((entries) => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      renderGallery(+e.target.dataset.pi);
+      seen.unobserve(e.target);
+    }), { rootMargin: '800px 0px' });
+    leads.forEach((el, pi) => { if (el) { el.dataset.pi = pi; seen.observe(el); } });
+  } else {
+    PROJECTS.forEach((_, pi) => renderGallery(pi));
+  }
 
   // A lead box letterboxes its figure, so callouts are re-laid whenever the
   // box changes size.
@@ -1499,7 +1509,22 @@ function initReveal() {
       if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
   }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.section-reveal').forEach(el => obs.observe(el));
+  // On screen at load, or the target of the link that brought the visitor
+  // here: shown at once, with no fade, so a page never opens on a blank band.
+  const hashEl = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  const hashSection = hashEl && (hashEl.closest('.section-reveal') || (hashEl.classList.contains('section-reveal') ? hashEl : null));
+  const instant = [];
+  document.querySelectorAll('.section-reveal').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if ((r.top < window.innerHeight && r.bottom > 0) || el === hashSection) {
+      el.classList.add('visible', 'reveal-instant');
+      instant.push(el);
+    } else {
+      obs.observe(el);
+    }
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    instant.forEach(el => el.classList.remove('reveal-instant'))));
 
   // A hash landing scrolls the page immediately after this runs, and images
   // without intrinsic size settle later still, so don't rely solely on the
@@ -1896,28 +1921,24 @@ function initHobbyGraph() {
   window.updateHobbyGraphTheme = () => { readColors(); if (reducedMotion) draw(-1, 0); };
 }
 
-function initHobbyCarousel() {
-  const track = document.getElementById('hobby-track');
+// ── Slide carousels ────────────────────────────────────
+// Beyond the desk (About) and the Dornier internship use the same slideshow:
+// autoplay at a varied interval, paused on hover and keyboard focus, arrows,
+// dots, swipe, and a play/pause button for touch visitors, who have no hover
+// to pause on. Reduced motion starts it paused on the first slide.
+function initCarousel({ prefix, slide, dot, minDelay, spread }) {
+  const track = document.getElementById(`${prefix}-track`);
   if (!track) return;
-  const slides = Array.from(track.querySelectorAll('.hobby-slide'));
-  const dots = Array.from(document.querySelectorAll('.hobby-dot'));
+  const slides = Array.from(track.querySelectorAll(`.${slide}`));
+  const dots = Array.from(document.querySelectorAll(`.${dot}`));
   if (!slides.length) return;
 
   let current = 0;
   let timer = null;
-  // Reduced-motion visitors get a static first slide, not an un-transitioned
-  // snap every few seconds — the existing reducedMotion flag already governs
-  // the CSS crossfade duration; this gates the JS interval on the same flag.
   let isPaused = reducedMotion;
 
-  function videoIn(slide) {
-    const v = slide.querySelector('video');
-    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-  }
-  function videoOut(slide) {
-    const v = slide.querySelector('video');
-    if (v) { v.pause(); }
-  }
+  const videoIn = (s) => { const v = s.querySelector('video'); if (v) { v.currentTime = 0; v.play().catch(() => {}); } };
+  const videoOut = (s) => { const v = s.querySelector('video'); if (v) v.pause(); };
 
   function goTo(n) {
     videoOut(slides[current]);
@@ -1928,120 +1949,30 @@ function initHobbyCarousel() {
     if (dots[current]) dots[current].classList.add('active');
     videoIn(slides[current]);
   }
-
   function scheduleNext() {
     clearTimeout(timer);
     if (isPaused) return;
-    const delay = 2800 + Math.random() * 2400; // 2.8s – 5.2s, non-fixed
-    timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, delay);
+    timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, minDelay + Math.random() * spread);
   }
+  const step = (d) => { clearTimeout(timer); goTo(current + d); scheduleNext(); };
 
   goTo(0);
   scheduleNext();
 
-  const carousel = document.getElementById('hobby-carousel');
-  carousel.addEventListener('mouseenter', () => clearTimeout(timer));
-  carousel.addEventListener('mouseleave', () => scheduleNext());
-  // Keyboard users tabbing through the dots get the same pause a mouse hover
-  // gives — otherwise the slide can change out from under a focused control.
-  carousel.addEventListener('focusin', () => clearTimeout(timer));
-  carousel.addEventListener('focusout', (e) => {
-    if (!carousel.contains(e.relatedTarget)) scheduleNext();
-  });
-
-  dots.forEach((dot, i) => dot.addEventListener('click', () => {
-    clearTimeout(timer);
-    goTo(i);
-    scheduleNext();
-  }));
-
-  const prevBtn = document.getElementById('hobby-prev');
-  const nextBtn = document.getElementById('hobby-next');
-  if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
-  if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
-  attachSwipe(carousel, () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); },
-                        () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
-
-  // Touch-only visitors have no hover/focus to pause on — a real, always-
-  // visible control, independent of the hover/focus pausing above.
-  const playPauseBtn = document.getElementById('hobby-playpause');
-  if (playPauseBtn) {
-    const syncButton = () => {
-      playPauseBtn.classList.toggle('is-paused', isPaused);
-      playPauseBtn.setAttribute('aria-label', isPaused ? 'Play slideshow' : 'Pause slideshow');
-      playPauseBtn.setAttribute('aria-pressed', String(isPaused));
-    };
-    syncButton();
-    playPauseBtn.addEventListener('click', () => {
-      isPaused = !isPaused;
-      syncButton();
-      if (isPaused) clearTimeout(timer); else scheduleNext();
-    });
-  }
-}
-
-function initInternshipCarousel() {
-  const track = document.getElementById('dornier-track');
-  if (!track) return;
-  const slides = Array.from(track.querySelectorAll('.internship-slide'));
-  const dots = Array.from(document.querySelectorAll('.internship-dot'));
-  if (!slides.length) return;
-
-  let current = 0;
-  let timer = null;
-  let isPaused = reducedMotion;
-
-  function videoIn(slide) {
-    const v = slide.querySelector('video');
-    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-  }
-  function videoOut(slide) {
-    const v = slide.querySelector('video');
-    if (v) v.pause();
-  }
-
-  function goTo(n) {
-    videoOut(slides[current]);
-    slides[current].classList.remove('active');
-    if (dots[current]) dots[current].classList.remove('active');
-    current = (n + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    if (dots[current]) dots[current].classList.add('active');
-    videoIn(slides[current]);
-  }
-
-  function scheduleNext() {
-    clearTimeout(timer);
-    if (isPaused) return;
-    const delay = 3200 + Math.random() * 2200;
-    timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, delay);
-  }
-
-  goTo(0);
-  scheduleNext();
-
-  const carousel = document.getElementById('dornier-carousel');
+  const carousel = document.getElementById(`${prefix}-carousel`);
   carousel.addEventListener('mouseenter', () => clearTimeout(timer));
   carousel.addEventListener('mouseleave', () => scheduleNext());
   carousel.addEventListener('focusin', () => clearTimeout(timer));
-  carousel.addEventListener('focusout', (e) => {
-    if (!carousel.contains(e.relatedTarget)) scheduleNext();
-  });
+  carousel.addEventListener('focusout', (e) => { if (!carousel.contains(e.relatedTarget)) scheduleNext(); });
 
-  dots.forEach((dot, i) => dot.addEventListener('click', () => {
-    clearTimeout(timer);
-    goTo(i);
-    scheduleNext();
-  }));
+  dots.forEach((d, i) => d.addEventListener('click', () => { clearTimeout(timer); goTo(i); scheduleNext(); }));
+  const prevBtn = document.getElementById(`${prefix}-prev`);
+  const nextBtn = document.getElementById(`${prefix}-next`);
+  if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => step(1));
+  attachSwipe(carousel, () => step(-1), () => step(1));
 
-  const prevBtn = document.getElementById('dornier-prev');
-  const nextBtn = document.getElementById('dornier-next');
-  if (prevBtn) prevBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); });
-  if (nextBtn) nextBtn.addEventListener('click', () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
-  attachSwipe(carousel, () => { clearTimeout(timer); goTo(current - 1); scheduleNext(); },
-                        () => { clearTimeout(timer); goTo(current + 1); scheduleNext(); });
-
-  const playPauseBtn = document.getElementById('dornier-playpause');
+  const playPauseBtn = document.getElementById(`${prefix}-playpause`);
   if (playPauseBtn) {
     const syncButton = () => {
       playPauseBtn.classList.toggle('is-paused', isPaused);
@@ -2133,7 +2064,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (document.fonts && document.fonts.load
     ? document.fonts.load("500 11.5px 'Atkinson Hyperlegible Next'").catch(() => {})
     : Promise.resolve()).then(initHobbyGraph);
-  initHobbyCarousel();
-  initInternshipCarousel();
+  initCarousel({ prefix: 'hobby', slide: 'hobby-slide', dot: 'hobby-dot', minDelay: 2800, spread: 2400 });
+  initCarousel({ prefix: 'dornier', slide: 'internship-slide', dot: 'internship-dot', minDelay: 3200, spread: 2200 });
   initTheme();
 });

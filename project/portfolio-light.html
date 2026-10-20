@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mark Lorenz Yamanaka — Engineering Portfolio</title>
-<meta name="description" content="Engineering portfolio of Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer. Six documented CFD, FEA and GD&amp;T projects, with revisions published alongside the results.">
+<meta name="description" content="Engineering portfolio of Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer. Seven projects: four stress and CFD analyses, each with its result and how it was checked, and three things built by hand. Revisions are published alongside the results.">
 <meta name="author" content="Mark Lorenz Yamanaka">
 <!-- www, not the apex: mlyamanaka.com 308-redirects to www, and a scraper
      that does not follow redirects would never reach og-card.png. -->
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Mark Lorenz Yamanaka">
 <meta property="og:url" content="https://www.mlyamanaka.com/">
 <meta property="og:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
-<meta property="og:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
+<meta property="og:description" content="Seven projects: four stress and CFD analyses, each with its result and how it was checked, and three things built by hand. Revisions are published alongside the results.">
 <meta property="og:image" content="https://www.mlyamanaka.com/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,7 +22,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mark Lorenz Yamanaka — Engineering Portfolio">
-<meta name="twitter:description" content="Six projects taken far enough that someone could build them — CFD, FEA and GD&amp;T drawing sets, with revisions published alongside the results.">
+<meta name="twitter:description" content="Seven projects: four stress and CFD analyses, each with its result and how it was checked, and three things built by hand. Revisions are published alongside the results.">
 <meta name="twitter:image" content="https://www.mlyamanaka.com/og-card.png">
 
 <!-- MLY grid monogram. favicon.svg is the bold small-size cut and follows the
@@ -81,6 +81,10 @@ if(m)m.setAttribute('content',dark ? '#1A2535' : '#FFFFFF');
 // Arm the scroll-reveal styles before first paint so nothing flashes in and
 // back out, then withdraw them if initReveal() never signals ready.
 document.documentElement.classList.add('js-reveal');
+// The hero entrance plays on the first page of a visit only. Moving between
+// the five pages is the most repeated action here, and replaying ~760ms of
+// title motion on every hop made navigation feel slow.
+try{if(sessionStorage.getItem('intro'))document.documentElement.classList.add('intro-seen');sessionStorage.setItem('intro','1');}catch(e){}
 setTimeout(function(){
   if(!window.__revealReady)document.documentElement.classList.remove('js-reveal');
 },3000);
@@ -137,7 +141,7 @@ setTimeout(function(){
 <nav style="position:sticky;top:0;z-index:40;background:var(--nav-bg);backdrop-filter:blur(10px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 clamp(18px,4vw,56px);">
   <div class="nav-inner">
     <div class="nav-scroll" id="nav-scroll">
-    <a href="./" class="nav-link nav-page" aria-current="page">Home</a>
+    <a href="portfolio-light.html" class="nav-link nav-page" aria-current="page">Home</a>
     <a href="projects.html" class="nav-link nav-page">Projects</a>
     <a href="internships.html" class="nav-link nav-page">Internships</a>
     <a href="about.html" class="nav-link nav-page">About</a>

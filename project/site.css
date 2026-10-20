@@ -510,68 +510,21 @@ button { font-family: inherit; }
 }
 holo-bay:defined .holo-fallback { display: none; }
 
-/* ── Hero CTA link ───────────────────────────────────── */
-.hero-cta-link {
-  transition: color 150ms ease, transform 180ms var(--ease-out);
-}
-.hero-cta-link:active { transform: scale(0.97); }
-
 /* ── Hero entry stagger ──────────────────────────────── */
 @keyframes hero-fade-up {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.hero-s1 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 0ms; }
-.hero-s2 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 80ms; }
-.hero-s3 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 160ms; }
-.hero-s4 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 220ms; }
-.hero-s5 { animation: hero-fade-up 540ms var(--ease-out) both; animation-delay: 280ms; }
+.hero-s1 { animation: hero-fade-up 300ms var(--ease-out) both; animation-delay: 0ms; }
+.hero-s2 { animation: hero-fade-up 300ms var(--ease-out) both; animation-delay: 60ms; }
+.hero-s3 { animation: hero-fade-up 300ms var(--ease-out) both; animation-delay: 120ms; }
+.hero-s4 { animation: hero-fade-up 300ms var(--ease-out) both; animation-delay: 180ms; }
+/* Played on the first page of a visit only (the head script sets this). */
+.intro-seen .hero-s1, .intro-seen .hero-s2, .intro-seen .hero-s3, .intro-seen .hero-s4 { animation: none; }
 
-/* ── Kicker discipline chips ─────────────────────────── */
-.kicker-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.kicker-chip {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-  padding: 2px 7px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-}
 
-/* A status chip, not a discipline one, so it carries the rust the rest of the
-   page uses for "this is live information" — the availability dot, the section
-   kickers — rather than the grey of the taxonomy chips beside it. */
-.kicker-chip.is-wip,
-.proj-card-kicker.is-wip {
-  color: var(--label);
-  border-color: var(--label);
-}
-
-/* ── Availability badge ──────────────────────────────── */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--label);
-  margin-top: 16px;
-}
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--rust);
-  flex-shrink: 0;
-  animation: dot-pulse 2.4s ease-in-out infinite;
-}
-@keyframes dot-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.6); opacity: 0.35; }
-}
 
 /* ── Lightbox (class-driven, always in DOM) ──────────── */
-/* Base = closed state; transition here fires on CLOSE (ease-in: accelerates to gone) */
 /* Page frozen behind the open viewer. scrollbar-gutter keeps the space the
    scrollbar used, so nothing shifts sideways when it disappears. touch-action
    and overscroll-behavior stop a swipe on the backdrop scrolling the page
@@ -592,7 +545,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   cursor: zoom-out;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 160ms var(--ease-in);
+  transition: opacity 150ms var(--ease-out);
 }
 /* .open state; transition here fires on OPEN (ease-out: instant start) */
 #lightbox.open {
@@ -601,13 +554,14 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   transition: opacity 200ms var(--ease-out);
 }
 
-/* Inner content: base = closed (ease-in on close), .open = ease-out on open */
+/* Inner content: closing and opening both on the ease-out curve, so the
+   close responds the instant it is asked for. */
 #lightbox-inner {
   max-width: 1440px;
   width: 100%;
-  transform: scale(0.96);
+  transform: scale(0.98);
   opacity: 0;
-  transition: transform 180ms var(--ease-in), opacity 180ms var(--ease-in);
+  transition: transform 150ms var(--ease-out), opacity 150ms var(--ease-out);
 }
 #lightbox.open #lightbox-inner {
   transform: none;
@@ -874,14 +828,14 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   transition: opacity 300ms var(--ease-out), transform 260ms var(--ease-out);
 }
 .js-reveal .section-reveal.visible { opacity: 1; transform: none; }
+.reveal-instant, .reveal-instant * { transition: none !important; }
 
 .js-reveal .section-reveal .metric-row {
   opacity: 0;
-  transform: translateX(-5px);
-  transition: opacity 240ms var(--ease-out), transform 200ms var(--ease-out);
-  transition-delay: calc(var(--ri, 0) * 40ms + 80ms);
+  transition: opacity 200ms var(--ease-out);
+  transition-delay: calc(var(--ri, 0) * 30ms + 60ms);
 }
-.js-reveal .section-reveal.visible .metric-row { opacity: 1; transform: none; }
+.js-reveal .section-reveal.visible .metric-row { opacity: 1; }
 
 .js-reveal .section-reveal .proj-card {
   opacity: 0;
@@ -915,6 +869,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .footer-cta-btn:active { transform: scale(0.98); }
 /* On the inner pages the footer's Get in touch is the same control as the
    nav's: a rust outline that fills on hover. */
+.footer-cta-sub { margin-left: auto; font-weight: 400; color: var(--muted); }
 .footer-cta-btn.footer-cta-primary {
   border-color: var(--rust);
   background: transparent;
@@ -924,6 +879,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 @media (hover: hover) and (pointer: fine) {
   /* Four classes, to outrank the page-wide a:not(...):hover colour rule. */
   .footer-grid .footer-cta .footer-cta-btn.footer-cta-primary:hover { background: var(--rust); border-color: var(--rust); color: var(--on-accent); }
+  .footer-grid .footer-cta .footer-cta-btn.footer-cta-primary:hover .footer-cta-sub { color: inherit; }
 }
 
 /* ── Footer layout ──────────────────────────────────────
@@ -986,7 +942,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
   .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
-  .hero-cta-link:hover { transform: translateX(3px); }
 }
 
 /* ── Focus visible (keyboard navigation) ────────────── */
@@ -1240,8 +1195,8 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  filter: blur(4px);
-  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
+  filter: blur(2px);
+  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
   pointer-events: none;
 }
 .hobby-slide.active {
@@ -1307,7 +1262,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 300ms var(--ease-out);
 }
 /* Behind a contained render that leaves a gap (see fitBackdrop). The same
    treatment as the project figures, scaled to a card: a smaller frame needs
@@ -1324,12 +1278,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .proj-card-thumb.is-letterboxed img {
   position: relative;
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
-}
-@media (hover: hover) and (pointer: fine) {
-  .proj-card:hover .proj-card-thumb img,
-  .proj-card:hover .proj-card-thumb video {
-    transform: scale(1.03);
-  }
 }
 .proj-card-body {
   padding: 16px 18px 18px;
@@ -1434,7 +1382,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background: var(--rust);
   transform: scale(1.25);
 }
-.hobby-dot:active { transform: scale(0.75); }
 @media (hover: hover) and (pointer: fine) {
   .hobby-dot:hover { background: var(--muted-2); }
   .hobby-dot.active:hover { background: var(--rust); }
@@ -1445,8 +1392,8 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  filter: blur(4px);
-  transition: opacity 500ms var(--ease-out), filter 500ms var(--ease-out);
+  filter: blur(2px);
+  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
   pointer-events: none;
 }
 .internship-slide.active {
@@ -1473,7 +1420,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background: var(--rust);
   transform: scale(1.25);
 }
-.internship-dot:active { transform: scale(0.75); }
 @media (hover: hover) and (pointer: fine) {
   .internship-dot:hover { background: var(--muted-2); }
   .internship-dot.active:hover { background: var(--rust); }
@@ -1503,7 +1449,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   overflow: hidden;
   transition: background 150ms ease, transform 120ms var(--ease-out);
 }
-.carousel-playpause:active { transform: scale(0.9); }
+.carousel-playpause:active { transform: scale(0.95); }
 @media (hover: hover) and (pointer: fine) {
   .carousel-playpause:hover { background: rgba(23,19,16,0.72); }
 }
@@ -1543,7 +1489,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .carousel-arrow.arrow-prev { left: 10px; }
 .carousel-arrow.arrow-next { right: 10px; }
-.carousel-arrow:active { transform: translateY(-50%) scale(0.9); }
+.carousel-arrow:active { transform: translateY(-50%) scale(0.95); }
 @media (hover: hover) and (pointer: fine) {
   .carousel-arrow:hover { background: rgba(23,19,16,0.72); }
 }
@@ -1655,8 +1601,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   }
   html { scroll-behavior: auto; }
   .hobby-slide { transition: none; }
-  .status-dot { animation: none; }
-  .hero-s1, .hero-s2, .hero-s3, .hero-s4, .hero-s5 { animation: none; opacity: 1; transform: none; }
+  .hero-s1, .hero-s2, .hero-s3, .hero-s4 { animation: none; opacity: 1; transform: none; }
 }
 
 /* ── Two pages ──────────────────────────────────────────
