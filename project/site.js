@@ -317,9 +317,11 @@ function calloutMarkup(view) {
   return `<div class="callouts" data-w="${w}" data-h="${h}" aria-hidden="true">`
     + `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${lines}</svg>${marks}</div>`;
 }
+// Spans, not <li>, because the project key sits inside the figure's
+// <button>, which may only hold phrasing content; the roles keep it a list.
 function calloutKey(view) {
   return view.callouts.map((c, i) =>
-    `<li><span class="callout-balloon">${i + 1}</span><span>${c.key}</span></li>`).join('');
+    `<span role="listitem"><span class="callout-balloon">${i + 1}</span><span>${c.key}</span></span>`).join('');
 }
 // The lead box shows its figure whole inside a padded frame, so the image's
 // own rectangle is worked out from that padding and the figure's shape.
@@ -382,16 +384,24 @@ function renderGallery(pi) {
 }
 
 // Crossfade lead image: ease-in on exit, ease-out on entry
+// ── Settle ─────────────────────────────────────────────
+// Content swapped in place (a figure, its caption, a release's numbers)
+// arrives at once and settles from 0.6 opacity over 150ms on the page's
+// ease-out curve, with a 2px blur to bridge a picture. Nothing waits for an
+// exit, and reduced motion skips it.
+const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+function settle(el, blur) {
+  if (!el || reducedMotion || !el.animate) return;
+  el.animate(blur
+    ? [{ opacity: 0.6, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0)' }]
+    : [{ opacity: 0.6 }, { opacity: 1 }], { duration: 150, easing: EASE_OUT });
+}
+
 function selectView(pi, vi) {
   viewIndex[pi] = vi;
-  const leadArea = document.getElementById(`lead-img-${pi}`);
   renderGallery(pi);
-  if (leadArea && !reducedMotion && leadArea.animate) {
-    leadArea.animate(
-      [{ opacity: 0.6, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0)' }],
-      { duration: 150, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
-    );
-  }
+  settle(document.getElementById(`lead-img-${pi}`), true);
+  settle(document.getElementById(`lead-cap-${pi}`), false);
 }
 
 // While the viewer is open the page behind it is frozen (html.lb-open), the
@@ -849,8 +859,14 @@ function setRevision(pi, id) {
   const r = PROJECTS[pi] && PROJECTS[pi].revisions;
   const rel = r && r.releases.find(x => x.id === id);
   if (!rel) return;
-  document.getElementById(`rev-table-${pi}`).innerHTML = metricRows(rel.values);
-  document.getElementById(`rev-note-${pi}`).textContent = rel.note;
+  const table = document.getElementById(`rev-table-${pi}`);
+  const note = document.getElementById(`rev-note-${pi}`);
+  table.innerHTML = metricRows(rel.values);
+  note.textContent = rel.note;
+  // 7.12 turning into a struck-through 42.70 is the page's story; the swap
+  // gets the same settle as a figure, so the change reads as a change.
+  settle(table, true);
+  settle(note, false);
   document.querySelectorAll(`#rev-${pi} .rev-toggle button`).forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
   document.getElementById(`rev-${pi}`).classList.toggle('is-superseded', !!rel.superseded);
@@ -863,7 +879,30 @@ function initCalloutFigures() {
   document.querySelectorAll('[data-callouts]').forEach(el => {
     const p = PROJECTS.find(x => x.anchor === el.dataset.callouts);
     const v = p && p.views.find(x => x.callouts);
-    if (v) el.insertAdjacentHTML('beforeend', calloutMarkup(v));
+    if (!v) return;
+    el.insertAdjacentHTML('beforeend', calloutMarkup(v));
+    // First page of a visit only, after the hero has risen in: each leader
+    // draws from the place a result was read out to its balloon, then the
+    // balloons settle in, 60ms apart. A returning page shows them at rest.
+    if (reducedMotion || document.documentElement.classList.contains('intro-seen')) return;
+    const layer = el.querySelector('.callouts');
+    if (!layer || !layer.animate) return;
+    const start = 420;
+    // Grown from its dot by scaling about that point, in the figure's own
+    // units. A dash-offset draw would be simpler, but the leaders keep a
+    // constant width (non-scaling-stroke), and Chrome measures dashes in
+    // screen space there, so the line showed whole from the first frame.
+    layer.querySelectorAll('line').forEach((l, i) => {
+      l.style.transformOrigin = `${l.getAttribute('x1')}px ${l.getAttribute('y1')}px`;
+      l.animate([{ transform: 'scale(0.001)' }, { transform: 'scale(1)' }],
+        { duration: 300, delay: start + i * 60, easing: EASE_OUT, fill: 'backwards' });
+    });
+    layer.querySelectorAll('.callout-dot').forEach((d, i) =>
+      d.animate([{ opacity: 0 }, { opacity: 1 }],
+        { duration: 150, delay: start + i * 60, easing: EASE_OUT, fill: 'backwards' }));
+    layer.querySelectorAll('.callout-balloon').forEach((b, i) =>
+      b.animate([{ opacity: 0, transform: 'scale(0.95)' }, { opacity: 1, transform: 'scale(1)' }],
+        { duration: 150, delay: start + 300 + i * 60, easing: EASE_OUT, fill: 'backwards' }));
   });
 }
 
@@ -932,9 +971,9 @@ function buildProjects() {
               <div class="lead-cap-row">
                 <span id="lead-cap-${pi}" class="lead-cap"></span>
                 <span class="lead-enlarge">⤢ Enlarge${p.views.length > 1 ? `, ${p.views.length} figures` : ''}</span>
+                <span id="lead-key-${pi}" class="callout-key" role="list" hidden></span>
               </div>
             </button>
-            <ol id="lead-key-${pi}" class="callout-key" hidden></ol>
             ${thumbsHtml}
           </div>
         </div>

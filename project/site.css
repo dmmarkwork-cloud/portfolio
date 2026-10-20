@@ -437,11 +437,16 @@ button { font-family: inherit; }
   line-height: 1.4;
   color: var(--ink);
 }
-.callout-key li { display: flex; align-items: center; gap: 10px; }
+.callout-key li, .callout-key [role="listitem"] { display: flex; align-items: center; gap: 10px; }
+/* The class sets display, which would otherwise beat the hidden attribute
+   and leave an empty box taking space under figures without callouts. */
+.callout-key[hidden] { display: none; }
 .callout-key .callout-balloon { position: static; margin: 0; flex: none; }
 .callout-key .data { color: var(--rust); font-weight: 600; }
 .callout-key s.data { color: var(--muted-2); font-weight: 400; text-decoration-thickness: 2px; }
-.proj-stage .callout-key { margin-top: 12px; }
+/* In a project the key sits in the caption row, inside the figure's fixed
+   height, so switching to a figure without callouts moves nothing below. */
+.lead-cap-row .callout-key { flex-basis: 100%; margin: 6px 0 0; gap: 6px; }
 
 /* ── The work ──────────────────────────────────────────
    Four analysis cards, two by two, with the hand builds and the turntable

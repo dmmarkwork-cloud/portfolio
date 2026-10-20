@@ -83,6 +83,15 @@ header#top { letter-spacing: 0.16em; }
     mask-image: none;
   }
   nav.nav-collapsed.nav-open .nav-scroll { display: grid; }
+  /* The panel drops 6px from the bar as it opens, so it reads as coming
+     from the button above it; closing is instant. */
+  nav.nav-collapsed .nav-scroll {
+    transform-origin: top;
+    transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+  }
+  @starting-style {
+    nav.nav-collapsed.nav-open .nav-scroll { opacity: 0; transform: translateY(-6px); }
+  }
   /* In the strip the 44px tap area comes from a ::after reaching 8px past
      the link on each side, which is free when the links sit in one row. In a
      stacked panel those areas would overlap by 14px and a tap near a
