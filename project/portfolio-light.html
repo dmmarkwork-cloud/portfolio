@@ -74,7 +74,7 @@
   --ink: #171310;
   --muted: #5F5852;
   --muted-2: #6E6862;
-  --label: #B4491B;          /* section labels and kickers */
+  --label: #6E6862;          /* section labels: quiet, so rust is left to results and links */
   --link: #B4491B;           /* text links */
   --focus: #B4491B;          /* focus ring */
   --on-accent: #FFFFFF;      /* text on a rust fill */
@@ -124,7 +124,7 @@
   --bg: #101827;            /* background: ink blue */
   --nav-active-bg: rgba(214, 138, 99, 0.16);
   --nav-active-fg: #DCD4C5; /* secondary accent: warm ivory */
-  --label: #D68A63;         /* copper passes on ink blue, so dark keeps it */
+  --label: #8E97A5;         /* section labels: quiet, so copper is left to results and links */
   --link: #D68A63;
   --focus: #D68A63;
   --on-accent: #101827;
@@ -279,8 +279,6 @@ button { font-family: inherit; }
   flex-shrink: 0;
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--rust);
   border: 1px solid var(--rust);
   padding: 4px 11px;
@@ -341,14 +339,211 @@ button { font-family: inherit; }
 }
 
 /* ── Hero two-column grid ────────────────────────────── */
+.hero {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 88px) clamp(18px, 4vw, 56px) clamp(32px, 5vw, 64px);
+}
+.hero-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-display);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  margin: 0 0 clamp(24px, 3vw, 40px);
+  max-width: 26ch;
+  text-wrap: balance;
+}
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 1.35fr) minmax(200px, 1fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
 }
 @media (max-width: 820px) {
   .hero-grid { grid-template-columns: 1fr; }
 }
+.hero-lede {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  max-width: 46ch;
+  margin: 0 0 26px;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--rust);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background-color 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.hero-btn:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .hero-btn:hover { background: var(--ink); color: var(--surface); }
+}
+.hero-creds { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.hero-creds span {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+.hero-fig {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: clamp(12px, 1.6vw, 20px);
+}
+.hero-fig figcaption {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ── Drawing callouts ──────────────────────────────────
+   Leader, dot and numbered balloon, as on a drawing sheet. The balloons
+   are HTML so they stay round and legible at any figure size; the leaders
+   are one SVG stretched over the image, drawn at a constant stroke. */
+.callout-fig { position: relative; display: block; }
+.callout-fig img { display: block; width: 100%; height: auto; }
+.callouts { position: absolute; inset: 0; pointer-events: none; }
+.callouts svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.callouts line { stroke: var(--rust); stroke-width: 1.5; }
+.callout-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--rust);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.callout-balloon {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--rust);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--rust);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  line-height: 1;
+}
+.callout-key {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.callout-key li { display: flex; align-items: center; gap: 10px; }
+.callout-key .callout-balloon { position: static; margin: 0; flex: none; }
+.callout-key .data { color: var(--rust); font-weight: 600; }
+.callout-key s.data { color: var(--muted-2); font-weight: 400; text-decoration-thickness: 2px; }
+.proj-stage .callout-key { margin-top: 12px; }
+
+/* ── The work ──────────────────────────────────────────
+   Four analysis cards, two by two, with the hand builds and the turntable
+   of models beside them. The section reads as an index: result first,
+   then the chapter for anyone who wants the proof. */
+.work {
+  padding: clamp(48px, 6vw, 80px) 0 clamp(32px, 4vw, 56px);
+  border-bottom: 1px solid var(--border);
+}
+.work-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+.section-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+}
+.section-lede {
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 52ch;
+  margin: 12px 0 0;
+}
+.grid-hint { font-size: var(--fs-micro); color: var(--muted); white-space: nowrap; }
+.work-layout { display: grid; gap: clamp(24px, 3vw, 40px); }
+@media (min-width: 1000px) {
+  .work-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+}
+.work-side { display: grid; gap: clamp(24px, 3vw, 32px); min-width: 0; }
+.built-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+.built-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+}
+.built-row img, .built-row > span:first-child {
+  width: 88px;
+  height: 66px;
+  object-fit: cover;
+  display: block;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+}
+.built-row strong { display: block; font-size: var(--fs-small); font-weight: 600; color: var(--ink); line-height: 1.3; }
+.built-row strong + span { display: block; font-size: var(--fs-small); color: var(--muted); line-height: 1.4; margin-top: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .built-row:hover strong { color: var(--link); }
+}
+.holo-panel { min-width: 0; background: var(--surface); border: 1px solid var(--border); }
+.holo-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-light);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  color: var(--muted-2);
+}
+.built-head { padding: clamp(56px, 7vw, 96px) 0 clamp(8px, 1vw, 16px); scroll-margin-top: 56px; }
 
 /* ── Holo-bay static fallback ─────────────────────────
    holo-bay is an unknown element until holo-bay.js loads and registers it;
@@ -370,8 +565,6 @@ button { font-family: inherit; }
 .holo-fallback-chip {
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--muted-2);
   padding: 4px 9px;
   border: 1px solid var(--border);
@@ -401,8 +594,6 @@ holo-bay:defined .holo-fallback { display: none; }
 .kicker-chip {
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--muted-2);
   padding: 2px 7px;
   border: 1px solid var(--border);
@@ -425,8 +616,6 @@ holo-bay:defined .holo-fallback { display: none; }
   gap: 7px;
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--label);
   margin-top: 16px;
 }
@@ -434,7 +623,7 @@ holo-bay:defined .holo-fallback { display: none; }
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--label);
+  background: var(--rust);
   flex-shrink: 0;
   animation: dot-pulse 2.4s ease-in-out infinite;
 }
@@ -528,10 +717,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
    these captions no longer fit a tablet's width, and a caption truncated to
    "The finished airframe — foam b…" has lost the half that says what the
    picture shows. */
-.lead-cap { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-@media (max-width: 860px) {
-  .lead-cap { white-space: normal; overflow: visible; line-height: 1.35; }
-}
+.lead-cap { flex: 1 1 240px; min-width: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
 
 /* ── The stage ──────────────────────────────────────────
    Every project is one figure and its numbers. On a desktop the figure takes
@@ -550,7 +736,117 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   gap: clamp(18px, 2.5vw, 30px);
 }
 .proj-read { order: -1; display: flex; flex-direction: column; min-width: 0; }
+@media (max-width: 999.98px) {
+  .proj-split { display: flex; flex-direction: column; gap: 0; }
+  .proj-read { display: contents; }
+  .proj-read > * { order: 1; }
+  .proj-stage { order: 2; margin-top: 26px; min-width: 0; }
+  .proj-read > .rev,
+  .proj-read > .proj-layers,
+  .proj-read > .proj-story,
+  .proj-read > .proj-story ~ .proj-metrics,
+  .proj-read > .proj-repo,
+  .proj-read > .proj-repo-note { order: 3; }
+  .proj-read > .proj-story { margin-top: 26px; }
+  .proj-read > .proj-repo, .proj-read > .proj-repo-note { margin-top: 4px; }
+}
 .proj-metrics { display: grid; margin-top: 22px; }
+.proj-section {
+  padding: clamp(32px, 4.5vw, 68px) 0 clamp(24px, 3vw, 44px);
+  border-bottom: 1px solid var(--border);
+}
+.proj-tags { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted-2); }
+.proj-status { color: var(--rust); font-weight: 600; }
+.proj-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+/* The result, as a sentence, directly under the name: a reader who reads
+   only the headings still leaves with the finding. */
+.proj-result {
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+.proj-story {
+  font-size: var(--fs-body);
+  line-height: 1.58;
+  color: var(--muted);
+  margin: 18px 0 0;
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.metric-k { font-size: var(--fs-small); color: var(--muted-2); }
+.metric-v {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+}
+.metric-v.is-num {
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--rust);
+  font-variant-numeric: tabular-nums;
+}
+.rev.is-superseded .metric-v.is-num { color: var(--muted-2); }
+/* Problem, approach, verification, lesson: a report's order, with labels a
+   skimmer can read down on their own. */
+.proj-layers {
+  display: grid;
+  grid-template-columns: 7.2em minmax(0, 1fr);
+  gap: 12px 18px;
+  margin: 30px 0 24px;
+}
+.proj-layers dt { font-size: var(--fs-small); font-weight: 600; color: var(--ink); padding-top: 2px; }
+.proj-layers dd { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+@media (max-width: 520px) {
+  .proj-layers { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .proj-layers dd { margin-bottom: 12px; }
+}
+.proj-repo {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.proj-repo-note { margin: 6px 0 0; font-size: var(--fs-small); color: var(--muted-2); }
+.proj-read > .proj-metrics:last-child, .proj-story + .proj-metrics { margin-bottom: 18px; }
+.lead-cap-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  border-top: 1px solid var(--border-light);
+  padding: 12px clamp(14px, 2vw, 22px);
+  font-family: var(--font-sans);
+  text-align: left;
+}
+.lead-enlarge { flex: none; font-size: var(--fs-micro); color: var(--muted-2); }
 .proj-stage .gallery-split { grid-template-columns: minmax(0, 1fr); }
 .proj-stage .thumb-rail {
   grid-auto-flow: column;
@@ -574,7 +870,7 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   .proj-read { order: 0; }
   /* Heading and prose at the top, numbers at the foot: the column reads as
      a spec sheet the height of the figure beside it. */
-  .proj-metrics { margin-top: auto; padding-top: 28px; }
+  .proj-metrics { margin-top: 26px; }
   .proj-stage .lead-btn { height: clamp(340px, 56svh, 560px); }
 }
 
@@ -591,8 +887,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .rev-title {
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--label);
 }
 .rev-toggle { display: inline-flex; border: 1px solid var(--ink); }
@@ -712,8 +1006,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   color: var(--muted-2);
   font-size: var(--fs-micro);
   line-height: 1.25;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 /* A hairline between the contact lines and the copyright, with equal air
    either side (2px margin + 8px grid gap above, 10px padding below). It
@@ -789,8 +1081,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .about-facts dt {
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--muted-2);
   margin-bottom: 6px;
 }
@@ -825,8 +1115,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   right: 12px;
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--muted-2);
   pointer-events: none;
 }
@@ -880,8 +1168,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   flex: none;
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--muted-2);
 }
 .learning-list {
@@ -1030,8 +1316,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background: linear-gradient(transparent, rgba(0,0,0,0.62));
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
   color: rgba(255,255,255,0.82);
   pointer-events: none;
 }
@@ -1092,26 +1376,11 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   position: relative;
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
 }
-.proj-card-num { z-index: 1; }
 @media (hover: hover) and (pointer: fine) {
   .proj-card:hover .proj-card-thumb img,
   .proj-card:hover .proj-card-thumb video {
     transform: scale(1.03);
   }
-}
-.proj-card-num {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.88);
-  background: rgba(23,19,16,0.52);
-  padding: 3px 7px;
-  border-radius: 2px;
-  backdrop-filter: blur(4px);
 }
 .proj-card-body {
   padding: 16px 18px 18px;
@@ -1128,8 +1397,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .proj-card-kicker {
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--muted);
   border: 1px solid var(--border-light);
   padding: 2px 7px;
@@ -1139,20 +1406,28 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   font-family: var(--font-sans);
   font-size: var(--fs-small);
   font-weight: 600;
-  color: var(--ink);
+  color: var(--muted);
   margin: 0 0 6px;
   line-height: 1.3;
 }
-.proj-card-metric {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  font-weight: 500;
-  color: var(--label);
-  letter-spacing: 0.04em;
-  /* Last line of the card: pinned to the bottom so the numbers line up
-     across a row however many lines the titles wrap to. */
-  margin-top: auto;
+.proj-card-result {
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0 0 16px;
+  text-wrap: pretty;
 }
+/* The number to remember, pinned to the foot of the card so the numbers
+   line up across a row however many lines the sentences above them take. */
+.proj-card-key {
+  margin-top: auto;
+  font-size: var(--fs-small);
+  color: var(--muted);
+  line-height: 1.35;
+}
+.proj-card-num { font-size: var(--fs-lead); font-weight: 600; color: var(--rust); letter-spacing: -0.02em; }
+.proj-card-status { display: block; color: var(--rust); font-weight: 600; margin-bottom: 2px; }
+.proj-card-check { margin-top: 6px; font-size: var(--fs-micro); color: var(--muted-2); }
 .tools-title {
   font-family: var(--font-sans);
   font-size: var(--fs-h2);   /* a section heading, like "Internships" */
@@ -1180,8 +1455,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ink);
   margin-bottom: 12px;
 }
@@ -1209,13 +1482,13 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   transition: background 200ms ease, transform 120ms var(--ease-out);
 }
 .hobby-dot.active {
-  background: var(--label);
+  background: var(--rust);
   transform: scale(1.25);
 }
 .hobby-dot:active { transform: scale(0.75); }
 @media (hover: hover) and (pointer: fine) {
   .hobby-dot:hover { background: var(--muted-2); }
-  .hobby-dot.active:hover { background: var(--label); }
+  .hobby-dot.active:hover { background: var(--rust); }
 }
 
 /* ── Internship carousel (shares slide + dot styles) ──── */
@@ -1248,13 +1521,13 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   transition: background 200ms ease, transform 120ms var(--ease-out);
 }
 .internship-dot.active {
-  background: var(--label);
+  background: var(--rust);
   transform: scale(1.25);
 }
 .internship-dot:active { transform: scale(0.75); }
 @media (hover: hover) and (pointer: fine) {
   .internship-dot:hover { background: var(--muted-2); }
-  .internship-dot.active:hover { background: var(--label); }
+  .internship-dot.active:hover { background: var(--rust); }
 }
 
 /* ── Carousel play/pause control ──────────────────────
@@ -1508,9 +1781,7 @@ header#top { letter-spacing: 0.16em; }
     border: 0;
     background: none;
     font-family: var(--font-sans);
-    font-size: var(--fs-micro);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: var(--fs-small);
     color: var(--ink);
     text-align: left;
     cursor: pointer;
@@ -1779,54 +2050,32 @@ setTimeout(function(){
 
 <!-- Header -->
 <div class="header-wrap">
-<section aria-label="Introduction" style="max-width:1240px;margin:0 auto;padding:clamp(44px,7vw,104px) clamp(18px,4vw,56px) clamp(32px,5vw,64px);">
-  <div class="hero-grid" style="gap:clamp(28px,4vw,64px);">
-    <div>
-      <div class="hero-s1" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.2em;text-transform:uppercase;color:var(--label);margin-bottom:22px;">ENGINEERING PORTFOLIO</div>
-      <h1 class="hero-s2" style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-display);line-height:1.05;letter-spacing:-0.035em;margin:0 0 26px;text-wrap:balance;">Every project here is one I'd still revise.</h1>
-      <p class="hero-s3" style="font-size:var(--fs-body);line-height:1.62;max-width:50ch;margin:0 0 22px;color:var(--muted);text-wrap:pretty;">I'm Mark Lorenz Yamanaka, a PRC-licensed Professional Aeronautical Engineer working across CFD, FEA and GD&T drawing sets. Seven projects below: six taken far enough that someone could build them, and one still under analysis. Where a result was revised, both versions are published. The full working is in the repositories.</p>
-      <a href="#p-bracket" class="hero-cta-link hero-s4" style="display:inline-block;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--link);margin-bottom:28px;">See the seven projects ↓</a>
-      <div class="hero-s5" style="display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">PRC Professional AE · 2024</span>
-        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">ASME Y14.5-2018</span>
-        <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.06em;padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--muted);">FAR Part 23 / 27 / 29</span>
-      </div>
-      <div class="status-badge hero-s5" style="margin-top:16px;">
-        <span class="status-dot"></span>
-        Open to aerospace / mechanical roles
-      </div>
-    </div>
-    <div style="min-width:0;background:var(--surface);border:1px solid var(--border);align-self:center;">
-      <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border-light);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);">
-        <span>Six of seven, in the round</span>
-        <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
-      </div>
-      <div style="padding:clamp(8px,1.2vw,14px);">
-        <holo-bay
-          height="358px"
-          subject-scale="1.6"
-          line="#96401A"
-          fill="#E6D3C5"
-          ring="#DCD2C6"
-          hover="#171310"
-          legend-fg="#6E6862"
-          legend-bg="#FFFFFF"
-          legend-border="#E2DAD0"
-          legend-active="#171310"
-          legend-active-border="#B4491B"
-        ><div class="holo-fallback">
-            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">Interactive view unavailable — the six projects</span>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;">
-              <span class="holo-fallback-chip">CD Nozzle</span>
-              <span class="holo-fallback-chip">Propellant Tank</span>
-              <span class="holo-fallback-chip">MK-10</span>
-              <span class="holo-fallback-chip">PANO-VISTA</span>
-              <span class="holo-fallback-chip">Rotor</span>
-              <span class="holo-fallback-chip">Wing rig</span>
-            </div>
-          </div></holo-bay>
+<section aria-label="Introduction" class="hero">
+  <!-- Answer first. A reviewer decides in about ten seconds whether to read
+       on, so the first line says who this is and what he does, and the
+       figure beside it is the strongest single piece of evidence on the
+       page: the nozzle result he corrected, marked where it was read. -->
+  <h1 class="hero-title hero-s1">Aeronautical engineer for stress, CFD and drawings.</h1>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="hero-lede hero-s2">PRC-licensed Professional Aeronautical Engineer in Tsukuba, Japan, looking for structures and stress roles. Every project here is one I'd still revise: each result shows how it was checked, and where one was wrong, both versions stay published.</p>
+      <a href="#p-nozzle" class="hero-btn hero-s3">See the four analyses</a>
+      <div class="hero-creds hero-s4">
+        <span>PRC Professional AE, 2024</span>
+        <span>ASME Y14.5-2018</span>
+        <span>FAR Part 23, 27 and 29</span>
       </div>
     </div>
+    <figure class="hero-fig hero-s3">
+      <a href="#p-nozzle" class="callout-fig" data-callouts="p-nozzle" aria-label="Uncooled SS316 C-D Nozzle: go to the project">
+        <img src="fea/mesh3/von-mises-global.png" width="1632" height="582" alt="von Mises stress in the nozzle wall, mesh J3, with the chamber junction and the throat marked" decoding="async">
+      </a>
+      <ol class="callout-key">
+        <li><span class="callout-balloon">1</span><span>Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span></span></li>
+        <li><span class="callout-balloon">2</span><span>Throat. v1.0 read it here: <s class="data">42.70</s>, withdrawn</span></li>
+      </ol>
+      <figcaption>Uncooled SS316 C-D nozzle. My first release read the stress at the throat and reported a factor of safety six times too high; the junction governs.</figcaption>
+    </figure>
   </div>
 </section>
 </div>
@@ -1839,19 +2088,17 @@ setTimeout(function(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></svg>
     </a>
     <div class="nav-scroll" id="nav-scroll">
-    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">01 Bracket</a>
-    <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">02 Nozzle</a>
-    <a href="#p-tank" data-nav="p-tank" class="nav-link">03 Tank</a>
-    <a href="#p-mk10" data-nav="p-mk10" class="nav-link">04 MK-10</a>
-    <a href="#p-uav" data-nav="p-uav" class="nav-link">05 PANO-VISTA</a>
-    <a href="#p-rotor" data-nav="p-rotor" class="nav-link">06 Rotor</a>
-    <a href="#p-wing" data-nav="p-wing" class="nav-link">07 Wing rig</a>
+    <a href="#p-nozzle" data-nav="p-nozzle" class="nav-link">Nozzle</a>
+    <a href="#p-tank" data-nav="p-tank" class="nav-link">Tank</a>
+    <a href="#p-mk10" data-nav="p-mk10" class="nav-link">MK-10</a>
+    <a href="#p-bracket" data-nav="p-bracket" class="nav-link">Bracket</a>
+    <a href="#built" data-nav="built" class="nav-link">Built by hand</a>
     <a href="#hangar" data-nav="hangar" class="nav-link">Internships</a>
     <a href="#about" data-nav="about" class="nav-link">About</a>
     <a href="uploads/Mark-Yamanaka-Resume.pdf" download="Mark-Lorenz-Yamanaka-Resume.pdf" target="_blank" rel="noopener" class="nav-link">Résumé</a>
     </div>
     <div class="nav-actions">
-    <a href="#contact" class="nav-cta"><span class="cta-long">Get in touch →</span><span class="cta-short">Contact</span></a>
+    <a href="#contact" class="nav-cta"><span class="cta-long">Get in touch</span><span class="cta-short">Contact</span></a>
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
       <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -1864,33 +2111,73 @@ setTimeout(function(){
 <main style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,56px) clamp(40px,6vw,88px);">
 
 
-  <!-- Project overview grid — rendered by JS -->
-  <div id="project-grid-container"></div>
+  <!-- The work: four analyses as cards, the three hand builds as a list,
+       and the turntable of six models as the section's picture. The cards
+       and the list are filled by buildProjectGrid(). -->
+  <section id="work" class="section-reveal work">
+    <div class="work-head">
+      <div>
+        <h2 class="section-title">The work</h2>
+        <p class="section-lede">Four analyses, each with its result and how it was checked, then three things built by hand.</p>
+      </div>
+      <span id="grid-hint" class="grid-hint"></span>
+    </div>
+    <div class="work-layout">
+      <div id="project-grid-container" class="proj-grid"></div>
+      <aside class="work-side" aria-label="Built by hand">
+        <div class="built-index">
+          <h3 class="built-title">Built by hand</h3>
+          <div id="built-list"></div>
+        </div>
+      <div class="holo-panel">
+        <div class="holo-head">
+          <span>Six of seven, in the round</span>
+          <span><span class="hover-only">Hover to identify</span><span class="touch-only">Drag to identify</span></span>
+        </div>
+        <div style="padding:clamp(8px,1.2vw,14px);">
+          <holo-bay
+            height="358px"
+            subject-scale="1.6"
+            line="#96401A"
+            fill="#E6D3C5"
+            ring="#DCD2C6"
+            hover="#171310"
+            legend-fg="#6E6862"
+            legend-bg="#FFFFFF"
+            legend-border="#E2DAD0"
+            legend-active="#171310"
+            legend-active-border="#B4491B"
+          ><div class="holo-fallback">
+              <span style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);">Interactive view unavailable — the six projects</span>
+              <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:320px;">
+                <span class="holo-fallback-chip">Nozzle</span>
+                <span class="holo-fallback-chip">Tank</span>
+                <span class="holo-fallback-chip">MK-10</span>
+                <span class="holo-fallback-chip">PANO-VISTA</span>
+                <span class="holo-fallback-chip">Rotor</span>
+                <span class="holo-fallback-chip">Wing rig</span>
+              </div>
+            </div></holo-bay>
+        </div>
+      </div>
+      </aside>
+    </div>
+  </section>
 
   <!-- Projects — rendered by JS -->
   <div id="projects-container"></div>
 
-  <!-- Tools: what the work above was done with. It used to sit between the
-       hero and "The work", which made twenty software chips the second
-       thing a visitor met, ahead of any project. It is supporting
-       evidence for the projects, so it follows them. -->
-  <section id="tools" class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
-    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);margin-bottom:8px;">Tools</div>
-    <h2 class="tools-title">What I bring to a project</h2>
-    <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
-    <div class="tools-grid" id="software-list"></div>
-  </section>
 
   <!-- Internships -->
   <section id="hangar" data-section="hangar" class="section-reveal" style="padding:clamp(56px,7vw,100px) 0 clamp(20px,3vw,36px);border-bottom:1px solid var(--border);">
-    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.2em;text-transform:uppercase;color:var(--label);margin-bottom:20px;">Hangar time</div>
+    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:20px;">Hangar time</div>
     <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.05;letter-spacing:-0.03em;margin:0 0 clamp(32px,4vw,54px);max-width:26ch;text-wrap:balance;">Internships</h2>
     <div style="display:grid;gap:clamp(36px,5vw,64px);">
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
         <div>
           <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Dornier Technology Inc.</div>
-          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);margin-bottom:18px;">Aircraft maintenance engineer intern · May–Jul 2023</div>
           <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Fifteen-plus pre- and post-flight inspections across A320, ATR-72 and B737 during line maintenance, then an A320 engine overhaul in base maintenance, including a torque-controlled fastener installation on a wing leading-edge de-icing boot under a licensed mechanic's sign-off. The last rotation was technical records: reviewing NRC, service-bulletin and airworthiness-directive compliance.</p>
           <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">Also where I learned to safety-wire properly. It is a small, unglamorous detail, but it tells you whether a job was done by someone paying attention.</p>
         </div>
@@ -1935,23 +2222,34 @@ setTimeout(function(){
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(22px,3.5vw,48px);align-items:start;">
         <div>
           <div style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h3);letter-spacing:-0.02em;line-height:1.15;margin-bottom:10px;">Alpha Aviation Group Philippines</div>
-          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);margin-bottom:18px;">Ground Support Group intern · Feb 2023</div>
           <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0 0 14px;max-width:54ch;text-wrap:pretty;">Flight simulation sessions on a Cessna 172 and an A320, trainer aircraft external inspection and cockpit prep, and one supervised engine run-up and taxi on the Cessna, working through the function checks and fault indications that go with it.</p>
           <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;max-width:54ch;text-wrap:pretty;">A fault indication reads differently once you have sat in the seat that shows it to you.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;">
           <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
             <img src="figures/internship/a320-sim.jpg" alt="Seated in an A320 full-flight simulator flight deck" loading="lazy" style="display:block;width:100%;height:190px;object-fit:cover;">
-            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">A320 full-flight simulator</figcaption>
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">A320 full-flight simulator</figcaption>
           </figure>
           <figure style="margin:0;background:var(--surface);border:1px solid var(--border);padding:8px;">
             <img src="figures/internship/cessna-flight-deck.jpg" alt="Seated at the controls of a light single-engine aircraft" loading="lazy" style="display:block;width:100%;height:190px;object-fit:contain;">
-            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">Light single flight deck</figcaption>
+            <figcaption style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);padding:9px 2px 2px;line-height:1.4;">Light single flight deck</figcaption>
           </figure>
         </div>
       </div>
 
     </div>
+  </section>
+
+  <!-- Tools: what the work above was done with. It used to sit between the
+       hero and "The work", which made twenty software chips the second
+       thing a visitor met, ahead of any project. It is supporting
+       evidence for the projects, so it follows them. -->
+  <section id="tools" class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
+    <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:8px;">Tools</div>
+    <h2 class="tools-title">What I bring to a project</h2>
+    <p class="tools-lede">Grouped by the stage of the work each one serves, from geometry through analysis to reporting.</p>
+    <div class="tools-grid" id="software-list"></div>
   </section>
 
   <!-- About -->
@@ -1972,7 +2270,7 @@ setTimeout(function(){
         </div>
         <!-- Background -->
         <div>
-          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);margin-bottom:20px;">Background</div>
+          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:20px;">Background</div>
           <div style="display:grid;gap:14px;">
             <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">I studied aeronautical engineering at Holy Angel University from 2020 to 2024, graduating on the Dean's List with a GPA of 1.58, where 1.00 is the highest mark, or about 3.54 out of 4.0. My coursework spanned aircraft structures, aircraft/helicopter/UAV design and systems, aerodynamics, powerplant, and reliability engineering, and I was licensed as a PRC Professional Aeronautical Engineer that same year. Somewhere between a hangar internship and a mesh study I worked out what I actually enjoy: taking an analysis far enough that it turns into a toleranced drawing someone can quote, machine and inspect.</p>
             <p style="font-size:var(--fs-body);line-height:1.68;color:var(--muted);margin:0;text-wrap:pretty;">The hangar came first, though. It is hard to over-report a factor of safety once you have seen what an aircraft actually looks like at 40,000 cycles.</p>
@@ -1992,7 +2290,7 @@ setTimeout(function(){
         <div class="beyond-layout">
           <div class="beyond-media">
                     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px;">
-            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);">Beyond the desk</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);">Beyond the desk</span>
           </div>
 
           <div class="beyond-row">
@@ -2092,7 +2390,7 @@ setTimeout(function(){
 <footer id="contact" style="border-top:1px solid var(--border);background:var(--surface);padding:clamp(44px,6vw,88px) 0;">
   <div class="footer-grid">
     <div class="footer-head">
-      <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.18em;text-transform:uppercase;color:var(--label);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
+      <div style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--label);margin-bottom:18px;">Open to aerospace / mechanical roles</div>
       <div style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:600;letter-spacing:-0.03em;line-height:1.08;">Feel free to reach out!</div>
     </div>
     <div class="footer-cta">
@@ -2150,7 +2448,7 @@ setTimeout(function(){
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
     <div id="lightbox-media"></div>
-    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:#E6DED5;">
+    <div class="lb-caption-row" style="display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:var(--font-sans);font-size:var(--fs-micro);color:#E6DED5;">
       <span id="lightbox-caption"></span>
       <span id="lb-count" style="flex:none;font-variant-numeric:tabular-nums;"></span>
     </div>
@@ -2181,34 +2479,26 @@ const HOLO_ATTRS = {
 <script>
 const PROJECTS = [
   {
-    anchor: 'p-bracket', num: '01', wip: true,
-    kicker: ['Structures', 'Dynamics', 'Fatigue'],
-    title: 'Ti-6Al-4V Engine Bracket',
-    story: 'A Ti-6Al-4V clevis lifting bracket, redesigned in CATIA 3DEXPERIENCE to the GrabCAD GE bracket challenge interfaces and load cases. It hoists the engine on the ground and stays bolted to it in flight, so it has to clear static strength and then survive engine vibration for its service life. Allowables trace to MIL-HDBK-5J Table 5.4.1.0(b). No factor of safety yet; the analysis is still open.',
-    repoNote: 'Analysis in progress \u2014 repository on release',
-    values: [
-      { k: 'Peak load case', v: '9,500\u00a0lbf' },
-      { k: 'Ftu (A-basis)', v: '896.3\u00a0MPa' },
-      { k: 'Minimum wall', v: '0.060\u00a0in' }
-    ],
-    views: [
-      { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
-      { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75\u00a0in pin bore cantilevered off a swept web, lightened through the center and flared into the mounting plate' },
-      { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375\u00a0in bolt holes on the corners, clevis centered between them' },
-      { label: 'Sandbox \u00b7 Free-free modal', video: 'figures/bracket/sandbox-free-free.mp4', poster: 'figures/bracket/sandbox-free-free-poster.jpg', caption: 'Workbench sandbox \u2014 free-free modal at 1999.2\u00a0Hz. Arbitrary material and damping, run to learn the interface and check the rigid-body count.' },
-      { label: 'Sandbox \u00b7 Constrained modal', video: 'figures/bracket/sandbox-modal.mp4', poster: 'figures/bracket/sandbox-modal-poster.jpg', caption: 'Workbench sandbox \u2014 constrained modal at 3307\u00a0Hz. Minimum deformation falls to zero at the restraints, against 0.043\u00a0mm free-free.' }
-    ]
-  },
-  {
-    anchor: 'p-nozzle', num: '02',
+    anchor: 'p-nozzle', group: 'flagship', short: 'Nozzle',
     kicker: ['Propulsion', 'Multiphysics', 'DFM'],
     title: 'Uncooled SS316 C-D Nozzle',
+    result: 'Stress governs at the chamber junction: a factor of safety of 7.12.',
+    key: { v: '7.12', k: 'factor of safety; v1.0 said 42.70' },
+    check: 'Hand calcs and 17 FEA validation gates',
+    layers: [
+      ['Problem', 'Can an uncooled SS316 nozzle hold 2\u00a0MPa and 800\u00a0K at the design point, and can it be made and inspected?'],
+      ['Approach', 'Hand calculations first, then 2D axisymmetric CFD in Fluent, mapped one-way onto a thermal and structural model in Mechanical. The result is carried into a GD&T drawing set to ASME Y14.5-2018.'],
+      ['Verification', 'Exit Mach 2.85 against 2.94 by hand, within 3.1\u00a0%. Seventeen FEA validation gates, including thrust equilibrium within 0.20\u00a0%; the two that failed are bounded in the report. A three-mesh ladder gives the factor of safety as a band, 7.02 to 7.12.'],
+      ['Lesson', 'v1.0 read the throat and reported 42.70, about six times too high. Yield is also the wrong limit to stop at: the wall runs at 527\u00a0°C, above the creep onset of SS316, so the design holds for short ground-test firings only.']
+    ],
     story: 'An uncooled SS316 converging–diverging nozzle running at <span class="data">2\u00a0MPa</span> and <span class="data">800\u00a0K</span>, carried from CFD through thermal-structural analysis into a full GD&T drawing set. Governing stress falls at the chamber-to-converging junction, not the throat. The v1.0 release missed this and reported a factor of safety of <span class="data">42.70</span>; the corrected v2.0 is <span class="data">7.12</span>, and both are published.',
     repo: 'https://github.com/dmmarkwork-cloud/ss316-cd-nozzle-feasibility',
     values: [
-      { k: 'Exit Mach', v: '2.85' },
+      { k: 'Load case', v: '2\u00a0MPa, 800\u00a0K' },
+      { k: 'Governing stress', v: '29.6\u00a0MPa' },
+      { k: 'Allowable, yield at 527\u00a0°C', v: '210.7\u00a0MPa' },
       { k: 'Factor of safety', v: '7.12' },
-      { k: 'Wall temperature', v: '527\u00a0°C' }
+      { k: 'Exit Mach, checked by hand', v: '2.85' }
     ],
     // From the repository's README, "What changed in v2.0": v1.0 reported
     // 42.70 at the throat, on an assessed quantity that was not a classified
@@ -2234,13 +2524,19 @@ const PROJECTS = [
       ]
     },
     views: [
-      { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Mach contour — converged Fluent solution, 88,800-cell structured mesh' },
+      { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', size: [1632, 582],
+        caption: 'Governing stress at the chamber-to-converging junction: 29.6\u00a0MPa membrane plus bending on mesh J3. The 82.3\u00a0MPa peak at the sharp corner is singular and excluded.',
+        callouts: [
+          { x: 843, y: 113, bx: 700, by: 34, key: 'Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span>' },
+          { x: 1121, y: 329, bx: 1000, by: 440, key: 'Throat. v1.0 read it here: <s class="data">42.70</s>, withdrawn' }
+        ] },
+      { label: 'FEA · Junction path', src: 'fea/mesh3/von-mises-junction-converging.png', caption: 'The through-wall path at the junction. The linearised membrane plus bending stress read along it is the governing 29.6\u00a0MPa.' },
+      { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Exit Mach 2.85 against 2.94 by hand, within 3.1\u00a0%, from a converged Fluent solution on an 88,800-cell structured mesh.' },
       { label: 'CAD · Dimensioned profile', src: 'figures/nozzle/cad-cad_dimensions.png', caption: 'Half-section contour sketch — 90\u00a0mm chamber, R22.50 converging fillet into an R5.73 throat, 183.44\u00a0mm overall' },
       { label: 'CFD · Mesh & BCs', src: 'figures/nozzle/mesh-with-bc.png', caption: 'Structured axisymmetric mesh — pressure inlet at the chamber, pressure outlet at the exit plane, clustered through the throat' },
       { label: 'CFD · Residuals', src: 'figures/nozzle/residuals.png', caption: 'Scaled residuals, k-omega SST — continuity and momentum flatten below 1e-3 by iteration 300' },
       { label: 'CFD · Mass flow convergence', src: 'figures/nozzle/mass-flow-vs-residuals.png', caption: 'Mass flow imbalance monitor — settles to zero by iteration 250, confirming a converged solution' },
       { label: 'CFD · Wall y+', src: 'figures/nozzle/y-plus-wall.png', caption: 'Wall y+ along the contour — under 1 through the chamber and diverging section, peaking near 1.75 at the throat' },
-      { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', caption: 'von Mises field, mesh J3 — governing stress taken from a linearised path, not the singular peak' },
       { label: 'Exploded assembly', src: 'dfm/images/exploded-view.png', caption: 'Exploded assembly — body, flange, graphite gasket, 8\u00a0×\u00a0M8 A286 bolts, 4.531\u00a0kg' },
       { label: 'DFM · Clash check', src: 'figures/nozzle/clash-check-result.png', caption: 'Interference check on the flange-to-body register — the highlighted contact ring confirmed a clean fit before releasing the drawing set' },
       { label: 'DFM · Gasket engagement', src: 'figures/nozzle/gasket-compressed-register-engagement.png', caption: '3\u00a0mm of spigot engagement remains after full gasket compression, keeping the flange self-aligning under bolt preload' },
@@ -2250,31 +2546,52 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-tank', num: '03',
+    anchor: 'p-tank', group: 'flagship', short: 'Tank',
     kicker: ['Pressure Vessel', 'FEA'],
-    title: 'Al6061 Gas Vessel Propellant',
+    title: 'Al6061 Propellant Tank',
+    result: 'Short of its 2.00 target at 1.91; 0.2\u00a0mm more wall clears it.',
+    key: { v: '1.91', k: 'factor of safety, 2.00 required' },
+    check: 'Hand calc within 1.0\u00a0%, mesh converged to 0.62\u00a0%',
+    layers: [
+      ['Problem', 'Does a 3\u00a0mm Al 6061-T6 tank with hemispherical caps keep a factor of safety of 2.00 against yield at 32.5\u00a0bar?'],
+      ['Approach', 'Thin-wall hand calculations set the baseline. The solid model runs in CalculiX through PrePoMax, restrained only at the two cap tips, so no restraint stiffens the junction.'],
+      ['Verification', 'FEA lands within 1.0\u00a0% of the hand calc mid-cylinder and 2.3\u00a0% on the cap. Three meshes, from 22,131 to 132,628 elements, converge to 0.62\u00a0%.'],
+      ['Lesson', 'An earlier model fixed the junction edge and read 204.1\u00a0MPa there. Moving the restraint gave 144.5\u00a0MPa, which still misses the target by 4.8\u00a0%. About 0.2\u00a0mm more wall clears it.']
+    ],
     story: 'A <span class="data">3\u00a0mm</span> aluminum tank with hemispherical caps at <span class="data">32.5\u00a0bar</span>. Hand calculation set the baseline, a three-level mesh study proved convergence, and the governing stress sits at the cylinder-to-cap junction: a factor of safety of <span class="data">1.91</span> against a <span class="data">2.00</span> target. The record includes a documented boundary-condition correction and sizes the next revision: about <span class="data">0.2\u00a0mm</span> of extra wall brings it to target.',
     repo: 'https://github.com/dmmarkwork-cloud/gas-vessel-fea',
     values: [
-      { k: 'Factor of safety', v: '1.91' },
-      { k: 'Against a target of', v: '2.00' },
-      { k: 'Mesh convergence', v: '0.62\u00a0%' }
+      { k: 'Load case, internal pressure', v: '3.25\u00a0MPa' },
+      { k: 'Critical location', v: 'Cylinder-to-cap junction' },
+      { k: 'Governing stress, von Mises', v: '144.5\u00a0MPa' },
+      { k: 'Allowable, Al 6061-T6 yield', v: '276\u00a0MPa' },
+      { k: 'Factor of safety, 2.00 required', v: '1.91' },
+      { k: 'Margin of safety', v: '−0.05' }
     ],
     views: [
-      { label: 'Geometry & load', src: 'figures/images-gas-vessel-geometry-image.png', caption: 'Tank geometry and pressure load — R\u00a0147\u00a0mm, 3\u00a0mm wall, 700\u00a0mm overall' },
-      { label: 'Mesh · coarse', src: 'images/mesh_coarse.png', caption: 'Coarse mesh — 22,131 C3D10 elements, the convergence baseline' },
-      { label: 'Mesh · fine', src: 'images/mesh_fine.png', caption: 'Fine mesh — 132,628 elements, the governing result at 144.5\u00a0MPa' }
+      { label: 'Mesh · fine', src: 'images/mesh_fine.png', caption: 'The cylinder-to-cap junction peaks at 144.5\u00a0MPa on the fine mesh of 132,628 elements: a factor of safety of 1.91. Mid-cylinder, 136.6\u00a0MPa sits within 1.0\u00a0% of the hand calc.' },
+      { label: 'Geometry & load', src: 'figures/images-gas-vessel-geometry-image.png', caption: 'Tank geometry and pressure load: R\u00a0147\u00a0mm, 3\u00a0mm wall, 700\u00a0mm overall, 3.25\u00a0MPa inside.' },
+      { label: 'Mesh · coarse', src: 'images/mesh_coarse.png', caption: 'Coarse mesh of 22,131 C3D10 elements, the start of the convergence study.' }
     ]
   },
   {
-    anchor: 'p-mk10', num: '04',
+    anchor: 'p-mk10', group: 'flagship', short: 'MK-10',
     kicker: ['Aircraft Design', 'Loads', 'Structures'],
     title: 'MK-10: Part 23 Light Aircraft',
+    result: 'One weight baseline carried from the mission to the spar sizing.',
+    key: { v: '1,649\u00a0lb', k: 'gross weight, carried to the spars' },
+    check: 'FAR Part 23 loads, spars sized per Bruhn',
+    layers: [
+      ['Problem', 'Size a two-seat, single-engine FAR Part 23 light aircraft from its mission, and keep one design baseline all the way to the spars.'],
+      ['Approach', 'Weight and CG, airfoil selection, drag buildup and performance, then the V-n envelope, gust and maneuver load distributions, ten spanwise wing strips, and front and rear spar shear and moment, sized per Bruhn.'],
+      ['Lesson', 'A weight change only counts once it reaches the shear-moment diagrams, so every one here was carried through to them.']
+    ],
     story: 'The MK-10: one design baseline held all the way from mission definition through weight and CG, drag buildup and the V-n envelope into front and rear spar sizing. Every weight change had to be carried through to the shear-moment diagrams, which is the whole point.',
     repo: 'https://github.com/dmmarkwork-cloud/mk10-aircraft-design',
     values: [
+      { k: 'Gross weight', v: '1,649\u00a0lb' },
+      { k: 'Front spar depth', v: '188.7\u00a0mm' },
       { k: 'Range', v: '459\u00a0nmi' },
-      { k: 'Endurance', v: '7.63\u00a0h' },
       { k: 'Service ceiling', v: '9,536\u00a0ft' }
     ],
     views: [
@@ -2287,7 +2604,36 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-uav', num: '05',
+    anchor: 'p-bracket', group: 'flagship', short: 'Bracket', wip: true,
+    kicker: ['Structures', 'Dynamics', 'Fatigue'],
+    title: 'Ti-6Al-4V Engine Bracket',
+    result: 'Static and fatigue checks are still open: no factor of safety yet.',
+    key: { v: '9,500\u00a0lbf', k: 'peak load case' },
+    check: 'Allowables from MIL-HDBK-5J',
+    layers: [
+      ['Problem', 'A Ti-6Al-4V clevis lifting bracket, redesigned to the GrabCAD GE bracket challenge interfaces and load cases. It hoists the engine on the ground and stays bolted to it in flight.'],
+      ['Approach', 'Static strength first, against the A-basis allowables in MIL-HDBK-5J Table 5.4.1.0(b), then engine vibration over its service life. Modelled in CATIA 3DEXPERIENCE.'],
+      ['Status', 'No factor of safety yet. The two modal runs shown are sandbox runs, made to learn the interface and check the rigid-body count.']
+    ],
+    story: 'A Ti-6Al-4V clevis lifting bracket, redesigned in CATIA 3DEXPERIENCE to the GrabCAD GE bracket challenge interfaces and load cases. It hoists the engine on the ground and stays bolted to it in flight, so it has to clear static strength and then survive engine vibration for its service life. Allowables trace to MIL-HDBK-5J Table 5.4.1.0(b). No factor of safety yet; the analysis is still open.',
+    repoNote: 'Repository on release, once the analysis closes.',
+    values: [
+      { k: 'Peak load case', v: '9,500\u00a0lbf' },
+      { k: 'Allowable, Ftu (A-basis)', v: '896.3\u00a0MPa' },
+      { k: 'Minimum wall', v: '0.060\u00a0in' },
+      { k: 'Factor of safety', v: 'Not yet' }
+    ],
+    views: [
+      { label: 'CAD \u00b7 Isometric', src: 'figures/bracket/cad-iso.png', caption: 'Twin clevis lugs rising from a waisted four-bolt baseplate, tapered web carrying the lug loads back into the plate' },
+      { label: 'CAD \u00b7 Side elevation', src: 'figures/bracket/cad-right.png', caption: 'Side elevation \u2014 the 0.75\u00a0in pin bore cantilevered off a swept web, lightened through the center and flared into the mounting plate' },
+      { label: 'CAD \u00b7 Plan', src: 'figures/bracket/cad-top.png', caption: 'Plan view \u2014 four 0.375\u00a0in bolt holes on the corners, clevis centered between them' },
+      { label: 'Sandbox \u00b7 Free-free modal', video: 'figures/bracket/sandbox-free-free.mp4', poster: 'figures/bracket/sandbox-free-free-poster.jpg', caption: 'Workbench sandbox \u2014 free-free modal at 1999.2\u00a0Hz. Arbitrary material and damping, run to learn the interface and check the rigid-body count.' },
+      { label: 'Sandbox \u00b7 Constrained modal', video: 'figures/bracket/sandbox-modal.mp4', poster: 'figures/bracket/sandbox-modal-poster.jpg', caption: 'Workbench sandbox \u2014 constrained modal at 3307\u00a0Hz. Minimum deformation falls to zero at the restraints, against 0.043\u00a0mm free-free.' }
+    ]
+  },
+  {
+    anchor: 'p-uav', group: 'built', short: 'PANO-VISTA',
+    result: 'A foam-board UAV wired with the hardware its CAD specifies.',
     kicker: ['UAV', 'Systems Integration'],
     title: 'PANO-VISTA: UAV Fixed-Wing',
     story: 'PANO-VISTA is a tractor-configuration fixed-wing UAV, modeled part by part in one master assembly, then cut from foam board and wired up for real with brushless power, an eight-channel receiver, and four micro servos, one per surface. The hardware in the CAD is the hardware on the bench. Team project with four classmates.',
@@ -2311,9 +2657,10 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-rotor', num: '06',
+    anchor: 'p-rotor', group: 'built', short: 'Rotor',
+    result: 'A two-blade rotor drawn by hand, twisted from 78° to 24°.',
     kicker: ['Rotorcraft', 'Drafting', 'CAD'],
-    title: 'Wooden Rotor Blade Design',
+    title: 'Wooden Rotor Blade',
     story: 'A <span class="data">Ø71.10\u00a0in</span> two-blade rotor traced in orthographic projection on tracing paper before it was ever parametric. The twist falls from <span class="data">78°</span> inboard to <span class="data">24°</span> at the tip because blade element theory asks for it, so that angle of attack stays roughly constant as local velocity climbs with radius.',
     repo: 'https://github.com/dmmarkwork-cloud/rotor-blade-helicopter-design',
     // Overview card crops the portrait lead photo to landscape; aim the crop
@@ -2335,9 +2682,10 @@ const PROJECTS = [
     ]
   },
   {
-    anchor: 'p-wing', num: '07',
+    anchor: 'p-wing', group: 'built', short: 'Wing rig',
+    result: 'Servo-driven slats and ailerons you can watch deploy.',
     kicker: ['Mechatronics', 'High-Lift Devices', 'Arduino'],
-    title: 'High-Lift Device',
+    title: 'High-Lift Wing Rig',
     story: 'A sectioned wing built in cardboard and skinned in aluminum foil, mounted on its own stand so it can be demonstrated at eye level. Servos embedded in the section drive the ailerons and leading-edge slats from an Arduino Uno sketch, with a dedicated control interface on the base, so these are high-lift devices you can watch deploy instead of read about.',
     repo: null,
     gridThumb: 'figures/wing/servo-bay.jpg',
@@ -2432,6 +2780,42 @@ function leadMediaMarkup(view) {
   return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true });
 }
 
+// ── Drawing callouts ───────────────────────────────────
+// A leader and a numbered balloon, as on a drawing sheet, pointing at the
+// place a result was read, with the balloons explained in a key under the
+// figure. Coordinates are in the figure's own pixels, so the overlay only
+// has to be laid over the image at whatever size it is shown.
+function calloutMarkup(view) {
+  const [w, h] = view.size;
+  const pct = (v, d) => (v / d * 100).toFixed(3) + '%';
+  const lines = view.callouts.map(c =>
+    `<line x1="${c.x}" y1="${c.y}" x2="${c.bx}" y2="${c.by}" vector-effect="non-scaling-stroke"/>`).join('');
+  const marks = view.callouts.map((c, i) =>
+    `<span class="callout-dot" style="left:${pct(c.x, w)};top:${pct(c.y, h)};"></span>`
+    + `<span class="callout-balloon" style="left:${pct(c.bx, w)};top:${pct(c.by, h)};">${i + 1}</span>`).join('');
+  return `<div class="callouts" data-w="${w}" data-h="${h}" aria-hidden="true">`
+    + `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${lines}</svg>${marks}</div>`;
+}
+function calloutKey(view) {
+  return view.callouts.map((c, i) =>
+    `<li><span class="callout-balloon">${i + 1}</span><span>${c.key}</span></li>`).join('');
+}
+// The lead box shows its figure whole inside a padded frame, so the image's
+// own rectangle is worked out from that padding and the figure's shape.
+function fitCallouts(area) {
+  const layer = area.querySelector('.callouts');
+  const img = area.querySelector('img');
+  if (!layer || !img) return;
+  const cs = getComputedStyle(img);
+  const pl = parseFloat(cs.paddingLeft), pt = parseFloat(cs.paddingTop);
+  const W = area.clientWidth - pl - parseFloat(cs.paddingRight);
+  const H = area.clientHeight - pt - parseFloat(cs.paddingBottom);
+  if (W <= 0 || H <= 0) return;
+  const r = +layer.dataset.w / +layer.dataset.h;
+  const w = Math.min(W, H * r), h = w / r;
+  layer.style.cssText = `left:${pl + (W - w) / 2}px;top:${pt + (H - h) / 2}px;width:${w}px;height:${h}px;`;
+}
+
 // Update gallery state in-place — no innerHTML rebuild on thumb strip
 function renderGallery(pi) {
   const p = PROJECTS[pi];
@@ -2440,11 +2824,17 @@ function renderGallery(pi) {
 
   const leadArea = document.getElementById(`lead-img-${pi}`);
   if (leadArea) {
-    leadArea.innerHTML = leadMediaMarkup(lead);
+    leadArea.innerHTML = leadMediaMarkup(lead) + (lead.callouts ? calloutMarkup(lead) : '');
+    if (lead.callouts) fitCallouts(leadArea);
   }
 
   const captionEl = document.getElementById(`lead-cap-${pi}`);
   if (captionEl) captionEl.textContent = lead.caption;
+  const keyEl = document.getElementById(`lead-key-${pi}`);
+  if (keyEl) {
+    keyEl.innerHTML = lead.callouts ? calloutKey(lead) : '';
+    keyEl.hidden = !lead.callouts;
+  }
 
   // Update thumb borders and opacity in-place (no rebuild)
   const thumbsEl = document.getElementById(`thumbs-${pi}`);
@@ -2638,9 +3028,13 @@ function buildProjectGrid() {
   }
 
 
-  const cards = PROJECTS.map((p, ci) => {
+  // A card is the back of a trading card: the project's name, its result
+  // in one sentence, the one number to remember and how it was checked.
+  // Discipline tags and a sequence number used to fill this space; a
+  // reviewer comparing candidates side by side reads results, not tags.
+  const flagships = PROJECTS.filter(p => p.group === 'flagship');
+  container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
-    const topMetric = p.values[0];
     const isPng = media && media.src && media.src.toLowerCase().endsWith('.png');
     const imgStyle = isPng
       ? 'width:100%;height:100%;object-fit:contain;object-position:center center;display:block;padding:10px;'
@@ -2648,35 +3042,34 @@ function buildProjectGrid() {
     const thumb = media
       ? (media.type === 'video'
           ? `<video src="${media.src}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-          : `<img src="${media.src}" alt="${p.title}" loading="lazy"${isPng ? ' data-fit="contain"' : ''} style="${imgStyle}">`)
+          : `<img src="${media.src}" alt="" loading="lazy"${isPng ? ' data-fit="contain"' : ''} style="${imgStyle}">`)
       : '';
-    const kickers = (p.wip ? '<span class="proj-card-kicker is-wip">In progress</span>' : '')
-      + p.kicker.map(k => `<span class="proj-card-kicker">${k}</span>`).join('');
     return `
-      <a class="proj-card" href="#${p.anchor}" aria-label="${p.title}" style="--ci:${ci}">
-        <div class="proj-card-thumb">
-          ${thumb}
-          <span class="proj-card-num">${p.num}</span>
-        </div>
+      <a class="proj-card" href="#${p.anchor}" style="--ci:${ci}">
+        <div class="proj-card-thumb">${thumb}</div>
         <div class="proj-card-body">
-          <div class="proj-card-kickers">${kickers}</div>
           <h3 class="proj-card-title">${p.title}</h3>
-          <div class="proj-card-metric">${topMetric.k}: ${dataValue(topMetric.v)}</div>
+          <p class="proj-card-result">${p.result}</p>
+          <div class="proj-card-key">${p.wip ? '<span class="proj-card-status">Analysis in progress</span>' : ''}<span class="proj-card-num">${dataValue(p.key.v)}</span> ${p.key.k}</div>
+          <div class="proj-card-check">${p.check}</div>
         </div>
       </a>`;
   }).join('');
 
-  container.innerHTML = `
-    <section class="section-reveal" style="padding:clamp(48px,6vw,80px) 0 clamp(32px,4vw,56px);border-bottom:1px solid var(--border);">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:clamp(24px,3vw,40px);">
-        <div>
-          <div style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);margin-bottom:8px;">All seven projects</div>
-          <h2 style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:600;color:var(--ink);margin:0;line-height:1.05;letter-spacing:-0.03em;">The work</h2>
-        </div>
-        <span id="grid-hint" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Scroll for detail ↓</span>
-      </div>
-      <div class="proj-grid">${cards}</div>
-    </section>`;
+  const built = document.getElementById('built-list');
+  if (built) {
+    built.innerHTML = PROJECTS.filter(p => p.group === 'built').map(p => {
+      const media = firstImage(p);
+      const thumb = media && media.type === 'img'
+        ? `<img src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
+        : '<span></span>';
+      return `
+        <a class="built-row" href="#${p.anchor}">
+          ${thumb}
+          <span><strong>${p.title}</strong><span>${p.result}</span></span>
+        </a>`;
+    }).join('');
+  }
 
   container.querySelectorAll('.proj-card-thumb img[data-fit="contain"]').forEach(fitBackdrop);
 
@@ -2697,26 +3090,24 @@ function buildProjectGrid() {
     card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
   });
 
-  // On a phone the grid becomes a snap rail, and a rail needs to say how far
-  // along it you are — otherwise six peers look like one card and a gap.
-  // "Scroll for detail ↓" is still the right label on desktop, where the
-  // whole gallery is on screen at once and there is no position to report.
-  const grid = container.querySelector('.proj-grid');
-  const hint = container.querySelector('#grid-hint');
-  if (grid && hint) {
-    const total = PROJECTS.length;
+  // On a phone the cards become a snap rail, and a rail needs to say how
+  // far along it you are. On a desktop all four are in view and the hint
+  // has nothing to report, so it stays empty.
+  const hint = document.getElementById('grid-hint');
+  if (hint) {
+    const total = flagships.length;
     const syncHint = () => {
-      if (grid.scrollWidth <= grid.clientWidth + 1) {
-        hint.textContent = 'Scroll for detail ↓';
+      if (container.scrollWidth <= container.clientWidth + 1) {
+        hint.textContent = '';
         return;
       }
-      const max = grid.scrollWidth - grid.clientWidth;
+      const max = container.scrollWidth - container.clientWidth;
       const i = max > 0
-        ? Math.min(total - 1, Math.round((grid.scrollLeft / max) * (total - 1)))
+        ? Math.min(total - 1, Math.round((container.scrollLeft / max) * (total - 1)))
         : 0;
-      hint.textContent = `${i + 1} / ${total} · swipe →`;
+      hint.textContent = `${i + 1} of ${total}, swipe for more`;
     };
-    grid.addEventListener('scroll', syncHint, { passive: true });
+    container.addEventListener('scroll', syncHint, { passive: true });
     window.addEventListener('resize', syncHint);
     syncHint();
   }
@@ -2817,9 +3208,9 @@ function wheelToHorizontal(el) {
 // toggle, which re-renders its own table in place.
 function metricRows(values) {
   return values.map((v, ri) => `
-    <div class="metric-row" style="--ri:${ri};display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:10px 0;border-top:1px solid var(--border);">
-      <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">${v.k}</span>
-      <span style="font-family:var(--font-sans);font-size:var(--fs-lead);font-weight:600;letter-spacing:-0.02em;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;">${dataValue(v.v)}</span>
+    <div class="metric-row" style="--ri:${ri};">
+      <span class="metric-k">${v.k}</span>
+      <span class="metric-v${NUMERIC_VALUE.test(v.v) ? ' is-num' : ''}">${dataValue(v.v)}</span>
     </div>`).join('');
 }
 
@@ -2866,13 +3257,20 @@ function setRevision(pi, id) {
   document.getElementById(`rev-${pi}`).classList.toggle('is-superseded', !!rel.superseded);
 }
 
+// Discipline tags as one plain line: "Propulsion, multiphysics and DFM".
+// Acronyms and proper names keep their capitals.
+function tagLine(tags) {
+  const keep = (w) => /^[A-Z0-9-]{2,}$/.test(w) || w === 'Arduino';
+  const words = tags.map((t, i) => t.split(' ')
+    .map((w, j) => keep(w) || (i === 0 && j === 0) ? w : w.toLowerCase()).join(' '));
+  return words.length > 1 ? words.slice(0, -1).join(', ') + ' and ' + words[words.length - 1] : words[0];
+}
+
 function buildProjects() {
   const container = document.getElementById('projects-container');
   container.innerHTML = PROJECTS.map((p, pi) => {
     const hasThumbs = p.views.length > 1;
     const splitClass = hasThumbs ? 'gallery-split' : 'gallery-split no-thumbs';
-    const kickerHtml = p.kicker.map(k => `<span class="kicker-chip">${k}</span>`).join('');
-
     const thumbsHtml = hasThumbs ? `
       <div id="thumbs-${pi}" class="thumb-rail">
         ${p.views.map((v, i) => `
@@ -2880,7 +3278,7 @@ function buildProjects() {
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
               ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
             </div>
-            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);line-height:1.3;">${v.label}</span>
+            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);line-height:1.3;">${v.label}</span>
           </button>`).join('')}
       </div>` : '';
 
@@ -2891,33 +3289,50 @@ function buildProjects() {
     // reached the factor of safety it supports. It comes first in source so
     // it takes the left column; on a phone the reading column is moved above
     // it with `order`, which keeps the stacked layout that was already there.
-    return `
-    <section id="${p.anchor}" data-section="${p.anchor}" class="section-reveal proj-section" style="padding:clamp(32px,4.5vw,68px) 0 clamp(24px,3vw,44px);border-bottom:1px solid var(--border);">
+    // The three hand builds sit under their own heading after the four
+    // analyses, and all three light the one "Built by hand" link in the nav.
+    const isBuilt = p.group === 'built';
+    const groupHead = isBuilt && PROJECTS[pi - 1] && PROJECTS[pi - 1].group !== 'built' ? `
+    <div id="built" data-section="built" class="built-head section-reveal">
+      <h2 class="section-title">Built by hand</h2>
+      <p class="section-lede">Three projects where the drawing became a thing on a bench: a foam-board UAV, a carved rotor and a servo-driven wing section.</p>
+    </div>` : '';
+    const repoHtml = p.repo
+      ? `<a href="${p.repo}" class="proj-repo">Full working on GitHub</a>`
+      : `<p class="proj-repo-note">${p.repoNote || 'A hardware build, so there is no repository.'}</p>`;
+    // Answer first: the name, the result in a sentence, the numbers that
+    // prove it, then the story in four labelled parts a skimmer can read by
+    // their labels alone. The hand builds keep their single paragraph.
+    const readHtml = p.group === 'flagship' ? `
+          <div class="proj-metrics">${metricRows(tableValues(p))}</div>
+          ${revisionMarkup(p, pi)}
+          <dl class="proj-layers">${p.layers.map(([h, t]) => `<dt>${h}</dt><dd>${t}</dd>`).join('')}</dl>` : `
+          <p class="proj-story">${p.story}</p>
+          <div class="proj-metrics">${metricRows(tableValues(p))}</div>`;
+    return groupHead + `
+    <section id="${p.anchor}" data-section="${isBuilt ? 'built' : p.anchor}" class="section-reveal proj-section">
       <div class="proj-split">
 
         <div class="proj-stage">
           <div class="${splitClass}">
             <button type="button" class="lead-btn" onclick="openLightbox(${pi})" title="Click to enlarge">
               <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
-              <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
+              <div class="lead-cap-row">
                 <span id="lead-cap-${pi}" class="lead-cap"></span>
-                <span style="flex:none;">⤢ Enlarge${p.views.length > 1 ? ` · ${p.views.length} figures` : ''}</span>
+                <span class="lead-enlarge">⤢ Enlarge${p.views.length > 1 ? `, ${p.views.length} figures` : ''}</span>
               </div>
             </button>
+            <ol id="lead-key-${pi}" class="callout-key" hidden></ol>
             ${thumbsHtml}
           </div>
         </div>
 
         <div class="proj-read">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);">${p.num}</span>
-            <div class="kicker-chips">${p.wip ? '<span class="kicker-chip is-wip">In progress</span>' : ''}${kickerHtml}</div>
-          </div>
-          <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
-          <p style="font-size:var(--fs-body);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
-          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="align-self:flex-start;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--link);">Full working on GitHub →</a>` : `<span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
-          <div class="proj-metrics">${metricRows(tableValues(p))}</div>
-          ${revisionMarkup(p, pi)}
+          <p class="proj-tags">${p.wip ? '<span class="proj-status">Analysis in progress.</span> ' : ''}${tagLine(p.kicker)}</p>
+          <h2 class="proj-title">${p.title}</h2>
+          <p class="proj-result">${p.result}</p>
+          ${readHtml}
+          ${repoHtml}
         </div>
 
       </div>
@@ -2925,6 +3340,21 @@ function buildProjects() {
   }).join('');
 
   PROJECTS.forEach((_, pi) => renderGallery(pi));
+
+  // A lead box letterboxes its figure, so callouts are re-laid whenever the
+  // box changes size.
+  PROJECTS.forEach((p, pi) => {
+    if (!p.views.some(v => v.callouts)) return;
+    const area = document.getElementById(`lead-img-${pi}`);
+    if (area && 'ResizeObserver' in window) new ResizeObserver(() => fitCallouts(area)).observe(area);
+  });
+
+  // The hero figure carries the same callouts as the project it comes from.
+  document.querySelectorAll('[data-callouts]').forEach(el => {
+    const p = PROJECTS.find(x => x.anchor === el.dataset.callouts);
+    const v = p && p.views.find(x => x.callouts);
+    if (v) el.insertAdjacentHTML('beforeend', calloutMarkup(v));
+  });
 
   // Same edge-fade language as the nav strip, so a horizontally scrollable
   // row always looks like one.

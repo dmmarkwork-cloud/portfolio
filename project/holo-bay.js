@@ -226,12 +226,12 @@
       };
 
       const specs = [
-        { id: '01', name: 'CD Nozzle', build: nozzle, roll: -Math.PI / 2, nudgeY: -0.47 },
-        { id: '02', name: 'Propellant Tank', build: tank, roll: -Math.PI / 2 },
+        { id: '01', name: 'Nozzle', build: nozzle, roll: -Math.PI / 2, nudgeY: -0.47 },
+        { id: '02', name: 'Tank', build: tank, roll: -Math.PI / 2 },
         { id: '03', name: 'MK-10', build: () => aircraft({ len: 0.92, fwd: 0.085, rear: 0.045, span: 1.30, chord: 0.24, taper: 0.62, wingX: 0.10, wingY: -0.05, prop: 0.20, gear: true }) },
         { id: '04', name: 'PANO-VISTA', build: () => aircraft({ len: 0.74, fwd: 0.075, rear: 0.04, span: 1.34, chord: 0.18, taper: 0.78, wingX: 0.06, wingY: 0.07, prop: 0.17, gear: true }) },
         { id: '05', name: 'Rotor', build: rotor },
-        { id: '06', name: 'Wing Rig', build: wingRig }
+        { id: '06', name: 'Wing rig', build: wingRig }
       ];
 
       const items = specs.map((s, i) => {
