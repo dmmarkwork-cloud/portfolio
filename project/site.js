@@ -6,9 +6,9 @@ const PROJECTS = [
     result: 'Stress governs at the chamber junction: a factor of safety of 7.12.',
     key: { v: '7.12', k: 'factor of safety; v1.0 said 42.70' },
     check: 'Hand calcs and 17 FEA validation gates',
-    // The hero above already shows the von Mises plot; the feature card
-    // shows the hardware that result belongs to, filling its frame.
-    gridThumb: 'dfm/images/exploded-view.png', gridFit: 'cover',
+    // The hero above already shows the von Mises plot; the ledger shows the
+    // hardware that result belongs to.
+    gridThumb: 'dfm/images/exploded-view.png',
     layers: [
       ['Problem', 'Can an uncooled SS316 nozzle hold 2\u00a0MPa and 800\u00a0K at the design point, and can it be made and inspected?'],
       ['Approach', 'Hand calculations first, then 2D axisymmetric CFD in Fluent, mapped one-way onto a thermal and structural model in Mechanical. The result is carried into a GD&T drawing set to ASME Y14.5-2018.'],
@@ -51,8 +51,8 @@ const PROJECTS = [
       { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', size: [1632, 582],
         caption: 'Governing stress at the chamber-to-converging junction: 29.6\u00a0MPa membrane plus bending on mesh J3. The 82.3\u00a0MPa peak at the sharp corner is singular and excluded.',
         callouts: [
-          { x: 843, y: 113, bx: 700, by: 34, key: 'Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span>' },
-          { x: 1121, y: 329, bx: 1000, by: 440, key: 'Throat. v1.0 read it here: <s class="data">42.70</s>, withdrawn' }
+          { x: 843, y: 113, bx: 700, by: 34, rev: 'v2.0', key: 'Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span>' },
+          { x: 1121, y: 329, bx: 1000, by: 440, rev: 'v1.0', key: 'Throat. v1.0 read it here: <s class="data">42.70</s>, withdrawn' }
         ] },
       { label: 'FEA · Junction path', src: 'fea/mesh3/von-mises-junction-converging.png', caption: 'The through-wall path at the junction. The linearised membrane plus bending stress read along it is the governing 29.6\u00a0MPa.' },
       { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Exit Mach 2.85 against 2.94 by hand, within 3.1\u00a0%, from a converged Fluent solution on an 88,800-cell structured mesh.' },
@@ -312,11 +312,14 @@ function leadMediaMarkup(view) {
 function calloutMarkup(view) {
   const [w, h] = view.size;
   const pct = (v, d) => (v / d * 100).toFixed(3) + '%';
+  // A reading that belongs to one release carries it, so the home page's
+  // switch can bring that release's leader forward.
+  const rev = (c) => c.rev ? ` data-rev="${c.rev}"` : '';
   const lines = view.callouts.map(c =>
-    `<line x1="${c.x}" y1="${c.y}" x2="${c.bx}" y2="${c.by}" vector-effect="non-scaling-stroke"/>`).join('');
+    `<line x1="${c.x}" y1="${c.y}" x2="${c.bx}" y2="${c.by}"${rev(c)} vector-effect="non-scaling-stroke"/>`).join('');
   const marks = view.callouts.map((c, i) =>
-    `<span class="callout-dot" style="left:${pct(c.x, w)};top:${pct(c.y, h)};"></span>`
-    + `<span class="callout-balloon" style="left:${pct(c.bx, w)};top:${pct(c.by, h)};">${i + 1}</span>`).join('');
+    `<span class="callout-dot"${rev(c)} style="left:${pct(c.x, w)};top:${pct(c.y, h)};"></span>`
+    + `<span class="callout-balloon"${rev(c)} style="left:${pct(c.bx, w)};top:${pct(c.by, h)};">${i + 1}</span>`).join('');
   return `<div class="callouts" data-w="${w}" data-h="${h}" aria-hidden="true">`
     + `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${lines}</svg>${marks}</div>`;
 }
@@ -373,7 +376,7 @@ function renderGallery(pi) {
     thumbsEl.querySelectorAll('.thumb-btn').forEach((btn, i) => {
       const active = i === vi;
       if (active) activeBtn = btn;
-      btn.style.borderColor = active ? 'var(--rust)' : 'var(--border)';
+      btn.setAttribute('aria-current', active ? 'true' : 'false');
       const media = btn.querySelector('img, video');
       if (media) media.style.opacity = active ? '1' : '0.62';
     });
@@ -556,101 +559,95 @@ function buildProjectGrid() {
     if (p.gridThumb) return { type: 'img', src: p.gridThumb };
     for (const v of p.views) {
       if (v.src) return { type: 'img', src: v.src };
-      if (v.video) return { type: 'video', src: v.video };
+      if (v.video && v.poster) return { type: 'img', src: v.poster };
     }
     return null;
   }
+  // A transparent render on a plain field is shown whole; a photograph or a
+  // render with its own background fills its frame.
+  const contained = (p, m) => m && m.src.toLowerCase().endsWith('.png') && p.gridFit !== 'cover';
 
-
-  // A card is the back of a trading card: the project's name, its result
-  // in one sentence, the one number to remember and how it was checked.
-  // Discipline tags and a sequence number used to fill this space; a
-  // reviewer comparing candidates side by side reads results, not tags.
+  // A ledger row is the back of a trading card: the name and the result in
+  // a sentence on the left, the one number to remember on the right, how it
+  // was checked underneath. The chapters live on the projects page.
   const flagships = PROJECTS.filter(p => p.group === 'flagship');
-  // The chapters live on the projects page; from anywhere else, link there.
   const chapterPage = document.getElementById('projects-container') ? '' : 'projects';
-  // Size says status: the lead analysis spans the grid, finished ones are
-  // standard cards, one still open is a slim strip. Phones keep one rail.
-  const size = (p, ci) => ci === 0 ? ' is-feature' : p.wip ? ' is-compact' : '';
   container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
-    const isPng = media && media.src && media.src.toLowerCase().endsWith('.png') && p.gridFit !== 'cover';
-    const imgStyle = isPng
-      ? 'width:100%;height:100%;object-fit:contain;object-position:center center;display:block;padding:10px;'
-      : `width:100%;height:100%;object-fit:cover;object-position:${p.gridFocus || 'center'};display:block;`;
     const thumb = media
-      ? (media.type === 'video'
-          ? `<video src="${media.src}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-          : `<img src="${media.src}" alt="" loading="lazy"${isPng ? ' data-fit="contain"' : ''} style="${imgStyle}">`)
+      ? `<img class="ledger-thumb${contained(p, media) ? ' is-contain' : ''}" src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
       : '';
     return `
-      <a class="proj-card${size(p, ci)}" href="${chapterPage}#${p.anchor}" style="--ci:${ci}">
-        <div class="proj-card-thumb">${thumb}</div>
-        <div class="proj-card-body">
-          <h3 class="proj-card-title">${p.title}</h3>
-          <p class="proj-card-result">${p.result}</p>
-          <div class="proj-card-foot">
-            <div class="proj-card-key">${p.wip ? '<span class="proj-card-status">Analysis in progress</span>' : ''}<span class="proj-card-num">${dataValue(p.key.v)}</span> ${p.key.k}</div>
-            <div class="proj-card-check">${p.check}</div>
-          </div>
-        </div>
-      </a>`;
+      <li><a class="ledger-row" href="${chapterPage}#${p.anchor}" data-i="${ci}">
+        ${thumb}
+        <span class="ledger-name">${p.title}</span>
+        <span class="ledger-result">${p.result}</span>
+        <span class="ledger-key"><span class="ledger-num">${dataValue(p.key.v)}</span><span class="ledger-k">${p.key.k}</span></span>
+        <span class="ledger-check">${p.wip ? '<span class="ledger-status">Analysis in progress</span>' : ''}${p.check}</span>
+      </a></li>`;
   }).join('');
+
+  // The frame beside the column holds every row's picture, stacked; the row
+  // you are on shows its own, and the frame slides down to sit level with
+  // it. A transform transition, so a fast run down the list retargets from
+  // wherever the frame is instead of queueing.
+  const frame = document.getElementById('ledger-frame');
+  if (frame) {
+    frame.innerHTML = flagships.map((p, ci) => {
+      const media = firstImage(p);
+      return media
+        ? `<img src="${media.src}" alt="" loading="lazy" class="${contained(p, media) ? 'is-contain' : ''}${ci === 0 ? ' is-on' : ''}" style="object-position:${p.gridFocus || 'center'};">`
+        : '<span></span>';
+    }).join('');
+    const rows = [...container.querySelectorAll('.ledger-row')];
+    const pics = [...frame.children];
+    let on = 0;
+    const show = (i) => {
+      if (i === on) return;
+      pics[on].classList.remove('is-on');
+      pics[i].classList.add('is-on');
+      on = i;
+      const list = container.getBoundingClientRect();
+      const row = rows[i].getBoundingClientRect();
+      const room = Math.max(0, list.height - frame.offsetHeight);
+      frame.style.transform = `translateY(${Math.min(room, Math.max(0, row.top - list.top))}px)`;
+    };
+    rows.forEach((row, i) => {
+      row.addEventListener('pointerenter', () => show(i));
+      row.addEventListener('focus', () => show(i));
+    });
+  }
 
   const built = document.getElementById('built-list');
   if (built) {
     built.innerHTML = PROJECTS.filter(p => p.group === 'built').map(p => {
       const media = firstImage(p);
-      const thumb = media && media.type === 'img'
+      const thumb = media
         ? `<img src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
         : '<span></span>';
       return `
-        <a class="built-row" href="${chapterPage}#${p.anchor}">
+        <li><a class="built-row" href="${chapterPage}#${p.anchor}">
           ${thumb}
           <span><strong>${p.title}</strong><span>${p.result}</span></span>
-        </a>`;
+        </a></li>`;
     }).join('');
   }
 
-  container.querySelectorAll('.proj-card-thumb img[data-fit="contain"]').forEach(fitBackdrop);
+}
 
-  if (!reducedMotion) {
-    const cardEls = [...container.querySelectorAll('.proj-card')];
-    cardEls.forEach((card, i) => { card.style.transitionDelay = `${i * 35 + 60}ms`; });
-    const last = cardEls[cardEls.length - 1];
-    last.addEventListener('transitionend', function clearStagger(e) {
-      if (e.propertyName !== 'opacity') return;
-      cardEls.forEach(c => c.style.transitionDelay = '');
-      last.removeEventListener('transitionend', clearStagger);
-    });
-  }
-
-  container.querySelectorAll('.proj-card video').forEach(v => {
-    const card = v.closest('.proj-card');
-    card.addEventListener('mouseenter', () => v.play().catch(() => {}));
-    card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
-  });
-
-  // On a phone the cards become a snap rail, and a rail needs to say how
-  // far along it you are. On a desktop all four are in view and the hint
-  // has nothing to report, so it stays empty.
-  const hint = document.getElementById('grid-hint');
-  if (hint) {
-    const total = flagships.length;
-    const syncHint = () => {
-      if (container.scrollWidth <= container.clientWidth + 1) {
-        hint.textContent = '';
-        return;
-      }
-      const max = container.scrollWidth - container.clientWidth;
-      const i = max > 0
-        ? Math.min(total - 1, Math.round((container.scrollLeft / max) * (total - 1)))
-        : 0;
-      hint.textContent = `${i + 1} of ${total}, swipe for more`;
-    };
-    container.addEventListener('scroll', syncHint, { passive: true });
-    window.addEventListener('resize', syncHint);
-    syncHint();
+// The projects page opens on an index of all seven, grouped as the page
+// is, each with its number.
+function buildProjectIndex() {
+  const index = document.getElementById('proj-index');
+  if (index) {
+    let group = null;
+    index.innerHTML = PROJECTS.map(p => {
+      const head = p.group !== group
+        ? `<li><p class="grp">${p.group === 'flagship' ? 'Analyses' : 'Built by hand'}</p></li>` : '';
+      group = p.group;
+      const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
+      return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
+    }).join('');
   }
 }
 
@@ -827,12 +824,12 @@ function wheelToHorizontal(el) {
 
 // One project's metric table. Shared by the build and by the revision
 // toggle, which re-renders its own table in place.
+// A real table: a quantity and its value per row, so it reads as one to a
+// screen reader and keeps its row lines.
 function metricRows(values) {
-  return values.map((v, ri) => `
-    <div class="metric-row" style="--ri:${ri};">
-      <span class="metric-k">${v.k}</span>
-      <span class="metric-v${NUMERIC_VALUE.test(v.v) ? ' is-num' : ''}">${dataValue(v.v)}</span>
-    </div>`).join('');
+  return `<table class="metrics"><tbody>${values.map(v => `
+    <tr><th scope="row">${v.k}</th><td${NUMERIC_VALUE.test(v.v) ? ' class="is-num"' : ''}>${dataValue(v.v)}</td></tr>`).join('')}
+  </tbody></table>`;
 }
 
 // The main table, minus any row the revision record carries: otherwise the
@@ -918,6 +915,38 @@ function initCalloutFigures() {
   });
 }
 
+// ── The revision switch ────────────────────────────────
+// The home page's figure is the nozzle as v2.0 reads it. The switch moves
+// the reading back to where v1.0 took it, the throat, and the readout and
+// its note follow from the project's own revision record, so the numbers
+// can never disagree with the projects page. The chosen release's leader
+// comes forward; the other steps back. Without script the switch is hidden
+// and the figure keeps both readings drawn, with the note naming both.
+function initRevisionSwitch() {
+  const rig = document.querySelector('.hero-rig');
+  const nozzle = PROJECTS.find(p => p.anchor === 'p-nozzle');
+  const r = nozzle && nozzle.revisions;
+  if (!rig || !r) return;
+  const num = document.getElementById('rig-num');
+  const unit = document.getElementById('rig-unit');
+  const note = document.getElementById('rig-note');
+  const buttons = [...rig.querySelectorAll('.rig-switch button')];
+  const set = (id) => {
+    const rel = r.releases.find(x => x.id === id);
+    if (!rel || rig.dataset.rev === id) return;
+    rig.dataset.rev = id;
+    buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
+    const fos = rel.values.find(v => v.k === 'Factor of safety');
+    num.textContent = fos ? fos.v : '';
+    num.classList.toggle('is-withdrawn', !!rel.superseded);
+    unit.textContent = `factor of safety, ${id}, ${rel.superseded ? 'withdrawn' : 'current'}`;
+    note.textContent = rel.note;
+    settle(num, true);
+    settle(note, false);
+  };
+  buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.rev)));
+}
+
 // The GitHub mark for the repository buttons (fill, so it reads at 16px).
 const GITHUB_ICON = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>';
 
@@ -941,7 +970,7 @@ function buildProjects() {
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
               ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
             </div>
-            <span style="font-family:var(--font-sans);font-size:var(--fs-micro);color:var(--muted-2);line-height:1.3;">${v.label}</span>
+            <span class="thumb-label">${v.label}</span>
           </button>`).join('')}
       </div>` : '';
 
@@ -955,13 +984,24 @@ function buildProjects() {
     // The three hand builds sit under their own heading after the four
     // analyses, and all three light the one "Built by hand" link in the nav.
     const isBuilt = p.group === 'built';
+    // The heading for the hand builds carries a small index of the three,
+    // with their pictures, so it does not stand alone in half the width.
+    const pic = (q) => q.gridThumb || (q.views.find(x => x.src) || {}).src || (q.views.find(x => x.poster) || {}).poster;
+    const builds = PROJECTS.filter(q => q.group === 'built');
     const groupHead = isBuilt && PROJECTS[pi - 1] && PROJECTS[pi - 1].group !== 'built' ? `
     <div id="built" data-section="built" class="built-head section-reveal">
-      <h2 class="section-title">Built by hand</h2>
-      <p class="section-lede">Three projects where the drawing became a thing on a bench: a foam-board UAV, a carved rotor and a servo-driven wing section.</p>
+      <div class="wrap grid12">
+        <header class="col-read rv">
+          <h2 class="sec-title">Built by hand</h2>
+          <p class="sec-lede">Three projects where the drawing became a thing on a bench: a foam-board UAV, a carved rotor and a servo-driven wing section.</p>
+        </header>
+        <nav class="col-side rv" style="--rv:1" aria-label="The three builds"><ul class="built-jump">${builds.map(q => `
+          <li><a href="#${q.anchor}"><img src="${pic(q)}" alt="" loading="lazy" style="object-position:${q.gridFocus || 'center'};"><span>${q.short}</span></a></li>`).join('')}
+        </ul></nav>
+      </div>
     </div>` : '';
     const repoHtml = p.repo
-      ? `<a href="${p.repo}" class="proj-repo-btn btn btn-outline btn-sm" target="_blank" rel="noopener">${GITHUB_ICON}Full working on GitHub</a>`
+      ? `<a href="${p.repo}" class="proj-repo-btn btn btn-quiet" target="_blank" rel="noopener">${GITHUB_ICON}Full working on GitHub</a>`
       : `<p class="proj-repo-note">${p.repoNote || 'A hardware build, so there is no repository.'}</p>`;
     // Answer first: the name, the result in a sentence, the numbers that
     // prove it, then the story in four labelled parts a skimmer can read by
@@ -976,8 +1016,8 @@ function buildProjects() {
     <section id="${p.anchor}" data-section="${isBuilt ? 'built' : p.anchor}" class="section-reveal proj-section">
       <div class="proj-split">
 
-        <div class="proj-stage">
-          <div class="${splitClass}">
+        <div class="proj-stage rv" style="--rv:1">
+          <div class="${splitClass}" data-ui>
             <button type="button" class="lead-btn" onclick="openLightbox(${pi})" title="Click to enlarge">
               <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
               <div class="lead-cap-row">
@@ -991,10 +1031,10 @@ function buildProjects() {
           </div>
         </div>
 
-        <div class="proj-read">
-          <p class="proj-tags">${p.wip ? '<span class="proj-status">Analysis in progress.</span> ' : ''}${tagLine(p.kicker)}</p>
+        <div class="proj-read rv">
           <h2 class="proj-title">${p.title}</h2>
           <p class="proj-result">${p.result}</p>
+          <p class="proj-tags">${p.wip ? '<span class="proj-status">Analysis in progress.</span> ' : ''}${tagLine(p.kicker)}</p>
           ${readHtml}
           ${repoHtml}
         </div>
@@ -1064,7 +1104,7 @@ function buildProjects() {
 
 // Hand-drawn brand marks for tools simple/iconic enough to reproduce
 // accurately from memory (see RASTER_LOGOS below for real vendor artwork,
-// and toolChip() for the plain monogram badge used when neither exists).
+// and toolItem() for the plain monogram used when neither exists).
 const TOOL_ICONS = {
   python: `<svg viewBox="0 0 24 24" width="16" height="16"><path fill="#3776AB" d="M11.9 1.5c-1 0-1.9.1-2.7.3-2.4.4-2.8 1.3-2.8 3v2.2h5.6v.7H4.3c-1.7 0-3.2 1-3.7 3-.6 2.2-.6 3.6 0 5.9.5 1.7 1.4 3 3.1 3h2v-2.6c0-1.9 1.7-3.6 3.7-3.6h5.6c1.6 0 2.9-1.3 2.9-3V4.8c0-1.6-1.4-2.8-2.9-3.1-1-.2-2-.3-2.9-.2z"/><path fill="#FFD43B" d="M12.1 22.5c1 0 1.9-.1 2.7-.3 2.4-.4 2.8-1.3 2.8-3v-2.2h-5.6v-.7h7.7c1.7 0 3.2-1 3.7-3 .6-2.2.6-3.6 0-5.9-.5-1.7-1.4-3-3.1-3h-2v2.6c0 1.9-1.7 3.6-3.7 3.6H9c-1.6 0-2.9 1.3-2.9 3v5.1c0 1.6 1.4 2.8 2.9 3.1 1 .2 2 .3 2.9.2z"/></svg>`,
   git: `<svg viewBox="0 0 24 24" width="16" height="16"><path fill="#F05133" d="M21.7 11.1L12.9 2.3a1.1 1.1 0 0 0-1.6 0L9.4 4.2l2.4 2.4a1.3 1.3 0 0 1 1.6 1.6l2.3 2.3a1.3 1.3 0 1 1-.8.8L12.6 9v6a1.3 1.3 0 1 1-1.1 0V8.9a1.3 1.3 0 0 1-.7-1.7L8.4 4.8 2.3 10.9a1.1 1.1 0 0 0 0 1.6l8.8 8.8a1.1 1.1 0 0 0 1.6 0l8.9-8.9a1.1 1.1 0 0 0 .1-1.3z"/></svg>`,
@@ -1125,17 +1165,21 @@ const TOOLS = [
   { name: 'Power BI', cat: 'pm', icon: 'powerbi' },
 ];
 
-function toolChip(t) {
+// A tool is its name with its mark. A vendor logo drawn on a white or a
+// black field keeps that field as a small plate, so it never shows a
+// mismatched box on the other theme; a transparent one sits on the page.
+function toolItem(t) {
   let icon;
   if (t.raster) {
     const { src, bg } = RASTER_LOGOS[t.raster];
-    icon = `<span style="display:inline-flex;align-items:center;justify-content:center;height:20px;padding:2px 4px;border-radius:4px;background:${bg};border:1px solid var(--border);flex-shrink:0;"><img src="${src}" alt="" loading="lazy" style="height:100%;width:auto;max-width:56px;object-fit:contain;display:block;"></span>`;
+    const plate = bg === '#fff' ? ' is-plate' : bg === '#000' ? ' is-dark' : '';
+    icon = `<span class="tool-icon${plate}"><img src="${src}" alt="" loading="lazy"></span>`;
   } else if (t.icon) {
-    icon = TOOL_ICONS[t.icon];
+    icon = `<span class="tool-icon">${TOOL_ICONS[t.icon]}</span>`;
   } else {
-    icon = `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 3px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-family:var(--font-sans);font-size:var(--fs-micro);font-weight:600;letter-spacing:0.02em;color:var(--muted-2);flex-shrink:0;">${t.initials}</span>`;
+    icon = `<span class="tool-icon"><span class="initials">${t.initials}</span></span>`;
   }
-  return `<span class="tool-pill">${icon}${t.name}</span>`;
+  return `<li class="tool-item">${icon}<span>${t.name}</span></li>`;
 }
 
 function buildSoftware() {
@@ -1143,8 +1187,8 @@ function buildSoftware() {
   if (!list) return;
   list.innerHTML = TOOL_GROUPS.map(g => `
     <div class="tool-group">
-      <div class="tool-group-label">${g.label}</div>
-      <div class="tool-group-pills">${TOOLS.filter(t => t.cat === g.id).map(toolChip).join('')}</div>
+      <p class="tool-group-label">${g.label}</p>
+      <ul class="tool-list">${TOOLS.filter(t => t.cat === g.id).map(toolItem).join('')}</ul>
     </div>`).join('');
 }
 
@@ -1160,7 +1204,8 @@ function initNav() {
   const closeMenu = () => {
     if (!nav) return;
     nav.classList.remove('nav-open');
-    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open');
+    if (menuBtn) { menuBtn.setAttribute('aria-expanded', 'false'); menuLabel.textContent = 'Menu'; }
   };
   if (nav && navScroll) {
     menuBtn = document.createElement('button');
@@ -1168,11 +1213,10 @@ function initNav() {
     menuBtn.className = 'nav-menu-btn';
     menuBtn.setAttribute('aria-controls', 'nav-scroll');
     menuBtn.setAttribute('aria-expanded', 'false');
-    menuBtn.innerHTML = '<span class="nav-menu-label">Jump to a section</span>'
-      + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
-      + ' stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-      + '<path d="m6 9 6 6 6-6"/></svg>';
-    navScroll.parentNode.insertBefore(menuBtn, navScroll);
+    // A word, not an icon: "Menu" says what it opens, "Close" what it does.
+    menuBtn.innerHTML = '<span class="nav-menu-label">Menu</span>';
+    const actions = nav.querySelector('.nav-actions');
+    (actions || navScroll.parentNode).insertBefore(menuBtn, actions ? actions.firstChild : navScroll);
     menuLabel = menuBtn.querySelector('.nav-menu-label');
     nav.classList.add('nav-collapsed');
 
@@ -1180,6 +1224,8 @@ function initNav() {
       e.stopPropagation();
       const open = nav.classList.toggle('nav-open');
       menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuLabel.textContent = open ? 'Close' : 'Menu';
+      document.documentElement.classList.toggle('menu-open', open);
     });
     // Closed by choosing a destination, tapping away, or Escape.
     navScroll.addEventListener('click', (e) => { if (e.target.closest('a')) closeMenu(); });
@@ -1216,6 +1262,7 @@ function initNav() {
     else if (r.right > c.right - pad) navScroll.scrollLeft += (r.right - (c.right - pad));
   };
 
+  const hereEl = document.getElementById('nav-here');
   let lastActive = null;
   let raf = null;
   const syncNav = () => {
@@ -1248,14 +1295,13 @@ function initNav() {
       a.classList.toggle('active', on);
       if (on) activeEl = a;
     });
-    // On a phone the bar is the only thing naming where you are, so it says so
-    // in words instead of relying on a chip that may be off-screen.
-    if (menuLabel) {
-      const here = document.querySelector('.nav-page[aria-current="page"]');
-      const next = activeEl ? activeEl.textContent.trim()
-        : (document.querySelector('[data-nav]') ? 'Jump to a section' : (here ? here.textContent.trim() : 'Menu'));
-      if (menuLabel.textContent !== next) menuLabel.textContent = next;
+    // On the projects page the bar names the chapter you are reading after
+    // the page's own name, so a long page always says where you are.
+    if (hereEl) {
+      const next = activeEl ? activeEl.textContent.trim() : '';
+      if (hereEl.textContent !== next) hereEl.textContent = next;
     }
+    if (nav) nav.classList.toggle('is-stuck', window.scrollY > 4);
     if (best !== lastActive) {
       lastActive = best;
       // Back on the hero: return the strip to its start so 01 is in view.
@@ -2002,9 +2048,11 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   function goTo(n) {
     videoOut(slides[current]);
     slides[current].classList.remove('active');
+    slides[current].setAttribute('aria-hidden', 'true');
     if (dots[current]) dots[current].classList.remove('active');
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active');
+    slides[current].removeAttribute('aria-hidden');
     if (dots[current]) dots[current].classList.add('active');
     videoIn(slides[current]);
   }
@@ -2015,6 +2063,7 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   }
   const step = (d) => { clearTimeout(timer); goTo(current + d); scheduleNext(); };
 
+  slides.forEach(s => s.setAttribute('aria-hidden', 'true'));
   goTo(0);
   scheduleNext();
 
@@ -2071,7 +2120,7 @@ function applyTheme(dark) {
   else root.removeAttribute('data-theme');
   try { sessionStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
   const meta = document.getElementById('theme-color');
-  if (meta) meta.setAttribute('content', dark ? '#1A2535' : '#FFFFFF');
+  if (meta) meta.setAttribute('content', dark ? '#121517' : '#FFFFFF');
   // holo-bay takes its colours as attributes, so it has to be torn down and
   // rebooted — which resets the scene to its opening camera position. Inside a
   // view transition the crossfade covers that jump; it used to be visible.
@@ -2109,10 +2158,24 @@ function initTheme() {
   });
 }
 
+// A clip in the page (not in a carousel) plays only while it is on screen,
+// and not at all under reduced motion, where its poster frame stands in.
+function initInViewVideos() {
+  const vids = document.querySelectorAll('video[data-inview]');
+  if (!vids.length || reducedMotion || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries) => entries.forEach(e => {
+    if (e.isIntersecting) e.target.play().catch(() => {});
+    else e.target.pause();
+  }), { threshold: 0.35 });
+  vids.forEach(v => { v.preload = 'metadata'; io.observe(v); });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildProjectGrid();
+  buildProjectIndex();
   buildProjects();
   initCalloutFigures();
+  initRevisionSwitch();
   buildSoftware();
   initNav();
   initReveal();
@@ -2125,5 +2188,6 @@ document.addEventListener('DOMContentLoaded', () => {
     : Promise.resolve()).then(initHobbyGraph);
   initCarousel({ prefix: 'hobby', slide: 'hobby-slide', dot: 'hobby-dot', minDelay: 2800, spread: 2400 });
   initCarousel({ prefix: 'dornier', slide: 'internship-slide', dot: 'internship-dot', minDelay: 3200, spread: 2200 });
+  initInViewVideos();
   initTheme();
 });

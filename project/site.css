@@ -1,8 +1,8 @@
-/* ── Type: two self-hosted variable families ─────────────
-   Latin subset only: every character the page renders is in it except the
-   arrows (→ ↓) and the ✕ ⤢ icon glyphs, which neither family draws in any
-   subset, so the browser takes those from the system font either way.
-   No italic files: nothing on the page is set in italic. */
+/* ── Type: one self-hosted variable family ───────────────
+   Atkinson Hyperlegible Next only. It already draws the slashed zero and a
+   distinct 1 / l / I, which is what the mono face used to be kept for, so
+   numbers are set in the text face with tabular figures instead.
+   Latin subset only; the arrow and icon glyphs come from the system font. */
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
   src: url("fonts/atkinson-next-latin-wght.woff2") format("woff2");
@@ -11,440 +11,435 @@
   font-display: swap;
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
-@font-face {
-  font-family: "Atkinson Hyperlegible Mono";
-  src: url("fonts/atkinson-mono-latin-wght.woff2") format("woff2");
-  font-weight: 200 800;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
+
+/* ── Tokens ──────────────────────────────────────────────
+   Bare alclad aluminium and the primer inside every airframe: a white
+   ground, one aluminium step for surfaces, graphite ink, and the primer's
+   yellow-green as the one accent. The accent fills things (the action, the
+   switch, the closing band); where the same hue has to read as a line or a
+   word on the ground it is --accent-deep. */
 :root {
+  color-scheme: light;
+  --bg: #FFFFFF;
+  --surface: #EEF0EE;
+  --ink: #1B1E20;
+  --muted: #565D60;
+  --accent: #C8D15A;
+  --accent-ink: #1B1E20;
+  --accent-deep: #5F6720;
+
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --rust: #B4491B;
-  --rust-dim: #96401A;
-  --rust-tint: #E6D3C5;
-  --ink: #171310;
-  --muted: #5F5852;
-  --muted-2: #6E6862;
-  --label: #6E6862;          /* section labels: quiet, so rust is left to results and links */
-  --link: #B4491B;           /* text links */
-  --focus: #B4491B;          /* focus ring */
-  --on-accent: #FFFFFF;      /* text on a rust fill */
-  --border: #E2DAD0;
-  --border-light: #EFE9E1;
-  --surface: #FFFFFF;
-  --bg: #F7F3ED;
-  --nav-bg: rgba(247, 243, 237, 0.92);
-  --scroll-thumb: #E2DAD0;          /* the border colour, as shadcn's bg-border */
-  --scroll-thumb-active: #CFC4B7;   /* one quiet step darker while held */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
-  /* The two type families. Weights and spacing stay per element. */
-  --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* ── The type scale ──────────────────────────────────
-     Seven steps, and nothing off them. The page had grown to eighteen
-     distinct sizes (8, 9, 9.5, 10, 10.5, 11, 11.5, 12, 13, 14, 15, 15.5,
-     16.5 and five display clamps), which is what makes a dense page read as
-     busy: at that resolution a size difference stops signalling rank and
-     becomes noise. Everything that was 8-13px is now one `micro` step, and
-     the four near-identical heading clamps (42, 42, 44, 46) are one `h2`.
-     `micro` sits at 13px rather than the 9.5-11.5px it replaces, because
-     nothing meant to be read belongs below 13. */
-  --fs-display: clamp(38px, 5.6vw, 64px);   /* the page title, once */
-  --fs-h2: clamp(27px, 3.3vw, 44px);        /* section and project headings */
-  --fs-h3: clamp(22px, 2.3vw, 30px);        /* sub-headings, pull quotes */
-  --fs-lead: clamp(19px, 1.8vw, 25px);      /* metric values */
-  --fs-body: clamp(16px, 1.2vw, 17.5px);    /* running text */
-  --fs-small: 15px;                          /* secondary notes */
-  --fs-micro: 13px;                          /* labels, chips, captions */
-  --nav-active-bg: #F0E2D8;
-  --nav-active-fg: #8A3A17;
+  /* Five sizes, far apart. Nothing on the page sits between them. */
+  --step-small: 14px;
+  --step-body: clamp(17px, 0.95rem + 0.2vw, 19px);
+  --step-lead: clamp(20px, 1.05rem + 0.6vw, 26px);
+  --step-head: clamp(30px, 1.1rem + 2.2vw, 48px);
+  --step-display: clamp(44px, 0.9rem + 5.6vw, 104px);
+
+  /* One pair of margins and one grid for every page. Sections hang from
+     column 3 on a desktop; the bar, the hero copy and the footer from the
+     margin. */
+  --margin: clamp(20px, 2.4vw, 36px);
+  --gutter: clamp(16px, 1.6vw, 28px);
+  --max: 1680px;
+  --bar-h: 64px;
+  --section: clamp(64px, 8vw, 120px);
+
+  /* Names the scripts still read (the interests graph, the gallery). */
+  --font-sans: var(--font);
+  --fs-micro: var(--step-small);
+  --muted-2: var(--muted);
+  --rust: var(--accent-deep);
+  --border: color-mix(in srgb, var(--ink) 16%, var(--bg));
 }
-
-/* Dark palette: ink blue, blue-charcoal cards, muted copper accent, warm
-   ivory secondary. Contrast (WCAG): ink 15.9:1 on --bg / 13.8:1 on
-   --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
-   text pairs clear AA (4.5:1). */
 [data-theme="dark"] {
-  --scroll-thumb: #303B4A;
-  --scroll-thumb-active: #3E4B5E;
-  --rust: #D68A63;          /* primary accent: muted copper */
-  --rust-dim: #C07752;
-  --ink: #F3F2EE;           /* main text: soft white */
-  --muted: #A0A9B6;         /* muted text: dusty blue-gray */
-  --muted-2: #8E97A5;       /* one step quieter than --muted, still 5.2:1 on cards */
-  --border: #303B4A;        /* desaturated blue */
-  --border-light: #253041;
-  --surface: #1A2535;       /* cards: blue-charcoal */
-  --bg: #101827;            /* background: ink blue */
-  --nav-active-bg: rgba(214, 138, 99, 0.16);
-  --nav-active-fg: #DCD4C5; /* secondary accent: warm ivory */
-  --label: #8E97A5;         /* section labels: quiet, so copper is left to results and links */
-  --link: #D68A63;
-  --focus: #D68A63;
-  --on-accent: #101827;
-  --nav-bg: rgba(16, 24, 39, 0.92);
+  color-scheme: dark;
+  --bg: #121517;
+  --surface: #1B1F21;
+  --ink: #E7EAE8;
+  --muted: #9EA6A8;
+  --accent: #BCC45C;
+  --accent-ink: #121517;
+  --accent-deep: #D5DC7E;
 }
-[data-theme="dark"] body { background-color: var(--bg); }
 
-html { scroll-behavior: smooth; }
 *, *::before, *::after { box-sizing: border-box; }
-
-/* Offset anchor scroll targets below the sticky nav */
-[data-section] { scroll-margin-top: 56px; }
-
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  -webkit-font-smoothing: antialiased;
-  font-family: var(--font-sans);
+  background: var(--bg);
   color: var(--ink);
-  background-color: var(--surface);
-  transition: background-color 280ms ease, color 280ms ease;
+  font-family: var(--font);
+  font-size: var(--step-body);
+  line-height: 1.55;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+}
+img, video { max-width: 100%; }
+p { margin: 0; }
+h1, h2, h3 { margin: 0; font-weight: 580; hyphens: none; text-wrap: balance; }
+a { color: inherit; }
+button { font-family: inherit; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
+[data-section] { scroll-margin-top: calc(var(--bar-h) + 16px); }
+
+/* A number and its unit, kept on one line, in the text face's tabular
+   figures so columns of results line up. */
+.data { font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+
+/* Running links: underlined clear of the descenders. */
+.text-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--ink) 40%, transparent);
+  transition: text-decoration-color 150ms ease;
 }
 
-/* ── Nav inner row ────────────────────────────────────
-   Two tracks. `.nav-scroll` holds the section links and is the only part
-   that scrolls; `.nav-actions` holds Get-in-touch and the theme toggle and
-   never scrolls out of reach. At 390px the link strip is 853px wide, so
-   with a single scrolling row the CTA and the toggle sat ~500px off the
-   right edge of a sticky bar — effectively absent on every phone. */
+.skip {
+  position: absolute;
+  left: var(--margin);
+  top: -60px;
+  z-index: 60;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: var(--step-small);
+}
+.skip:focus { top: 8px; }
+
+/* ── The grid ─────────────────────────────────────────── */
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--margin); }
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+.grid12 > * { min-width: 0; }
+.col-read, .col-side, .col-wide, .col-full { grid-column: 1 / -1; }
+@media (min-width: 760px) {
+  .col-read { grid-column: 1 / span 7; }
+  .col-side { grid-column: 8 / -1; }
+  .col-wide { grid-column: 1 / -1; }
+}
+@media (min-width: 1100px) {
+  .col-read { grid-column: 3 / span 5; }
+  .col-side { grid-column: 9 / -1; }
+  .col-wide { grid-column: 3 / -1; }
+}
+
+.sec { padding: var(--section) 0; }
+.sec-head { margin-bottom: clamp(28px, 3.4vw, 48px); }
+.sec-title {
+  font-size: var(--step-head);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+}
+.sec-lede {
+  margin-top: 14px;
+  max-width: 46ch;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ── The bar ──────────────────────────────────────────────
+   Wordmark, the four pages, one action. Opaque, on the page's own ground,
+   with no rule under it: it is told apart from what scrolls beneath by
+   being solid, and once the page has moved it steps to the surface tone. */
+nav.bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg);
+  transition: background-color 200ms ease;
+}
+nav.bar.is-stuck { background: var(--surface); }
 .nav-inner {
-  /* The page column's content width (1240px less its side padding), so the
-     first link starts level with the headings and text below. */
-  max-width: calc(1240px - 2 * clamp(18px, 4vw, 56px));
+  max-width: var(--max);
   margin: 0 auto;
+  padding: 0 var(--margin);
+  min-height: var(--bar-h);
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  padding: 12px 0;
+  gap: clamp(16px, 2.6vw, 44px);
 }
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  flex: none;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--step-small);
+  font-weight: 580;
+  letter-spacing: 0.005em;
+}
+.brand-mark { height: 17px; width: auto; flex: none; display: block; }
 .nav-scroll {
   display: flex;
   align-items: center;
-  gap: clamp(4px, 1vw, 14px);
-  flex: 0 1 auto;
+  gap: clamp(16px, 2vw, 32px);
+  flex: 1 1 auto;
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  /* Deliberately not `scroll-behavior: smooth`. The strip is nudged by page
-     scrolling, and animating the side effect of a continuous gesture always
-     lags the gesture — flick past four sections and you would watch the
-     chips slide for a second after you stopped. Instant reads as part of
-     the scroll instead of as a second, late event. */
-  scroll-padding-inline: 20px;
-  overscroll-behavior-x: contain;
 }
-/* Touch: a swipe that starts on the nav bar moves the link strip sideways
-   and never the page. A thumb swipe is never perfectly level, and with the
-   default touch-action the vertical part of it scrolled the page, carrying
-   the bar (and the hero, when not yet stuck) up out of view. pan-x keeps
-   taps working; the page still scrolls from anywhere below the bar. The
-   strip needs its own declaration: touch-action is resolved only up to the
-   nearest scroll container, and .nav-scroll is one, so nav's would not
-   reach a swipe that starts on a link. */
-nav, .nav-scroll { touch-action: pan-x; }
-/* A link's text sits 8px inside its chip; pull the strip back by that so
-   the first word, not the chip's edge, lines up with the column. */
-@media (min-width: 641px) { .nav-scroll { margin-left: -8px; } }
-.nav-scroll::-webkit-scrollbar { display: none; }
-/* Brand: the MLY grid monogram beside the name in the top bar. Drawn without
-   its grid at this size (the hairlines turn to noise under ~32px tall) and
-   coloured by the theme tokens, so it follows light and dark. */
-.brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); }
-.brand-mark { height: 18px; width: auto; flex: none; display: block; }
+.nav-link {
+  position: relative;
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 15px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+.nav-link[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+  text-decoration-color: var(--accent-deep);
+}
+/* The chapter you are reading, after the page name on the Projects page. */
+.nav-here {
+  color: var(--muted);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-here:empty { display: none; }
+@media (max-width: 999.98px) { .nav-here { display: none; } }
+.nav-here { margin-left: calc(-1 * clamp(16px, 2vw, 32px) + 10px); }
+.nav-here::before { content: "/"; margin-right: 0.5em; color: var(--muted); }
+.nav-chapter.active { color: var(--ink); }
+.nav-chapter { display: none; }
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: clamp(10px, 1.6vw, 18px);
+  gap: 10px;
   flex: none;
   margin-left: auto;
-  padding-left: clamp(12px, 2vw, 24px);
-}
-/* Edge fades, applied by JS only on the side that actually has more content.
-   A static right-hand fade would dim a fully-visible last link for no reason,
-   and would lie about there being more to the right once you reach the end. */
-.nav-scroll.fade-r { -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); mask-image: linear-gradient(to right, black calc(100% - 28px), transparent); }
-.nav-scroll.fade-l { -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); mask-image: linear-gradient(to left, black calc(100% - 28px), transparent); }
-.nav-scroll.fade-l.fade-r {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
-  mask-image: linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent);
 }
 
-a { color: var(--link); text-decoration: none; transition: color 150ms ease; }
-::selection { background: var(--rust-tint); color: var(--ink); }
-[data-theme="dark"] ::selection { background: rgba(214, 138, 99, 0.3); color: var(--ink); }
-button { font-family: inherit; }
-
-/* A number and its unit in the mono face, kept on one line. Size and weight
-   inherit from wherever it sits. A mono space is a 0.632em cell against the
-   sans's 0.280em, so "2&nbsp;MPa" would read as two spaces without the
-   word-spacing pull-back. */
-.data {
-  font-family: var(--font-mono);
-  font-variant-ligatures: none;
-  white-space: nowrap;
-  word-spacing: -0.35em;
-}
-
-/* ── Nav ─────────────────────────────────────────────── */
-.nav-link {
-  /* The active section was a 1px underline on muted-2 text, easy to miss.
-     Now: darker resting text, and a filled chip plus a 2px rule for the
-     section you are in. Type size, weight and tracking are unchanged. */
-  color: var(--muted);
-  padding: 6px 8px 4px;
-  border-radius: 3px;
-  border-bottom: 2px solid transparent;
-  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
-  text-decoration: none;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.nav-link.active {
-  color: var(--nav-active-fg);
-  background-color: var(--nav-active-bg);
-  border-bottom-color: var(--rust);
-}
-
-
-/* ── Buttons ───────────────────────────────────────────
-   One system, after shadcn/ui's Button: an inline row of a 16px icon and a
-   label, 6px corners, three heights (32 / 36 / 40px) and two variants.
-   Outline is the quiet one: a surface fill and the border colour, for the
-   GitHub links and the footer's other rows. Get in touch and See the four
-   analyses keep their own looks (.btn-cta, .btn-solid) on the same base. shadcn's
-   1px resting shadow is left off: nothing here floats. shadcn's 3px focus ring in the focus colour; the
-   page's 0.97 press. Transitions name their properties, never `all`. */
+/* ── Buttons ──────────────────────────────────────────────
+   Square corners, decided once. One filled primary (primer on the page, ink
+   on the primer band), one outlined action in the bar, one quiet tone-step
+   button for repositories. Presses scale to 0.97 on the way down. */
 .btn {
   display: inline-flex;
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 16px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  font-weight: 500;
-  line-height: 1;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 580;
+  line-height: 1.1;
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
-  outline: none;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
-              box-shadow 150ms ease, transform 120ms var(--ease-out);
+  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease,
+              transform 120ms var(--ease-out);
 }
-.btn svg { width: 16px; height: 16px; flex-shrink: 0; pointer-events: none; }
-.btn:has(> svg) { padding-inline: 12px; }
+.btn svg { width: 16px; height: 16px; flex: none; pointer-events: none; }
+.btn .icon-gmail { width: 17px; height: 13px; }
 .btn:active { transform: scale(0.97); }
-.btn:focus-visible {
-  border-color: var(--focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
-}
-/* The one direction hint: See the four analyses' arrow drops 2px on hover,
-   saying where the button goes. The other icons hold still. */
-.btn .icon-down { transition: transform 150ms var(--ease-out); }
-/* A footer row is 500px wide, where 0.97 would pull its ends in by 16px;
-   wide buttons press to 0.99, the same felt depth. */
-.footer-cta .btn:active { transform: scale(0.99); }
-.btn-sm { height: 32px; gap: 6px; padding: 0 12px; }
-.btn-sm:has(> svg) { padding-inline: 10px; }
-.btn-lg { height: 40px; padding: 0 24px; }
-.btn-lg:has(> svg) { padding-inline: 16px; }
-/* Get in touch, as the live site had it before the redesign: a 1px rust
-   outline, rust label, square corners, filling rust on hover, with the
-   Gmail mark. Small in the nav; a full row in the inner pages' footers. */
-.btn-cta {
-  border-color: var(--rust);
-  border-radius: 0;
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-ink { background: var(--ink); color: var(--bg); }
+/* Get in touch in the bar: the outlined action, with the Gmail mark. */
+.btn-ghost {
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--ink);
   background: transparent;
-  color: var(--rust);
+  border: 1.5px solid var(--ink);
 }
-.nav-cta.btn-cta { height: auto; padding: 5px 11px; gap: 7px; font-size: var(--fs-micro); }
-/* See the four analyses, as first built: a solid rust block, white label,
-   2px corners, one shade deeper on hover. */
-.btn-solid {
-  min-height: 44px;
-  height: auto;
-  padding: 10px 18px;
-  border-radius: 2px;
-  background: var(--rust);
-  color: var(--on-accent);
-  font-weight: 600;
-}
-.btn .icon-gmail { width: 16px; height: 12px; }
-.btn-solid:has(> svg) { padding-inline: 16px 18px; }
-/* The arrow sits in its own square well at the trailing end, a shade
-   darker than whatever the button is, so it reads on rust and on the
-   hover's deeper rust alike. The well fills the button's height minus 6px. */
-.btn-well { padding: 6px 6px 6px 18px; gap: 14px; }
+.btn-quiet { background: var(--surface); color: var(--ink); min-height: 40px; padding: 0 16px; font-size: 15px; }
+/* The arrow in its own square well at the trailing end, a shade darker than
+   whatever the button is, so it reads at rest and on hover alike. */
+.btn-well { padding: 6px 6px 6px 20px; gap: 16px; }
 .btn-well .well {
   display: grid;
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 1px;
-  background: rgb(0 0 0 / 0.16);
+  background: rgb(0 0 0 / 0.12);
 }
-.btn-outline {
-  background: var(--surface);
-  border-color: var(--border);
-  color: var(--ink);
-}
+.btn .icon-down { transition: transform 150ms var(--ease-out); }
 @media (hover: hover) and (pointer: fine) {
-  .btn-cta:hover { background: var(--rust); color: var(--surface); }
-  /* One shade deeper in the same hue; ink read as a different button. */
-  .btn-solid:hover { background: var(--rust-dim); color: var(--on-accent); }
-  /* One tone step toward the border colour: darker on the light page,
-     lighter on the dark one, as shadcn's outline hover is in each theme. */
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 84%, var(--ink)); }
+  .btn-ink:hover { background: color-mix(in srgb, var(--ink) 84%, var(--bg)); }
+  .btn-ghost:hover { background: var(--ink); color: var(--bg); }
+  .btn-quiet:hover { background: color-mix(in srgb, var(--surface) 78%, var(--ink)); }
   .btn:hover .icon-down { transform: translateY(2px); }
-  .btn-outline:hover { background: color-mix(in srgb, var(--surface) 55%, var(--border)); color: var(--ink); }
+  .nav-link:hover { color: var(--ink); }
+  .text-link:hover { text-decoration-color: var(--ink); }
 }
-.lead-btn {
-  appearance: none;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  cursor: zoom-in;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-template-columns: minmax(0, 1fr);
-  width: 100%;
-  min-width: 0;
-  text-align: left;
-  padding: 0;
-  height: 380px;
-  transition: border-color 150ms var(--ease-out), transform 120ms var(--ease-out);
-}
-.lead-btn:active { transform: scale(0.985); }
 
-.lead-media-area {
-  /* opacity transition managed by JS for directional easing */
+/* ── Theme toggle ─────────────────────────────────────── */
+.theme-toggle {
   position: relative;
-  /* Safari bug: an absolutely-positioned child with height:100% inside a
-     grid item sized by `fr` (this row is `minmax(0,1fr)` in .lead-btn)
-     doesn't resolve — the child collapses to nothing. Chrome/Firefox
-     handle it fine via grid stretch alone. Explicit height/min-height
-     here gives Safari a definite value to anchor percentage heights to. */
-  height: 100%;
-  min-height: 100%;
-}
-
-.thumb-btn {
-  appearance: none;
-  cursor: pointer;
-  padding: 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
   display: grid;
-  gap: 5px;
-  width: 100%;
-  min-width: 0;
-  text-align: left;
-  transition: border-color 150ms var(--ease-out), transform 100ms var(--ease-out);
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 150ms ease, transform 120ms var(--ease-out);
 }
-.thumb-btn:active { transform: scale(0.95); }
-.thumb-btn img, .thumb-btn video { transition: opacity 150ms ease; }
-
-/* ── Header full-bleed wrapper ──────────────────────── */
-.header-wrap {
-  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
-  background-size: 28px 28px;
+.theme-toggle:active { transform: scale(0.95); }
+.theme-toggle .icon-moon,
+.theme-toggle .icon-sun {
+  position: absolute;
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+.theme-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.6); }
+[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+[data-theme="dark"] .theme-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover { background: var(--surface); }
 }
 
-/* ── Hero two-column grid ────────────────────────────── */
+/* ── Home: the first screen ──────────────────────────────
+   Two tones meeting at the middle. The left holds the title, the sentence
+   that says what this is and the one action, anchored to the foot. The
+   right holds the evidence and the switch that reads it: the nozzle, and
+   where its stress is read. */
 .hero {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: clamp(40px, 6vw, 88px) clamp(18px, 4vw, 56px) clamp(32px, 5vw, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100svh - var(--bar-h));
+}
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(40px, 6vw, 96px) clamp(24px, 4vw, 72px) clamp(40px, 6vw, 88px)
+           max(var(--margin), calc((100vw - var(--max)) / 2 + var(--margin)));
 }
 .hero-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-display);
-  line-height: 1.04;
+  font-size: var(--step-display);
+  line-height: 0.98;
   letter-spacing: -0.035em;
-  margin: 0 0 clamp(24px, 3vw, 40px);
-  max-width: 26ch;
-  text-wrap: balance;
+  margin: 0 0 clamp(22px, 2.6vw, 36px) -0.04em;
+  max-width: 9.5em;
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(28px, 4vw, 64px);
-  align-items: start;
-}
-@media (max-width: 820px) {
-  .hero-grid { grid-template-columns: 1fr; }
-}
+.hero-title .line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.hero-title .line > span { display: inline-block; }
 .hero-lede {
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  max-width: 46ch;
-  margin: 0 0 26px;
-  color: var(--ink);
+  max-width: 40ch;
+  font-size: var(--step-body);
+  line-height: 1.55;
   text-wrap: pretty;
 }
-.hero-creds { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
-.hero-creds span {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  padding: 7px 11px;
-  border: 1px solid var(--border);
-  background: var(--surface);
+.hero-actions { margin-top: clamp(24px, 2.8vw, 36px); }
+.hero-creds {
+  margin-top: clamp(28px, 3vw, 44px);
   color: var(--muted);
-}
-/* Framed like a drawing sheet: the outer border carries a centring mark at
-   the middle of each edge, as ASME Y14.1 sheets do, and the plot sits in its
-   own hairline inside the margin. The marks are four background strokes, so
-   they cost no markup and stay inside the padding, clear of the content. */
-.hero-fig {
-  margin: 0;
-  background:
-    linear-gradient(var(--muted-2), var(--muted-2)) 50% 0 / 1px 10px,
-    linear-gradient(var(--muted-2), var(--muted-2)) 50% 100% / 1px 10px,
-    linear-gradient(var(--muted-2), var(--muted-2)) 0 50% / 10px 1px,
-    linear-gradient(var(--muted-2), var(--muted-2)) 100% 50% / 10px 1px,
-    var(--surface);
-  background-repeat: no-repeat;
-  border: 1px solid var(--border);
-  padding: clamp(12px, 1.6vw, 20px);
-}
-.hero-fig .callout-fig img { box-shadow: 0 0 0 1px var(--border-light); }
-.hero-fig figcaption {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-light);
-  font-size: var(--fs-small);
-  line-height: 1.5;
-  color: var(--muted);
+  font-size: var(--step-small);
+  line-height: 1.6;
 }
 
-/* ── Drawing callouts ──────────────────────────────────
-   Leader, dot and numbered balloon, as on a drawing sheet. The balloons
-   are HTML so they stay round and legible at any figure size; the leaders
-   are one SVG stretched over the image, drawn at a constant stroke. */
+.hero-rig {
+  margin: 0;
+  background: var(--surface);
+  padding: clamp(32px, 4.4vw, 72px) max(var(--margin), calc((100vw - var(--max)) / 2 + var(--margin)))
+           clamp(32px, 4.4vw, 72px) clamp(24px, 4vw, 72px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(18px, 2vw, 26px);
+}
+.rig-fig { display: block; }
+.rig-fig img { display: block; width: 100%; height: auto; }
+.rig-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--bg);
+  padding: 4px;
+  gap: 4px;
+}
+.rig-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 14px 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+}
+.rig-switch button:active { transform: scale(0.97); }
+.rig-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.rig-switch .callout-balloon { position: static; margin: 0; width: 24px; height: 24px; }
+.rig-read { display: grid; gap: 8px; }
+.rig-readout {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+.rig-num {
+  font-size: var(--step-head);
+  font-weight: 580;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.rig-num.is-withdrawn {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 0.06em;
+}
+.rig-unit { color: var(--muted); font-size: var(--step-small); }
+.rig-note { max-width: 52ch; color: var(--muted); font-size: var(--step-small); line-height: 1.5; }
+.rig-cap { max-width: 46ch; font-size: var(--step-body); line-height: 1.5; text-wrap: pretty; }
+/* With no script the switch would do nothing, so it is only shown once the
+   script has taken the figure over. Both callouts stay drawn either way. */
+html:not(.has-js) .rig-switch { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .rig-switch button[aria-pressed="false"]:hover { color: var(--ink); }
+}
+
+/* ── Drawing callouts ──────────────────────────────────────
+   Leader, dot and numbered balloon, as on a drawing sheet. On the switch's
+   figure the reading you have not chosen steps back. */
 .callout-fig { position: relative; display: block; }
 .callout-fig img { display: block; width: 100%; height: auto; }
 .callouts { position: absolute; inset: 0; pointer-events: none; }
 .callouts svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.callouts line { stroke: var(--rust); stroke-width: 1.5; }
+.callouts line { stroke: var(--ink); stroke-width: 1.5; transition: opacity 200ms ease; }
+[data-theme="dark"] .callouts line { stroke: #1B1E20; }
 .callout-dot {
   position: absolute;
-  width: 9px;
-  height: 9px;
-  margin: -4.5px 0 0 -4.5px;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
   border-radius: 50%;
-  background: var(--rust);
-  box-shadow: 0 0 0 2px var(--surface);
+  background: #1B1E20;
+  box-shadow: 0 0 0 2px #FFFFFF; /* taste-skill-ignore: the dot's ring on a contour plot, part of the drawing */
+  transition: opacity 200ms ease, transform 200ms var(--ease-out);
 }
 .callout-balloon {
   position: absolute;
@@ -453,884 +448,428 @@ button { font-family: inherit; }
   margin: -13px 0 0 -13px;
   display: grid;
   place-items: center;
-  border: 1.5px solid var(--rust);
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--rust);
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  font-weight: 600;
+  background: var(--accent);
+  color: #1B1E20;
+  box-shadow: inset 0 0 0 1.5px #1B1E20; /* taste-skill-ignore: the balloon's drawn outline */
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 200ms ease;
 }
+.hero-rig[data-rev] .callouts [data-rev] { opacity: 0.25; }
+.hero-rig[data-rev="v1.0"] .callouts [data-rev="v1.0"],
+.hero-rig[data-rev="v2.0"] .callouts [data-rev="v2.0"] { opacity: 1; }
 .callout-key {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   padding: 0;
   display: grid;
   gap: 8px;
-  font-size: var(--fs-small);
-  line-height: 1.4;
-  color: var(--ink);
+  font-size: var(--step-small);
+  line-height: 1.45;
 }
 .callout-key li, .callout-key [role="listitem"] { display: flex; align-items: center; gap: 10px; }
-/* The class sets display, which would otherwise beat the hidden attribute
-   and leave an empty box taking space under figures without callouts. */
 .callout-key[hidden] { display: none; }
 .callout-key .callout-balloon { position: static; margin: 0; flex: none; }
-.callout-key .data { color: var(--rust); font-weight: 600; }
-.callout-key s.data { color: var(--muted-2); font-weight: 400; text-decoration-thickness: 2px; }
-/* In a project the key sits in the caption row, inside the figure's fixed
-   height, so switching to a figure without callouts moves nothing below. */
-.lead-cap-row .callout-key { flex-basis: 100%; margin: 6px 0 0; gap: 6px; }
+.callout-key .data { font-weight: 580; }
+.callout-key s.data { color: var(--muted); font-weight: 400; text-decoration-thickness: 2px; }
+.lead-cap-row .callout-key { flex-basis: 100%; margin: 4px 0 0; gap: 6px; }
 .key-below { margin-top: 14px; }
 @media (min-width: 641px) { .key-below { display: none !important; } }
 @media (max-width: 640px) { .lead-cap-row .callout-key { display: none !important; } }
 
-/* ── The work ──────────────────────────────────────────
-   Four analysis cards, two by two, with the hand builds and the turntable
-   of models beside them. The section reads as an index: result first,
-   then the chapter for anyone who wants the proof. */
-.work {
-  padding: clamp(48px, 6vw, 80px) 0 clamp(32px, 4vw, 56px);
-  border-bottom: 1px solid var(--border);
-}
-.work-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  margin-bottom: clamp(24px, 3vw, 40px);
-}
-.section-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h2);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+/* ── Home: four analyses ──────────────────────────────────
+   A ledger, not cards: the name and the result on the left, the number to
+   remember on the right, the check under it. The frame beside the column
+   shows the row you are on and follows it down. */
+.ledger { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(8px, 1vw, 14px); }
+.ledger-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "thumb thumb" "name key" "result key" "check check";
+  column-gap: clamp(16px, 2.4vw, 36px);
+  padding: clamp(14px, 1.4vw, 20px) 0;
   color: var(--ink);
-  margin: 0;
+  text-decoration: none;
+  transition: color 150ms ease, transform 120ms var(--ease-out);
 }
-.section-lede {
-  font-size: var(--fs-body);
-  line-height: 1.55;
-  color: var(--muted);
-  max-width: 52ch;
-  margin: 12px 0 0;
+.ledger-row:active { transform: scale(0.99); }
+.ledger-thumb { grid-area: thumb; display: none; }
+.ledger-name { grid-area: name; font-size: var(--step-lead); font-weight: 580; letter-spacing: -0.015em; line-height: 1.2; }
+.ledger-result { grid-area: result; margin-top: 6px; max-width: 42ch; color: var(--muted); text-wrap: pretty; }
+.ledger-key { grid-area: key; align-self: start; text-align: right; display: grid; justify-items: end; gap: 2px; }
+.ledger-num {
+  font-size: var(--step-lead);
+  font-weight: 580;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
 }
-.grid-hint { font-size: var(--fs-micro); color: var(--muted); white-space: nowrap; }
-.work-layout { display: grid; gap: clamp(24px, 3vw, 40px); }
-@media (min-width: 1000px) {
-  .work-layout { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+.ledger-k { max-width: 17ch; color: var(--muted); font-size: var(--step-small); line-height: 1.35; text-wrap: balance; }
+.ledger-check { grid-area: check; margin-top: 8px; color: var(--muted); font-size: var(--step-small); }
+.ledger-status { display: inline-block; margin-right: 8px; padding: 1px 8px; background: var(--surface); color: var(--ink); font-size: var(--step-small); }
+.ledger-group { margin-top: clamp(28px, 3vw, 40px); color: var(--muted); font-size: var(--step-small); }
+/* While one row is being read, the others step back to the soft ink. */
+@media (hover: hover) and (pointer: fine) {
+  .ledger:has(.ledger-row:hover) .ledger-row:not(:hover) .ledger-name,
+  .ledger:has(.ledger-row:hover) .ledger-row:not(:hover) .ledger-num { color: var(--muted); }
 }
-.work-side { display: grid; gap: clamp(24px, 3vw, 32px); min-width: 0; }
-.built-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h3);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  margin: 0 0 10px;
+.ledger-more { margin-top: clamp(24px, 2.4vw, 36px); font-size: 16px; }
+.ledger-preview { position: relative; display: none; }
+.ledger-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  aspect-ratio: 4 / 3;
+  background: var(--surface);
+  overflow: hidden;
+  transition: transform 300ms var(--ease-out);
 }
+.ledger-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.ledger-frame img.is-contain { object-fit: contain; padding: 18px; }
+.ledger-frame img.is-on { opacity: 1; }
+@media (min-width: 760px) { .ledger-preview { display: block; } }
+@media (max-width: 759.98px) {
+  .ledger-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: var(--surface);
+    margin-bottom: 14px;
+  }
+  .ledger-thumb.is-contain { object-fit: contain; padding: 14px; }
+  .ledger-row { padding-top: 0; }
+  /* One column on a phone: the number follows the sentence it belongs to. */
+  .ledger-row { grid-template-columns: minmax(0, 1fr); grid-template-areas: "thumb" "name" "result" "key" "check"; }
+  .ledger-key { justify-items: start; text-align: left; grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; margin-top: 12px; }
+  .ledger-k { max-width: none; }
+}
+
+/* ── Home: built by hand ──────────────────────────────── */
+.built-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: clamp(18px, 2vw, 26px); }
 .built-row {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: clamp(96px, 9vw, 132px) minmax(0, 1fr);
+  gap: clamp(14px, 1.6vw, 22px);
   align-items: center;
-  padding: 12px 0;
-  border-top: 1px solid var(--border);
-  color: inherit;
+  color: var(--ink);
   text-decoration: none;
+  transition: transform 120ms var(--ease-out);
 }
+.built-row:active { transform: scale(0.99); }
 .built-row img, .built-row > span:first-child {
-  width: 88px;
-  height: 66px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
-  background: var(--bg);
-  border: 1px solid var(--border-light);
+  background: var(--surface);
 }
-.built-row strong { display: block; font-size: var(--fs-small); font-weight: 600; color: var(--ink); line-height: 1.3; transition: color 150ms ease; }
-.built-row { transition: transform 120ms var(--ease-out); }
-.built-row:active { transform: scale(0.99); }
-.built-row strong + span { display: block; font-size: var(--fs-small); color: var(--muted); line-height: 1.4; margin-top: 2px; }
+.built-row strong { display: block; font-size: var(--step-body); font-weight: 580; line-height: 1.3; }
+.built-row strong + span { display: block; margin-top: 2px; color: var(--muted); font-size: var(--step-small); line-height: 1.45; }
 @media (hover: hover) and (pointer: fine) {
-  .built-row:hover strong { color: var(--link); }
+  .built-row:hover strong { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.2em; }
 }
-.holo-panel { min-width: 0; background: var(--surface); border: 1px solid var(--border); }
-.holo-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--border-light);
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-}
-.built-head { padding: clamp(56px, 7vw, 96px) 0 clamp(8px, 1vw, 16px); scroll-margin-top: 56px; }
-
-/* ── Holo-bay static fallback ─────────────────────────
-   holo-bay is an unknown element until holo-bay.js loads and registers it;
-   until then (or if the script never loads at all — CDN down, blocked,
-   offline) the fallback below stays visible via :not(:defined). No JS
-   needed for this half; rebootHoloBay() guards the other half so a theme
-   toggle can't wipe this out while the component is still unregistered. */
+.holo { margin: 0; background: var(--surface); padding: clamp(10px, 1.2vw, 16px); }
+.holo figcaption { padding: 10px 4px 2px; color: var(--muted); font-size: var(--step-small); }
+@media (max-width: 759.98px) { .holo { margin-top: 32px; } }
 .holo-fallback {
-  height: 358px;
+  height: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   text-align: center;
   padding: 20px;
-  box-sizing: border-box;
+  color: var(--muted);
+  font-size: var(--step-small);
 }
-.holo-fallback-chip {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-  padding: 4px 9px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
+.holo-fallback-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; max-width: 320px; color: var(--ink); }
 holo-bay:defined .holo-fallback { display: none; }
 
-/* ── Hero entry stagger ──────────────────────────────── */
-@keyframes hero-fade-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-/* `backwards`, not `both`: the start state holds through each delay, and the
-   animation lets go once played. With `both` the end state kept overriding
-   the hero button's :active press, so it never visibly pressed. */
-.hero-s1 { animation: hero-fade-up 300ms var(--ease-out) backwards; animation-delay: 0ms; }
-.hero-s2 { animation: hero-fade-up 300ms var(--ease-out) backwards; animation-delay: 60ms; }
-.hero-s3 { animation: hero-fade-up 300ms var(--ease-out) backwards; animation-delay: 120ms; }
-.hero-s4 { animation: hero-fade-up 300ms var(--ease-out) backwards; animation-delay: 180ms; }
-/* Played on the first page of a visit only (the head script sets this). */
-.intro-seen .hero-s1, .intro-seen .hero-s2, .intro-seen .hero-s3, .intro-seen .hero-s4 { animation: none; }
-
-
-
-/* ── Lightbox (class-driven, always in DOM) ──────────── */
-/* Page frozen behind the open viewer. scrollbar-gutter keeps the space the
-   scrollbar used, so nothing shifts sideways when it disappears. touch-action
-   and overscroll-behavior stop a swipe on the backdrop scrolling the page
-   on touch browsers that ignore overflow on <html>. */
-html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
-#lightbox:focus { outline: none; }
-#lightbox {
-  touch-action: none;
-  overscroll-behavior: contain;
-  display: flex;
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: rgba(23, 19, 16, 0.86);
-  align-items: center;
-  justify-content: center;
-  padding: clamp(16px, 3vw, 52px);
-  cursor: zoom-out;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 150ms var(--ease-out);
-}
-/* .open state; transition here fires on OPEN (ease-out: instant start) */
-#lightbox.open {
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 200ms var(--ease-out);
-}
-
-/* Inner content: closing and opening both on the ease-out curve, so the
-   close responds the instant it is asked for. */
-#lightbox-inner {
-  max-width: 1440px;
-  width: 100%;
-  transform: scale(0.98);
-  opacity: 0;
-  transition: transform 150ms var(--ease-out), opacity 150ms var(--ease-out);
-}
-#lightbox.open #lightbox-inner {
-  transform: none;
-  opacity: 1;
-  transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
-}
-
-/* ── Project gallery split ───────────────────────────── */
-.gallery-split {
+/* ── Home: tools ─────────────────────────────────────────
+   Four stages of the work, side by side, each a plain list. */
+.tools-cols {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 172px;
-  gap: 12px;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(28px, 3vw, 44px) var(--gutter);
 }
-.gallery-split.no-thumbs { grid-template-columns: minmax(0, 1fr); }
+.tool-group-label { color: var(--muted); font-size: var(--step-small); margin-bottom: 14px; }
+.tool-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tool-item { display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 1.3; }
+.tool-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 22px;
+}
+.tool-icon img { max-width: 30px; max-height: 20px; object-fit: contain; display: block; }
+.tool-icon.is-plate { background: #FFFFFF; padding: 2px; }
+.tool-icon.is-dark { background: #000000; padding: 2px; }
+.tool-icon .initials { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: var(--muted); }
 
-.thumb-rail {
+/* ── The closing band ─────────────────────────────────────
+   Every page ends on the primer: the one place the accent floods. */
+.band { background: var(--accent); color: var(--accent-ink); padding: clamp(64px, 8vw, 128px) 0; }
+.band-title { font-size: var(--step-head); line-height: 1.04; letter-spacing: -0.025em; max-width: 16ch; }
+.band-text { margin-top: 16px; max-width: 34ch; font-size: var(--step-lead); line-height: 1.35; text-wrap: pretty; }
+.band-actions { margin-top: clamp(26px, 3vw, 40px); display: flex; flex-wrap: wrap; gap: 12px; }
+.band-side { display: grid; align-content: end; gap: clamp(22px, 2.4vw, 32px); margin-top: 40px; }
+@media (min-width: 760px) { .band-side { margin-top: 0; } }
+.band-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: var(--step-body); }
+.band-links a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+.band-bases { display: grid; gap: 14px; font-size: var(--step-small); line-height: 1.5; }
+.band-bases span { display: block; }
+/* On the primer the button is the band's own dark ink in both themes. */
+.band .btn-ink { background: var(--accent-ink); color: var(--accent); }
+@media (hover: hover) and (pointer: fine) {
+  .band .btn-ink:hover { background: color-mix(in srgb, var(--accent-ink) 82%, var(--accent)); }
+}
+
+.site-foot { padding: 26px 0 30px; color: var(--muted); font-size: var(--step-small); }
+.foot-line {
   display: grid;
-  gap: 6px;
-  max-height: 380px;
-  overflow-y: auto;
-  padding-right: 2px;
-  overscroll-behavior: contain;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  gap: 12px 24px;
+}
+.foot-links { display: flex; flex-wrap: wrap; gap: 6px 24px; }
+.foot-links a { color: var(--ink); text-decoration: none; }
+.foot-line > :last-child { justify-self: end; }
+@media (hover: hover) and (pointer: fine) {
+  .foot-links a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  .band-links a:hover { text-decoration-thickness: 0.12em; }
+}
+@media (max-width: 759.98px) {
+  .foot-line { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .foot-line > :last-child { justify-self: start; }
 }
 
-/* Below ~640px a fixed 172px rail eats nearly half the width and leaves the
-   lead image a narrow sliver of a 380px-tall box. Stack instead, and run the
-   thumbnails as a horizontal rail underneath. */
-@media (max-width: 640px) {
-  .gallery-split { grid-template-columns: minmax(0, 1fr); }
-  .lead-btn { height: 300px; }
-  .thumb-rail {
-    grid-auto-flow: column;
-    grid-auto-columns: 132px;
-    max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-right: 0;
-    padding-bottom: 4px;
-  }
+/* ── Inner pages: the head ─────────────────────────────── */
+.page-head { padding: clamp(48px, 7vw, 120px) 0 clamp(36px, 4vw, 64px); }
+.page-title {
+  font-size: var(--step-display);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin-left: -0.04em;
+}
+.page-lede { margin-top: clamp(16px, 1.8vw, 24px); max-width: 38ch; font-size: var(--step-lead); line-height: 1.35; text-wrap: pretty; }
+.proj-index.page-index { margin-top: clamp(32px, 4vw, 56px); max-width: 36rem; }
+.page-statement { margin-top: clamp(16px, 1.8vw, 24px); max-width: 30ch; font-size: var(--step-lead); line-height: 1.35; color: var(--muted); }
+
+/* ── Projects: the index ──────────────────────────────── */
+.proj-index { list-style: none; margin: 0; padding: 0; display: grid; }
+.proj-index a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 11px 0;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--step-body);
+  transition: transform 120ms var(--ease-out);
+}
+.proj-index a:active { transform: scale(0.99); }
+.proj-index .k { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.proj-index .grp { padding: 22px 0 6px; color: var(--muted); font-size: var(--step-small); }
+.proj-index li:first-child .grp { padding-top: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .proj-index a:hover span:first-child { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.2em; }
 }
 
-/* The figure's caption. One line with an ellipsis where there is room for
-   one, and a wrapped second line where there is not: at 13px several of
-   these captions no longer fit a tablet's width, and a caption truncated to
-   "The finished airframe — foam b…" has lost the half that says what the
-   picture shows. */
-.lead-cap { flex: 1 1 240px; min-width: 0; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
+/* The hand builds' own heading on the projects page. */
+.built-head { padding: clamp(72px, 9vw, 140px) 0 clamp(8px, 1vw, 16px); }
+.built-jump { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-self: end; }
+@media (min-width: 760px) { .built-jump { margin-top: 0; } }
+.built-jump a { display: grid; gap: 8px; color: var(--ink); text-decoration: none; font-size: var(--step-small); transition: transform 120ms var(--ease-out); }
+.built-jump a:active { transform: scale(0.98); }
+.built-jump img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--surface); }
+@media (hover: hover) and (pointer: fine) {
+  .built-jump a:hover span { text-decoration: underline; text-underline-offset: 0.2em; }
+}
 
-/* ── The stage ──────────────────────────────────────────
-   Every project is one figure and its numbers. On a desktop the figure takes
-   the left column on a white stage and holds still (sticky) while the
-   reading column beside it carries the heading, the prose and the metric
-   table, so a figure and the claim it supports are on screen together.
-   Inside the stage the thumbnails always run as a strip under the figure:
-   the 172px side rail would leave a ~400px figure in a ~600px column.
+/* The projects page is a document: its reading column and its figures run
+   margin to margin, so the evidence gets the width. */
+@media (min-width: 1100px) {
+  .doc .col-read { grid-column: 1 / span 6; }
+  .doc .col-side { grid-column: 8 / -1; }
+  .doc .proj-read { grid-column: 1 / span 5; }
+  .doc .proj-stage { grid-column: 6 / -1; }
+}
 
-   Below 1000px there is not room for both side by side, and two things
-   cannot share a 390px screen and stay readable, so the section stacks the
-   way it always did: reading column first, figure after it. */
+/* ── Projects: a chapter ─────────────────────────────────
+   The reading column on the anchor line, the figure held still beside it
+   so the claim and its evidence stay on screen together. */
+.proj-section { padding: clamp(56px, 7vw, 112px) 0; }
+.proj-section:nth-of-type(even) { background: color-mix(in srgb, var(--surface) 55%, var(--bg)); }
 .proj-split {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--margin);
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(18px, 2.5vw, 30px);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
 }
-.proj-read { order: -1; display: flex; flex-direction: column; min-width: 0; }
-@media (max-width: 999.98px) {
-  .proj-split { display: flex; flex-direction: column; gap: 0; }
+.proj-split > * { min-width: 0; }
+.proj-read { grid-column: 1 / -1; display: flex; flex-direction: column; }
+.proj-stage { grid-column: 1 / -1; }
+@media (min-width: 1100px) {
+  .proj-read { grid-column: 3 / span 4; order: 1; }
+  .proj-stage { grid-column: 7 / -1; order: 2; position: sticky; top: calc(var(--bar-h) + 24px); align-self: start; }
+}
+/* Narrower, the two cannot sit side by side, so the figure is placed right
+   after the numbers it supports, and the story follows it. */
+@media (max-width: 1099.98px) {
+  .proj-split { display: flex; flex-direction: column; }
   .proj-read { display: contents; }
   .proj-read > * { order: 1; }
-  .proj-stage { order: 2; margin-top: 26px; min-width: 0; }
+  .proj-stage { order: 2; margin-top: 28px; }
   .proj-read > .rev,
   .proj-read > .proj-layers,
   .proj-read > .proj-story,
   .proj-read > .proj-story ~ .proj-metrics,
   .proj-read > .proj-repo-btn,
   .proj-read > .proj-repo-note { order: 3; }
-  .proj-read > .proj-story { margin-top: 26px; }
-  .proj-read > .proj-repo-btn, .proj-read > .proj-repo-note { margin-top: 4px; }
+  .proj-read > .proj-story { margin-top: 28px; }
+  .proj-read > .proj-title, .proj-read > .proj-result, .proj-read > .proj-tags,
+  .proj-read > .proj-metrics, .proj-read > .rev { max-width: 40rem; width: 100%; }
 }
-.proj-metrics { display: grid; margin-top: 22px; }
-.proj-section {
-  padding: clamp(32px, 4.5vw, 68px) 0 clamp(24px, 3vw, 44px);
-  border-bottom: 1px solid var(--border);
-}
-.proj-tags { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted-2); }
-.proj-status { color: var(--rust); font-weight: 600; }
-.proj-title {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: var(--fs-h2);
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  margin: 0 0 14px;
-  max-width: 22ch;
-  text-wrap: balance;
-}
-/* The result, as a sentence, directly under the name: a reader who reads
-   only the headings still leaves with the finding. */
-.proj-result {
-  font-size: var(--fs-h3);
-  font-weight: 500;
-  line-height: 1.22;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  margin: 0;
-  max-width: 26ch;
-  text-wrap: balance;
-}
-.proj-story {
-  font-size: var(--fs-body);
-  line-height: 1.58;
-  color: var(--muted);
-  margin: 18px 0 0;
-  max-width: 54ch;
-  text-wrap: pretty;
-}
-.metric-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 18px;
-  padding: 10px 0;
-  border-top: 1px solid var(--border);
-}
-.metric-k { font-size: var(--fs-small); color: var(--muted-2); }
-.metric-v {
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--ink);
-  text-align: right;
-}
-.metric-v.is-num {
-  font-size: var(--fs-lead);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--rust);
-  font-variant-numeric: tabular-nums;
-}
-.rev.is-superseded .metric-v.is-num { color: var(--muted-2); }
-/* Problem, approach, verification, lesson: a report's order, with labels a
-   skimmer can read down on their own. */
-.proj-layers {
-  display: grid;
-  grid-template-columns: 7.2em minmax(0, 1fr);
-  gap: 12px 18px;
-  margin: 30px 0 24px;
-}
-.proj-layers dt { font-size: var(--fs-small); font-weight: 600; color: var(--ink); padding-top: 2px; }
-.proj-layers dd { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--muted); text-wrap: pretty; }
-@media (max-width: 520px) {
-  .proj-layers { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-  .proj-layers dd { margin-bottom: 12px; }
-}
-.proj-repo {
-  align-self: flex-start;
-  margin-top: 6px;
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.proj-repo-btn { align-self: flex-start; margin-top: 8px; }
-.proj-repo-note { margin: 6px 0 0; font-size: var(--fs-small); color: var(--muted-2); }
-.proj-read > .proj-metrics:last-child, .proj-story + .proj-metrics { margin-bottom: 18px; }
-.lead-cap-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  border-top: 1px solid var(--border-light);
-  padding: 12px clamp(14px, 2vw, 22px);
-  font-family: var(--font-sans);
-  text-align: left;
-}
-.lead-enlarge { flex: none; font-size: var(--fs-micro); color: var(--muted-2); }
-.proj-stage .gallery-split { grid-template-columns: minmax(0, 1fr); }
-.proj-stage .thumb-rail {
-  grid-auto-flow: column;
-  grid-auto-columns: 132px;
-  max-height: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  /* Sideways only: contained on both axes, a vertical wheel that reached
-     the end of the strip could not hand over to the page. */
-  overscroll-behavior-x: contain;
-  overscroll-behavior-y: auto;
-  padding-right: 0;
-  padding-bottom: 4px;
-}
-@media (min-width: 1000px) {
-  .proj-split {
-    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
-    gap: clamp(36px, 4vw, 64px);
-  }
-  .proj-stage { position: sticky; top: 76px; align-self: start; }
-  .proj-read { order: 0; }
-  /* Heading and prose at the top, numbers at the foot: the column reads as
-     a spec sheet the height of the figure beside it. */
-  .proj-metrics { margin-top: 26px; }
-  .proj-stage .lead-btn { height: clamp(340px, 56svh, 560px); }
-}
+.proj-tags { margin-top: 14px; color: var(--muted); font-size: var(--step-small); }
+.proj-status { color: var(--ink); font-weight: 580; }
+.proj-title { font-size: var(--step-head); line-height: 1.04; letter-spacing: -0.025em; max-width: 16ch; }
+.proj-result { margin-top: 16px; font-size: var(--step-lead); line-height: 1.3; letter-spacing: -0.01em; max-width: 28ch; text-wrap: balance; }
+.proj-story { margin-top: 20px; max-width: 54ch; text-wrap: pretty; }
 
-/* ── The revision record ───────────────────────────────── */
+/* Key results: a real table, so its rows keep their lines. */
+.proj-metrics { margin-top: 26px; }
+.metrics { width: 100%; border-collapse: collapse; font-size: var(--step-small); }
+.metrics th, .metrics td { padding: 10px 0; border-top: 1px solid var(--border); vertical-align: baseline; }
+.metrics tr:last-child th, .metrics tr:last-child td { border-bottom: 1px solid var(--border); }
+.metrics th { text-align: left; font-weight: 400; color: var(--muted); padding-right: 16px; }
+.metrics td { text-align: right; font-size: 16px; font-weight: 580; font-variant-numeric: tabular-nums lining-nums; }
+.metrics td.is-num { font-size: var(--step-lead); letter-spacing: -0.015em; }
+.rev.is-superseded .metrics tr:first-child td { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 2px; }
+
 .rev { margin-top: 30px; }
-.rev-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px 16px;
-  margin-bottom: 6px;
-}
-.rev-title {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--label);
-}
-.rev-toggle { display: inline-flex; border: 1px solid var(--ink); }
+.rev-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 10px; }
+.rev-title { font-size: var(--step-small); color: var(--muted); }
+.rev-toggle { display: inline-flex; padding: 4px; gap: 4px; background: var(--surface); }
+.proj-section:nth-of-type(even) .rev-toggle { background: var(--bg); }
 .rev-toggle button {
   appearance: none;
   border: 0;
   margin: 0;
   min-height: 36px;
-  padding: 6px 13px;
+  padding: 0 12px;
   background: transparent;
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), transform 120ms var(--ease-out);
-}
-.rev-toggle button + button { border-left: 1px solid var(--ink); }
-.rev-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
-.rev-toggle button:active { transform: scale(0.97); }
-.rev-note {
-  margin: 12px 0 0;
-  max-width: 46ch;
-  font-size: var(--fs-small);
-  line-height: 1.5;
   color: var(--muted);
+  font-size: var(--step-small);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
 }
-/* The superseded number is struck through, so a glance at the table says
-   "this was wrong" before the note says why. */
-.rev.is-superseded .metric-row:first-child span:last-child { text-decoration: line-through; text-decoration-thickness: 2px; }
+.rev-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.rev-toggle button:active { transform: scale(0.97); }
+.rev-note { margin-top: 12px; max-width: 46ch; color: var(--muted); font-size: var(--step-small); line-height: 1.5; }
 @media (hover: hover) and (pointer: fine) {
-  .rev-toggle button[aria-pressed="false"]:hover { background: var(--border-light); }
+  .rev-toggle button[aria-pressed="false"]:hover { color: var(--ink); }
 }
 @media (max-width: 640px), (pointer: coarse) {
   .rev-toggle button { min-height: 44px; }
 }
 
-/* ── Scroll reveals ──────────────────────────────────────
-   Every rule here is gated behind .js-reveal, which an inline head script
-   sets and a failsafe removes if initReveal() never finishes. Page content
-   must never be invisible because a script failed to run: with no JS, a
-   thrown exception, or a blocked stylesheet-adjacent resource, the class is
-   absent or withdrawn and the sections render normally. */
-.js-reveal .section-reveal {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 300ms var(--ease-out), transform 260ms var(--ease-out);
-}
-.js-reveal .section-reveal.visible { opacity: 1; transform: none; }
-.reveal-instant, .reveal-instant * { transition: none !important; }
+/* Problem, approach, verification, lesson: a report's order, read down the
+   labels alone or in full. */
+.proj-layers { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; margin: 32px 0 26px; }
+.proj-layers dt { font-size: var(--step-small); font-weight: 580; color: var(--muted); margin-top: 16px; }
+.proj-layers dt:first-child { margin-top: 0; }
+.proj-layers dd { margin: 0; max-width: 54ch; text-wrap: pretty; }
+.proj-repo-btn { align-self: flex-start; margin-top: 4px; }
+.proj-section:nth-of-type(even) .btn-quiet { background: var(--bg); }
+.proj-repo-note { margin-top: 10px; color: var(--muted); font-size: var(--step-small); }
+.proj-read > .proj-metrics:last-child, .proj-story + .proj-metrics { margin-bottom: 18px; }
 
-.js-reveal .section-reveal .metric-row {
-  opacity: 0;
-  transition: opacity 200ms var(--ease-out);
-  transition-delay: calc(var(--ri, 0) * 30ms + 60ms);
-}
-.js-reveal .section-reveal.visible .metric-row { opacity: 1; }
-
-.js-reveal .section-reveal .proj-card {
-  opacity: 0;
-  transition: opacity 300ms var(--ease-out), transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
-}
-.js-reveal .section-reveal.visible .proj-card { opacity: 1; }
-
-/* ── Footer links ────────────────────────────────────── */
-.footer-link {
-  color: var(--ink);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 8px;
-  display: block;
-  transition: color 150ms var(--ease-out), transform 100ms var(--ease-out);
-}
-.footer-link:active { transform: scale(0.98); }
-
-/* ── Footer contact CTA buttons ─────────────────────── */
-/* The footer's buttons fill the column and read from the left. */
-.footer-cta .btn { justify-content: flex-start; }
-.footer-cta-sub { margin-left: auto; font-weight: 400; opacity: 0.8; }
-
-/* ── Footer layout ──────────────────────────────────────
-   Left column: the heading at the top, numbers and copyright pinned to the
-   bottom, so it starts level with the first button and ends level with the
-   last. Right column: the buttons alone. The three small lines share one
-   gap. On a phone it stacks heading, buttons, then the small print, so the
-   copyright stays last. 640px is where the old auto-fit grid collapsed. */
-.footer-grid {
-  /* Same column as the banner, the hero and main: 1240px with the page's
-     inline padding inside it. With the padding on <footer> instead, the
-     grid sat on the column's outer edge, 56px left of every other block. */
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 clamp(18px, 4vw, 56px);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: auto 1fr;
-  grid-template-areas: "head cta" "info cta";
-  column-gap: clamp(26px, 4vw, 60px);
-  row-gap: 24px;
-}
-.footer-head { grid-area: head; }
-.footer-cta { grid-area: cta; display: grid; gap: 10px; font-family: var(--font-sans); }
-.footer-info {
-  grid-area: info;
-  align-self: end;
-  display: grid;
-  gap: 8px;
-  color: var(--muted-2);
-  font-size: var(--fs-micro);
-  line-height: 1.25;
-}
-/* A hairline between the contact lines and the copyright, with equal air
-   either side (2px margin + 8px grid gap above, 10px padding below). It
-   runs only as wide as the copyright text, not across the whole column. */
-.footer-copy {
-  justify-self: start;
-  margin-top: 2px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-@media (max-width: 640px) {
-  .footer-grid {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    grid-template-areas: "head" "cta" "info";
-    row-gap: 28px;
-  }
-  .footer-info { align-self: start; }
-}
-
-/* ── Hover states (pointer-device only) ─────────────── */
-@media (hover: hover) and (pointer: fine) {
-  .lead-btn:hover { border-color: var(--muted); }
-  .thumb-btn:hover { border-color: var(--rust); }
-  .nav-link:hover { color: var(--ink); background-color: var(--nav-active-bg); }
-  .footer-link:hover { color: var(--rust); }
-  a:not(.nav-link):not(.btn):not(.footer-link):hover { color: var(--ink); }
-  .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
-}
-
-/* ── Focus visible (keyboard navigation) ────────────── */
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-}
-.nav-link:focus-visible {
-  outline-offset: 4px;
-}
-.lead-btn:focus-visible,
-.thumb-btn:focus-visible {
-  outline-offset: 2px;
-}
-
-/* ── About two-column grid ───────────────────────────── */
-/* Three rows, one job each: who (photo + story), what (tools), and who
-   outside work. Reads top to bottom on every width, so the 01-03 numbering
-   is the order on screen and on a phone. */
-.about-intro {
-  display: grid;
-  grid-template-columns: minmax(200px, 320px) minmax(0, 1fr);
-  gap: clamp(28px, 4.5vw, 64px);
-  align-items: start;
-}
-.about-row {
-  margin-top: clamp(44px, 6vw, 80px);
-  padding-top: clamp(32px, 4vw, 52px);
-  border-top: 1px solid var(--border-light);
-}
-.about-facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 16px 28px;
-  margin: 26px 0 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-light);
-}
-.about-facts div { min-width: 0; }
-.about-facts dt {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-  margin-bottom: 6px;
-}
-.about-facts dd {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  line-height: 1.45;
-  color: var(--ink);
-}
-/* Graph wide, carousel landscape beside it, one shared height so the
-   personal row stays a strip rather than a second column of its own. */
-.beyond-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
-  gap: clamp(32px, 5vw, 72px);
-  align-items: start;
-}
-.beyond-media { display: grid; gap: 18px; }
-.beyond-media > :first-child { margin-bottom: -4px !important; }
-/* Carousel then graph on one line. The carousel is a fixed 9:16 frame
-   (auto column); the graph takes the remaining width. */
-.beyond-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
-}
-.graph-hint {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-  pointer-events: none;
-}
-.beyond-text { padding-top: 32px; }
-.beyond-text p {
-  font-size: var(--fs-body);
-  line-height: 1.68;
-  color: var(--muted);
-  margin: 0;
-  max-width: 42ch;
-  text-wrap: pretty;
-}
-/* Graph above, learning panel below; together they run exactly the
-   carousel's height. The panel takes what its text needs and the graph
-   absorbs the rest (min 240px), so neither column ends early. Phones stack
-   everything, so the fixed graph heights below 821px still apply. */
-.beyond-side {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-}
-@media (min-width: 821px) {
-  .beyond-side > .beyond-graph { flex: 1 1 0; height: auto; min-height: 240px; }
-}
-.learning {
-  flex: none;
-  padding: 12px 16px 4px;
+/* The stage: the figure, its caption and key, and the thumbnail strip. */
+.gallery-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.lead-btn {
+  appearance: none;
+  border: 0;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  cursor: zoom-in;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  color: var(--ink);
+  height: clamp(320px, 56svh, 600px);
+  transition: transform 120ms var(--ease-out);
 }
-.learning-head {
+.proj-section:nth-of-type(even) .lead-btn { background: var(--bg); }
+.lead-btn:active { transform: scale(0.985); }
+.lead-media-area { position: relative; height: 100%; min-height: 100%; }
+.lead-cap-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
-  padding-bottom: 9px;
-  border-bottom: 1px solid var(--border);
+  gap: 6px 16px;
+  padding: 12px clamp(14px, 1.6vw, 20px) 14px;
 }
-.learning-head h3 {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.learning-date {
-  flex: none;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted-2);
-}
-.learning-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.learning-list li { padding: 7px 0; }
-.learning-list li + li { border-top: 1px solid var(--border-light); }
-.learning-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-.learning-name {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  color: var(--ink);
-}
-.learning-pill {
-  flex: none;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-.learning-why {
-  margin: 2px 0 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  line-height: 1.4;
-  color: var(--muted);
-  text-wrap: pretty;
-}
-.learning-note {
-  margin: 1px 0 0;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  line-height: 1.35;
-  color: var(--muted-2);
-}
-.beyond-graph {
-  height: 300px;
-  background-color: var(--surface);
-  background-image: linear-gradient(#17131009 1px, transparent 1px), linear-gradient(90deg, #17131009 1px, transparent 1px);
-  background-size: 28px 28px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-}
-/* Every photo here is portrait (9:16 or 3:4), so the frame is portrait
-   too, and contain shows the whole image; a blurred copy of the same
-   photo fills whatever edge is left instead of flat bars. */
-/* The carousel is the lead on this line. Every frame uses the backpack
-   travel photo's own ratio (1536 x 2730, 9:16). The other two 9:16 items
-   fill it within 1%; the two 3:4 photos are trimmed at the sides, with
-   their subjects kept in frame by object-position. */
-.beyond-carousel { height: 540px; aspect-ratio: 1536 / 2730; border-radius: 4px; }
-.beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
-.beyond-carousel .hobby-slide::before {
-  content: '';
-  position: absolute;
-  inset: -24px;
-  background: var(--bg-img, none) center / cover;
-  filter: blur(18px) brightness(0.7);
-}
-.beyond-carousel .hobby-slide > img,
-.beyond-carousel .hobby-slide > video { position: relative; object-fit: cover !important; }
-/* Wide screens: one grid for the whole row, so the learning panel can run
-   under both the graph and the note. The wrapper divs step aside
-   (display: contents) and their children take named areas:
-
-     label  label  .
-     car    graph  text
-     car    learn  learn
-
-   The carousel spans the last two rows at its fixed 540px, the panel takes
-   its text height, and the graph row flexes to fill the rest (min 240px),
-   so the carousel, the panel and the note column all end level. The
-   column gap is 16px; the note's left padding restores its old wider gap.
-   From 1200px: narrower, the graph would drop under the ~432px its
-   two-sided layout needs. The canvas is absolutely positioned (inline), so
-   its pixel size never feeds back into the row height. */
-@media (min-width: 1200px) {
-  .beyond-layout {
-    /* note column: its 280px measure plus the wider gap it used to have */
-    grid-template-columns: auto minmax(0, 1fr) minmax(0, calc(280px + clamp(32px, 5vw, 72px) - 16px));
-    grid-template-rows: auto minmax(240px, 1fr) auto;
-    grid-template-areas: "label label ." "car graph text" "car learn learn";
-    gap: 16px;
-    align-items: stretch;
-  }
-  .beyond-media, .beyond-row, .beyond-side { display: contents; }
-  .beyond-media > :first-child { grid-area: label; margin-bottom: -2px !important; }
-  .beyond-carousel { grid-area: car; }
-  .beyond-side > .beyond-graph { grid-area: graph; height: auto; min-height: 240px; }
-  .learning { grid-area: learn; }
-  .beyond-text { grid-area: text; padding-top: 0; padding-left: calc(clamp(32px, 5vw, 72px) - 16px); }
-}
-/* Below 1200px the note drops under the media so the graph keeps room. */
-@media (max-width: 1199px) {
-  .beyond-layout { grid-template-columns: 1fr; gap: 24px; }
-  .beyond-text { padding-top: 0; }
-}
-@media (max-width: 820px) {
-  .about-intro { grid-template-columns: 1fr; }
-  .about-intro > :first-child { max-width: 360px; }
-  .beyond-row { grid-template-columns: 1fr; }
-  .beyond-graph { height: 320px; }
-  .beyond-carousel { height: auto; width: min(100%, 320px); justify-self: center; }
-  .beyond-text { padding-top: 0; }
-}
-
-/* ── Hobby carousel ──────────────────────────────────── */
-.hobby-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  filter: blur(2px);
-  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
-  pointer-events: none;
-}
-.hobby-slide.active {
-  opacity: 1;
-  filter: blur(0);
-  pointer-events: auto;
-}
-/* The caption reserves the bottom 40px for the slide dots, which sit in that
-   row beneath the text. They used to float 36px up, over the caption, which
-   held while every caption fit one line; at 13px the longer ones wrap, and
-   the second line ran straight into the dots. Reserving the row means the
-   two cannot meet however many lines a caption takes, and the scrim covers
-   both, so the dots read on any photograph. */
-.hobby-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 32px 14px 40px;
-  line-height: 1.35;
-  background: linear-gradient(transparent, rgba(0,0,0,0.62));
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: rgba(255,255,255,0.82);
-  pointer-events: none;
-}
-.proj-grid {
+.lead-cap { flex: 1 1 240px; min-width: 0; color: var(--muted); font-size: var(--step-small); line-height: 1.45; }
+.lead-enlarge { flex: none; color: var(--muted); font-size: var(--step-small); }
+.thumb-rail {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
-  gap: clamp(12px, 1.6vw, 20px);
+  grid-auto-flow: column;
+  grid-auto-columns: 124px;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  padding-bottom: 4px;
 }
-.proj-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+.thumb-btn {
+  appearance: none;
   cursor: pointer;
-}
-@media (hover: hover) and (pointer: fine) {
-  .proj-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--rust);
-    box-shadow: 0 6px 24px rgba(23,19,16,0.08);
-  }
-}
-.proj-card:active {
-  transform: scale(0.99) translateY(-1px);
-}
-.proj-card-thumb {
-  position: relative;
-  aspect-ratio: 3/2;
-  overflow: hidden;
-  background: var(--bg);
-}
-.proj-card-thumb img,
-.proj-card-thumb video {
+  padding: 6px;
+  border: 0;
+  background: var(--surface);
+  display: grid;
+  gap: 6px;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  min-width: 0;
+  text-align: left;
+  color: var(--muted);
+  box-shadow: inset 0 0 0 2px transparent; /* taste-skill-ignore: selection ring in the viewer */
+  transition: box-shadow 150ms ease, transform 100ms var(--ease-out);
 }
-/* Behind a contained render that leaves a gap (see fitBackdrop). The same
-   treatment as the project figures, scaled to a card: a smaller frame needs
-   less blur to turn the copy into a wash, and a wider overscan so its crop
-   never lines up with the sharp image in front of it. */
+.proj-section:nth-of-type(even) .thumb-btn { background: var(--bg); }
+.thumb-btn[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--ink); color: var(--ink); } /* taste-skill-ignore: selection ring */
+.thumb-btn:active { transform: scale(0.95); }
+.thumb-btn img, .thumb-btn video { transition: opacity 150ms ease; }
+.thumb-label { font-size: 13px; line-height: 1.3; }
 .thumb-backdrop {
   position: absolute;
   inset: 0;
@@ -1339,409 +878,14 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   background-size: 135% 135%;
   filter: blur(36px) brightness(0.8);
 }
-.proj-card-thumb.is-letterboxed img {
-  position: relative;
-  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
-}
-.proj-card-body {
-  padding: 16px 18px 18px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-.proj-card-kickers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 9px;
-}
-.proj-card-kicker {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  color: var(--muted);
-  border: 1px solid var(--border-light);
-  padding: 2px 7px;
-  border-radius: 2px;
-}
-.proj-card-title {
-  font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--muted);
-  margin: 0 0 6px;
-  line-height: 1.3;
-}
-.proj-card-result {
-  font-size: var(--fs-body);
-  line-height: 1.4;
-  color: var(--ink);
-  margin: 0 0 16px;
-  text-wrap: pretty;
-}
-/* The number to remember, pinned to the foot of the card so the numbers
-   line up across a row however many lines the sentences above them take. */
-.proj-card-foot { margin-top: auto; }
-.proj-card-key {
-  font-size: var(--fs-small);
-  color: var(--muted);
-  line-height: 1.35;
-  text-wrap: balance;
-}
-.proj-card-num { font-size: var(--fs-lead); font-weight: 600; color: var(--rust); letter-spacing: -0.02em; }
-.proj-card-status { display: block; color: var(--rust); font-weight: 600; margin-bottom: 2px; }
-.proj-card-check { margin-top: 6px; font-size: var(--fs-micro); color: var(--muted-2); }
-
-/* ── The work: size says status ────────────────────────
-   Four equal cards read as four equal claims. The nozzle leads the site, so
-   its card spans the grid with its picture at full width; the two finished
-   analyses keep the standard card; the bracket, still open, is a strip.
-   Feature and strip share one body: the sentence on the left, the number
-   and its check on the right. Phones keep the snap rail (site-mobile.css). */
-@media (min-width: 641px) {
-  .proj-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .proj-card.is-feature,
-  .proj-card.is-compact { grid-column: 1 / -1; }
-  .proj-card.is-feature .proj-card-thumb { aspect-ratio: 1920 / 918; }
-  .proj-card.is-feature .proj-card-body,
-  .proj-card.is-compact .proj-card-body {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) fit-content(44%);
-    grid-template-areas: "title foot" "result foot";
-    grid-template-rows: auto 1fr;
-    column-gap: clamp(20px, 3vw, 40px);
-  }
-  .proj-card.is-feature .proj-card-body { padding: 20px 24px 22px; }
-  .proj-card.is-feature .proj-card-title,
-  .proj-card.is-compact .proj-card-title { grid-area: title; }
-  .proj-card.is-feature .proj-card-result,
-  .proj-card.is-compact .proj-card-result { grid-area: result; margin: 0; }
-  .proj-card.is-feature .proj-card-result { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.35; text-wrap: balance; }
-  /* Still open, so its load case is a figure, not a result: one step down. */
-  .proj-card.is-compact .proj-card-num { font-size: clamp(17px, 1.4vw, 20px); }
-  .proj-card.is-feature .proj-card-foot,
-  .proj-card.is-compact .proj-card-foot {
-    grid-area: foot;
-    align-self: end;
-    padding-left: clamp(16px, 2vw, 24px);
-    border-left: 1px solid var(--border-light);
-  }
-  .proj-card.is-compact { flex-direction: row; }
-  .proj-card.is-compact .proj-card-thumb {
-    flex: 0 0 clamp(112px, 22%, 196px);
-    aspect-ratio: auto;
-    min-height: 116px;
-  }
-  .proj-card.is-compact .proj-card-body { flex: 1; padding: 14px 18px 16px; }
-}
-.tools-title {
-  font-family: var(--font-sans);
-  font-size: var(--fs-h2);   /* a section heading, like "Internships" */
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  color: var(--ink);
-  margin: 0 0 10px;
-}
-.tools-lede {
-  font-size: var(--fs-small);
-  line-height: 1.55;
-  color: var(--muted);
-  margin: 0 0 28px;
-  max-width: 54ch;
-}
-/* auto-fit: one column in the narrow about column today, three or four
-   across once the block is given full width. */
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 26px clamp(24px, 3vw, 48px);
-}
-.tool-group-label {
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 12px;
-}
-.tool-group-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.tool-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: var(--fs-micro);
-  padding: 6px 14px 6px 7px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-}
-.hobby-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: none;
-  background: var(--border);
-  padding: 0;
-  cursor: pointer;
-  transition: background 200ms ease, transform 120ms var(--ease-out);
-}
-.hobby-dot.active {
-  background: var(--rust);
-  transform: scale(1.25);
+@media (max-width: 640px) {
+  .lead-btn { height: 300px; }
 }
 @media (hover: hover) and (pointer: fine) {
-  .hobby-dot:hover { background: var(--muted-2); }
-  .hobby-dot.active:hover { background: var(--rust); }
+  .thumb-btn:hover { color: var(--ink); }
 }
 
-/* ── Internship carousel (shares slide + dot styles) ──── */
-.internship-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  filter: blur(2px);
-  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
-  pointer-events: none;
-}
-.internship-slide.active {
-  opacity: 1;
-  filter: blur(0);
-  pointer-events: auto;
-}
-/* Hit area: the painted dot stays 6px, its ::after grows the target to
-   24x24 (WCAG 2.2 minimum), taller still on touch below. The 18px gap in
-   .carousel-dots is exactly two 9px margins, so neighbours never overlap. */
-.hobby-dot, .internship-dot { position: relative; }
-.hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -9px; }
-.internship-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: none;
-  background: var(--border);
-  padding: 0;
-  cursor: pointer;
-  transition: background 200ms ease, transform 120ms var(--ease-out);
-}
-.internship-dot.active {
-  background: var(--rust);
-  transform: scale(1.25);
-}
-@media (hover: hover) and (pointer: fine) {
-  .internship-dot:hover { background: var(--muted-2); }
-  .internship-dot.active:hover { background: var(--rust); }
-}
-
-/* ── Carousel play/pause control ──────────────────────
-   Touch-only visitors have no hover/focus to pause on, so both auto-
-   advancing carousels need a real, always-visible control, not just the
-   existing mouseenter/focusin pause. */
-.carousel-playpause {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(23,19,16,0.52);
-  backdrop-filter: blur(4px);
-  color: rgba(255,255,255,0.88);
-  cursor: pointer;
-  padding: 0;
-  overflow: hidden;
-  transition: background 150ms ease, transform 120ms var(--ease-out);
-}
-.carousel-playpause:active { transform: scale(0.95); }
-@media (hover: hover) and (pointer: fine) {
-  .carousel-playpause:hover { background: rgba(23,19,16,0.72); }
-}
-.carousel-playpause .icon-pause,
-.carousel-playpause .icon-play {
-  position: absolute;
-  display: flex;
-  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
-}
-.carousel-playpause .icon-pause { opacity: 1; transform: scale(1); }
-.carousel-playpause .icon-play  { opacity: 0; transform: scale(0.6); }
-.carousel-playpause.is-paused .icon-pause { opacity: 0; transform: scale(0.6); }
-.carousel-playpause.is-paused .icon-play  { opacity: 1; transform: scale(1); }
-
-/* ── Carousel prev/next arrows ─────────────────────────
-   The dot strip is precise (6px targets) but not a comfortable click
-   target. Large always-visible arrows let a visitor step through slides
-   without having to aim at a dot. */
-.carousel-arrow {
-  position: absolute;
-  top: 50%;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(23,19,16,0.52);
-  backdrop-filter: blur(4px);
-  color: rgba(255,255,255,0.92);
-  cursor: pointer;
-  padding: 0;
-  transform: translateY(-50%);
-  transition: background 150ms ease, transform 120ms var(--ease-out);
-}
-.carousel-arrow.arrow-prev { left: 10px; }
-.carousel-arrow.arrow-next { right: 10px; }
-.carousel-arrow:active { transform: translateY(-50%) scale(0.95); }
-@media (hover: hover) and (pointer: fine) {
-  .carousel-arrow:hover { background: rgba(23,19,16,0.72); }
-}
-
-/* ── Theme toggle button ─────────────────────────────── */
-.theme-toggle {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted-2);
-  cursor: pointer;
-  flex-shrink: 0;
-  padding: 0;
-  overflow: hidden;
-  transition: border-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
-}
-.theme-toggle:active { transform: scale(0.95); }
-.theme-toggle .icon-moon,
-.theme-toggle .icon-sun {
-  position: absolute;
-  /* Same 220ms as the page swap: the icon finishing first was part of why the
-     switch felt unresolved. */
-  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
-}
-.theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
-.theme-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.6); }
-[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
-[data-theme="dark"] .theme-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
-
-/* ── Dark mode: hardcoded-colour overrides ───────────── */
-[data-theme="dark"] #lightbox {
-  background: rgba(16, 24, 39, 0.93);
-}
-[data-theme="dark"] .beyond-graph {
-  background-image:
-    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
-}
-[data-theme="dark"] .header-wrap {
-  background-image:
-    linear-gradient(rgba(243,242,238,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(243,242,238,0.05) 1px, transparent 1px);
-}
-
-/* ── Theme swap ──────────────────────────────────────────
-   A census of the toggle found 228 elements painting a themed colour across
-   18 different transition timings: 132 of them snapped instantly (no
-   transition declared), ~90 rippled over 150/160/180/200ms on five easing
-   curves, and the page background landed last at 280ms. The main thread cost
-   was only 7-10ms, so this was never performance — the page was changing in
-   about seven waves instead of once, and the eye reads that as tearing.
-
-   The fix is to stop animating the parts at all and animate the page. A view
-   transition snapshots before and after and crossfades the two on the
-   compositor, so the whole page changes as one object, on one curve, at one
-   duration — which is what the rest of this design does.
-
-   220ms and `ease`: under the 300ms ceiling, and `ease` is the curve for a
-   colour change. Nothing is entering, exiting or moving here, so `ease-out`
-   would be the wrong shape. */
-.theme-swap *,
-.theme-swap *::before,
-.theme-swap *::after {
-  /* Without this the per-element colour transitions still run underneath the
-     live `::view-transition-new` snapshot and the whole cascade survives
-     inside the crossfade. */
-  transition: none !important;
-}
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 220ms;
-  animation-timing-function: ease;
-}
-
-/* No View Transitions support: collapse the 18 timings into one rather than
-   removing them. Carried on a class that is added for the swap and taken off
-   straight after, so it never touches hover or any other state change. */
-.theme-swap-fallback *,
-.theme-swap-fallback *::before,
-.theme-swap-fallback *::after {
-  transition: background-color 220ms ease, border-color 220ms ease,
-              color 220ms ease, fill 220ms ease !important;
-}
-/* The blanket above would otherwise strip the sun/moon crossfade, which is
-   the one thing on screen that should still move. */
-.theme-swap-fallback .theme-toggle .icon-moon,
-.theme-swap-fallback .theme-toggle .icon-sun {
-  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out) !important;
-}
-
-/* ── Reduced motion ──────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-  .js-reveal .section-reveal,
-  .js-reveal .section-reveal .metric-row,
-  .js-reveal .section-reveal .proj-card,
-  .proj-card {
-    opacity: 1;
-    transform: none;
-  }
-  html { scroll-behavior: auto; }
-  .hobby-slide { transition: none; }
-  .hero-s1, .hero-s2, .hero-s3, .hero-s4 { animation: none; opacity: 1; transform: none; }
-}
-
-/* ── Two pages ──────────────────────────────────────────
-   The nav opens with the page switch, Home and Projects, ahead of the
-   sections of the page you are on. The current page is underlined; the
-   section you are in keeps the filled chip. */
-.nav-link.nav-page { color: var(--ink); font-weight: 600; }
-.nav-link.nav-page[aria-current="page"] {
-  text-decoration: underline;
-  text-decoration-color: var(--rust);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 7px;
-}
-.nav-sep { flex: none; align-self: center; width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
-.page-head { padding-bottom: clamp(28px, 4vw, 48px); }
-.page-head .hero-title { margin-bottom: 18px; }
-.page-head .hero-lede { max-width: 60ch; margin: 0; }
-.work-more { display: inline-block; margin-top: 14px; }
-/* The footer brings its own top rule, so the last section drops its own. */
-main > section:last-child,
-#projects-container > .proj-section:last-child { border-bottom: 0 !important; }
-
-/* ── Internships and About pages ──────────────────────── */
-.page-kicker { font-size: var(--fs-micro); color: var(--label); margin-bottom: 18px; }
-
-/* ── Scroll area (the thumbnail strips) ─────────────────
-   After shadcn/ui's ScrollArea, which is Radix's: the platform scrollbar is
-   hidden and replaced by a 10px track with a 1px inset and a fully rounded
-   thumb in the border colour, so it reads as part of the page in either
-   theme rather than as a high-contrast system control. Like Radix's default
-   ("hover"), it shows while the strip is hovered or scrolling and fades
-   600ms after. It sits under the strip, not over the labels. */
+/* ── Scroll area (the thumbnail strips) ─────────────────── */
 .scroll-area { position: relative; min-width: 0; padding-bottom: 12px; }
 .scroll-area > .thumb-rail { padding-bottom: 0; scrollbar-width: none; }
 .scroll-area > .thumb-rail::-webkit-scrollbar { display: none; }
@@ -1754,7 +898,6 @@ main > section:last-child,
   padding: 1px;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid transparent;
   touch-action: none;
   user-select: none;
   opacity: 0;
@@ -1766,14 +909,292 @@ main > section:last-child,
   flex: 1;
   width: 0;
   border-radius: 9999px;
-  background: var(--scroll-thumb);
+  background: color-mix(in srgb, var(--ink) 22%, var(--bg));
   transition: background-color 150ms var(--ease-out);
 }
-.scroll-area.is-dragging .scroll-thumb { background: var(--scroll-thumb-active); }
+.scroll-area.is-dragging .scroll-thumb { background: color-mix(in srgb, var(--ink) 38%, var(--bg)); }
 @media (hover: hover) and (pointer: fine) {
-  .scroll-thumb:hover { background: var(--scroll-thumb-active); }
+  .scroll-thumb:hover { background: color-mix(in srgb, var(--ink) 38%, var(--bg)); }
 }
+
+/* ── Internships ───────────────────────────────────────── */
+.intern + .intern { padding-top: 0; }
+/* The internships page opens on the hangar door. */
+.page-photo { margin: 32px 0 0; }
+.page-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; max-height: 70svh; object-fit: cover; background: var(--surface); }
+.page-photo figcaption { padding-top: 8px; color: var(--muted); font-size: var(--step-small); }
+@media (min-width: 760px) { .page-photo { margin-top: 0; } .page-head .page-photo { align-self: end; } }
+.intern-title { font-size: var(--step-head); line-height: 1.04; letter-spacing: -0.025em; }
+.intern-meta { margin-top: 10px; color: var(--muted); font-size: var(--step-small); }
+.intern-text { margin-top: 22px; display: grid; gap: 14px; max-width: 54ch; }
+.intern-text p { text-wrap: pretty; }
+.intern-media { margin-top: 32px; }
+@media (min-width: 760px) { .intern-media.col-side { margin-top: 0; } }
+.intern-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gutter);
+  margin: 32px 0;
+}
+.intern-photos figure { margin: 0; }
+.intern-photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface); }
+.intern-photos img.is-contain { object-fit: contain; }
+.intern-photos figcaption { padding-top: 8px; color: var(--muted); font-size: var(--step-small); }
+
+/* ── Carousels (internships, about) ─────────────────────── */
+.carousel { position: relative; overflow: hidden; background: var(--surface); }
+.internship-slide, .hobby-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: blur(2px);
+  transition: opacity 300ms var(--ease-out), filter 300ms var(--ease-out);
+  pointer-events: none;
+}
+.internship-slide.active, .hobby-slide.active { opacity: 1; filter: blur(0); pointer-events: auto; }
+/* The scrim is the one gradient allowed: neutral, under the caption only. */
+.hobby-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 36px 14px 42px;
+  line-height: 1.35;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6)); /* taste-skill-ignore: neutral scrim under a caption on a photo */
+  font-size: var(--step-small);
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  pointer-events: none;
+  z-index: 2;
+}
+.hobby-dot, .internship-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color 200ms ease, transform 120ms var(--ease-out);
+}
+.hobby-dot::after, .internship-dot::after { content: ''; position: absolute; inset: -9px; }
+.hobby-dot.active, .internship-dot.active { background: #FFFFFF; transform: scale(1.3); }
+@media (hover: hover) and (pointer: fine) {
+  .hobby-dot:hover, .internship-dot:hover { background: rgba(255, 255, 255, 0.8); }
+}
+.carousel-playpause, .carousel-arrow {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(20, 22, 24, 0.56);
+  color: rgba(255, 255, 255, 0.94);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 150ms ease, transform 120ms var(--ease-out);
+}
+.carousel-playpause { top: 10px; right: 10px; width: 30px; height: 30px; overflow: hidden; }
+.carousel-playpause:active { transform: scale(0.95); }
+.carousel-playpause .icon-pause,
+.carousel-playpause .icon-play {
+  position: absolute;
+  display: flex;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.carousel-playpause .icon-pause { opacity: 1; transform: scale(1); }
+.carousel-playpause .icon-play  { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-pause { opacity: 0; transform: scale(0.6); }
+.carousel-playpause.is-paused .icon-play  { opacity: 1; transform: scale(1); }
+.carousel-arrow { top: 50%; width: 36px; height: 36px; transform: translateY(-50%); }
+.carousel-arrow.arrow-prev { left: 10px; }
+.carousel-arrow.arrow-next { right: 10px; }
+.carousel-arrow:active { transform: translateY(-50%) scale(0.95); }
+@media (hover: hover) and (pointer: fine) {
+  .carousel-playpause:hover, .carousel-arrow:hover { background: rgba(20, 22, 24, 0.76); }
+}
+
+/* ── About ─────────────────────────────────────────────── */
+.letter { display: grid; gap: 16px; max-width: 58ch; }
+.letter p { text-wrap: pretty; }
+.portrait img { object-position: center 18%; }
+.facts { margin: clamp(32px, 4vw, 56px) 0 0; display: grid; max-width: 36rem; }
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(7em, 0.4fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 10px 0;
+}
+.facts dt { color: var(--muted); font-size: var(--step-small); padding-top: 2px; }
+.facts dd { margin: 0; }
+.learn-list { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(18px, 2vw, 24px); }
+.learn-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 20px; }
+.learn-name { font-size: var(--step-lead); font-weight: 580; line-height: 1.25; letter-spacing: -0.01em; }
+.learn-state { align-self: baseline; padding: 1px 10px; background: var(--surface); font-size: var(--step-small); white-space: nowrap; }
+.learn-why { grid-column: 1 / -1; max-width: 52ch; text-wrap: pretty; }
+/* Three things, side by side: name, where it stands, why, what so far. */
+.learn-cols { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); column-gap: var(--gutter); }
+.learn-cols .learn-row { grid-template-columns: minmax(0, 1fr); align-content: start; }
+.learn-cols .learn-state { justify-self: start; margin: 6px 0 8px; }
+.learn-note { grid-column: 1 / -1; color: var(--muted); font-size: var(--step-small); }
+.learn-date { margin-top: 18px; color: var(--muted); font-size: var(--step-small); }
+.beyond-grid { row-gap: clamp(24px, 3vw, 40px); }
+.learning-title { font-size: var(--step-lead); line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 20px; }
+@media (min-width: 760px) { .learning { padding-top: 6px; } }
+@media (max-width: 759.98px) { .learning { margin-top: 48px; } }
+.learning .learn-name { font-size: var(--step-body); }
+.learn-date { margin-top: 18px; }
+.hobby-strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.hobby-strip figure { margin: 0; }
+.hobby-strip img, .hobby-strip video { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--surface); }
+.hobby-strip figcaption { padding-top: 8px; color: var(--muted); font-size: var(--step-small); line-height: 1.4; }
+@media (max-width: 899.98px) {
+  .hobby-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hobby-strip li:first-child { grid-column: 1 / -1; }
+  .hobby-strip li:first-child img { aspect-ratio: 4 / 3; }
+}
+.beyond-carousel { width: 100%; aspect-ratio: 1536 / 2730; max-height: 600px; }
+.beyond-carousel .hobby-slide { background: #0B1118; overflow: hidden; }
+.beyond-carousel .hobby-slide::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  background: var(--bg-img, none) center / cover;
+  filter: blur(18px) brightness(0.7);
+}
+.beyond-carousel .hobby-slide > img,
+.beyond-carousel .hobby-slide > video { position: relative; object-fit: cover !important; }
+.beyond-graph { position: relative; height: 380px; background: var(--surface); overflow: hidden; }
+.graph-hint { position: absolute; top: 12px; right: 14px; color: var(--muted); font-size: var(--step-small); pointer-events: none; }
+.beyond-text { max-width: 46ch; text-wrap: pretty; }
+@media (min-width: 1100px) {
+  .beyond-carousel-cell { grid-column: 3 / span 3; }
+  .beyond-graph-cell { grid-column: 6 / -1; }
+}
+@media (min-width: 760px) and (max-width: 1099.98px) {
+  .beyond-carousel-cell { grid-column: 1 / span 5; }
+  .beyond-graph-cell { grid-column: 6 / -1; }
+}
+@media (max-width: 759.98px) {
+  .beyond-carousel { max-width: 320px; }
+  .beyond-graph { min-height: 320px; }
+}
+
+/* ── Lightbox (class-driven, always in DOM) ──────────────── */
+html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
+#lightbox:focus { outline: none; }
+#lightbox {
+  touch-action: none;
+  overscroll-behavior: contain;
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(14, 16, 17, 0.9);
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 52px);
+  cursor: zoom-out;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms var(--ease-out);
+}
+#lightbox.open { opacity: 1; pointer-events: auto; transition: opacity 200ms var(--ease-out); }
+#lightbox-inner {
+  position: relative;
+  max-width: 1440px;
+  width: 100%;
+  transform: scale(0.98);
+  opacity: 0;
+  transition: transform 150ms var(--ease-out), opacity 150ms var(--ease-out);
+}
+#lightbox.open #lightbox-inner {
+  transform: none;
+  opacity: 1;
+  transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
+}
+.lb-caption-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 14px;
+  font-size: var(--step-small);
+  color: #E4E8E6;
+}
+.lb-caption-row #lb-count { flex: none; font-variant-numeric: tabular-nums; }
+
+/* ── Motion ───────────────────────────────────────────────
+   The signature: the title's two lines rise from behind their own
+   baselines on the first page of a visit, then the sentence and the action
+   arrive. Every rule is gated so a page without script shows everything. */
+@keyframes line-rise { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes part-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+html:not(.intro-seen) .hero-title .line > span { animation: line-rise 760ms var(--ease-out) backwards; }
+html:not(.intro-seen) .hero-title .line:nth-child(2) > span { animation-delay: 110ms; }
+html:not(.intro-seen) .hero-lede { animation: part-in 420ms var(--ease-out) 300ms backwards; }
+html:not(.intro-seen) .hero-actions,
+html:not(.intro-seen) .hero-creds { animation: part-in 420ms var(--ease-out) 380ms backwards; }
+html:not(.intro-seen) .hero-rig > * { animation: part-in 420ms var(--ease-out) backwards; }
+html:not(.intro-seen) .hero-rig > :nth-child(1) { animation-delay: 160ms; }
+html:not(.intro-seen) .hero-rig > :nth-child(2) { animation-delay: 240ms; }
+html:not(.intro-seen) .hero-rig > :nth-child(3) { animation-delay: 300ms; }
+html:not(.intro-seen) .hero-rig > :nth-child(4) { animation-delay: 360ms; }
+html:not(.intro-seen) .page-title,
+html:not(.intro-seen) .page-lede,
+html:not(.intro-seen) .page-statement,
+html:not(.intro-seen) .page-index li,
+html:not(.intro-seen) .page-head .facts > div,
+html:not(.intro-seen) .page-photo,
+html:not(.intro-seen) .proj-index li { animation: part-in 420ms var(--ease-out) backwards; }
+html:not(.intro-seen) .page-photo { animation-delay: 140ms; }
+html:not(.intro-seen) .page-head .facts > div { animation-delay: 200ms; }
+html:not(.intro-seen) .page-index li:nth-child(1), html:not(.intro-seen) .proj-index li:nth-child(-n+3) { animation-delay: 180ms; }
+html:not(.intro-seen) .page-index li:nth-child(2), html:not(.intro-seen) .proj-index li:nth-child(n+4) { animation-delay: 230ms; }
+html:not(.intro-seen) .page-lede,
+html:not(.intro-seen) .page-statement { animation-delay: 90ms; }
+
+/* Sections: the parts arrive in reading order as the section enters,
+   heading first, 70ms apart, once. */
+.js-reveal .section-reveal .rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out);
+  transition-delay: calc(var(--rv, 0) * 70ms);
+}
+.js-reveal .section-reveal.visible .rv { opacity: 1; transform: none; }
+.reveal-instant, .reveal-instant * { transition: none !important; }
+
+/* ── Theme swap ───────────────────────────────────────────
+   The whole page changes as one object: a view transition crossfades a
+   snapshot, and per-element colour transitions are held off underneath. */
+.theme-swap *, .theme-swap *::before, .theme-swap *::after { transition: none !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; animation-timing-function: ease; }
+.theme-swap-fallback *, .theme-swap-fallback *::before, .theme-swap-fallback *::after {
+  transition: background-color 220ms ease, color 220ms ease, fill 220ms ease !important;
+}
+.theme-swap-fallback .theme-toggle .icon-moon,
+.theme-swap-fallback .theme-toggle .icon-sun {
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out) !important;
+}
+
+/* ── Reduced motion: no travel, the fades stay short ───── */
 @media (prefers-reduced-motion: reduce) {
-  .scroll-bar, .scroll-thumb { transition: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+  .js-reveal .section-reveal .rv { opacity: 1; transform: none; }
+  .hero-title .line > span { animation: none !important; }
   .btn .icon-down { transform: none !important; }
+  .ledger-frame { transition: none; }
 }
