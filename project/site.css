@@ -38,6 +38,7 @@
   --surface: #FFFFFF;
   --bg: #F7F3ED;
   --nav-bg: rgba(247, 243, 237, 0.92);
+  --btn-accent-fg: #96401A;         /* primary button label: rust-dim on its tint */
   --scroll-thumb: #E2DAD0;          /* the border colour, as shadcn's bg-border */
   --scroll-thumb-active: #CFC4B7;   /* one quiet step darker while held */
 
@@ -70,6 +71,7 @@
    --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
    text pairs clear AA (4.5:1). */
 [data-theme="dark"] {
+  --btn-accent-fg: #D68A63;
   --scroll-thumb: #303B4A;
   --scroll-thumb-active: #3E4B5E;
   --rust: #D68A63;          /* primary accent: muted copper */
@@ -254,14 +256,24 @@ button { font-family: inherit; }
 .btn-sm:has(> svg) { padding-inline: 10px; }
 .btn-lg { height: 40px; padding: 0 24px; }
 .btn-lg:has(> svg) { padding-inline: 16px; }
-.btn-primary { background: var(--rust); color: var(--on-accent); }
+/* Primary is a tint, not a fill: the accent at 12% over the surface, a
+   28% edge, and the label in the accent's text shade. The full rust block
+   was the loudest thing on every screen; this keeps it the one coloured
+   control while sitting at the page's own contrast. Mixed from the theme
+   tokens, so the same rule gives a rust tint on the light page and a copper
+   one on the dark page. Label contrast, measured: 5.8:1 light, 4.7:1 dark. */
+.btn-primary {
+  background: color-mix(in srgb, var(--rust) 12%, var(--surface));
+  border-color: color-mix(in srgb, var(--rust) 28%, var(--surface));
+  color: var(--btn-accent-fg);
+}
 .btn-outline {
   background: var(--surface);
   border-color: var(--border);
   color: var(--ink);
 }
 @media (hover: hover) and (pointer: fine) {
-  .btn-primary:hover { background: color-mix(in srgb, var(--rust) 88%, var(--ink)); color: var(--on-accent); }
+  .btn-primary:hover { background: color-mix(in srgb, var(--rust) 20%, var(--surface)); color: var(--btn-accent-fg); }
   /* One tone step toward the border colour: darker on the light page,
      lighter on the dark one, as shadcn's outline hover is in each theme. */
   .btn-outline:hover { background: color-mix(in srgb, var(--surface) 55%, var(--border)); color: var(--ink); }
