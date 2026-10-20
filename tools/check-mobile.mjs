@@ -6,8 +6,7 @@
 //
 //     node tools/check-mobile.mjs
 //
-// With no argument it checks both pages, portfolio-light.html (home) and
-// projects.html, one after the other. Each page is checked with the local
+// With no argument it checks every page in PAGES, one after the other. Each page is checked with the local
 // stylesheets and site script it links pasted in where the tags stand, so
 // the rules see what the browser sees, in the order it sees it; line
 // numbers in a report are lines of that expanded source.
@@ -29,9 +28,10 @@ import { dirname, join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const PAGES = ['portfolio-light.html', 'projects.html', 'internships.html', 'about.html', 'resume.html'];
 if (!process.argv[2]) {
   let status = 0;
-  for (const page of ['portfolio-light.html', 'projects.html']) {
+  for (const page of PAGES) {
     const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), join(root, 'project', page)], { stdio: 'inherit' });
     status = status || r.status;
   }
@@ -41,16 +41,23 @@ if (!process.argv[2]) {
 // broken copy — a guardrail nobody has watched fail is not a guardrail.
 const file = process.argv[2];
 const dir = dirname(file);
-const local = (href) => { const p = join(dir, href); return existsSync(p) ? readFileSync(p, 'utf8') : null; };
-const src = readFileSync(file, 'utf8')
+const local = (href, base) => { const p = join(base, href); return existsSync(p) ? readFileSync(p, 'utf8') : null; };
+const expand = (html, base) => html
   .replace(/<link rel="stylesheet" href="([^"]+)"(?: id="([^"]+)")?>/g, (m, href, id) => {
-    const css = local(href);
+    const css = local(href, base);
     return css === null ? m : `<style${id ? ` id="${id}"` : ''}>${css}</style>`;
   })
   .replace(/<script src="(site[^"]*\.js)"><\/script>/g, (m, href) => {
-    const js = local(href);
+    const js = local(href, base);
     return js === null ? m : `<script>${js}</script>`;
   });
+const src = expand(readFileSync(file, 'utf8'), dir);
+// Rule 5 asks whether the site has each affordance, and some live on one
+// page only (the turntable's "drag to identify" is on the home page), so it
+// reads every page; the nav, the viewport and the lightbox are per page.
+const site = PAGES.map((p) => join(root, 'project', p)).filter(existsSync)
+  .map((p) => expand(readFileSync(p, 'utf8'), dirname(p))).join('\n');
+const PER_PAGE = new Set(['nav split (pinned CTA + toggle)', 'nav link strip', 'lightbox close button', 'viewport meta']);
 const lineOf = (i) => src.slice(0, i).split('\n').length;
 
 // Blank out HTML comments before scanning for tags, keeping every byte offset
@@ -201,7 +208,7 @@ const styles = [...code.matchAll(/<style([^>]*)>([\s\S]*?)<\/style>/g)].map((m) 
     'viewport meta': /<meta name="viewport"[^>]*width=device-width/
   };
   const missing = Object.entries(required)
-    .filter(([, re]) => !re.test(src))
+    .filter(([k, re]) => !re.test(PER_PAGE.has(k) ? src : site))
     .map(([k]) => k);
   const swipeSites = (src.match(/attachSwipe\(/g) || []).length - 1; // minus the definition
   if (missing.length) {

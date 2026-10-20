@@ -1101,7 +1101,9 @@ function initNav() {
     // On a phone the bar is the only thing naming where you are, so it says so
     // in words instead of relying on a chip that may be off-screen.
     if (menuLabel) {
-      const next = activeEl ? activeEl.textContent.trim() : 'Jump to a section';
+      const here = document.querySelector('.nav-page[aria-current="page"]');
+      const next = activeEl ? activeEl.textContent.trim()
+        : (document.querySelector('[data-nav]') ? 'Jump to a section' : (here ? here.textContent.trim() : 'Menu'));
       if (menuLabel.textContent !== next) menuLabel.textContent = next;
     }
     if (best !== lastActive) {
