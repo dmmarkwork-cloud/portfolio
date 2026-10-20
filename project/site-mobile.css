@@ -116,8 +116,8 @@ header#top { letter-spacing: 0.16em; }
 
   /* Inline text links sit in running copy, so they can't grow a box without
      shifting the paragraph. Pad the tap area vertically only. */
-  .hero-cta-link, .top-bar-link { position: relative; }
-  .hero-cta-link::after, .top-bar-link::after { content: ''; position: absolute; inset: -13px -6px; }
+  .hero-cta-link { position: relative; }
+  .hero-cta-link::after { content: ''; position: absolute; inset: -13px -6px; }
 }
 
 /* ── Mobile: the six-project overview ────────────────────
