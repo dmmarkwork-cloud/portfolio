@@ -545,22 +545,97 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   .lead-cap { white-space: normal; overflow: visible; line-height: 1.35; }
 }
 
-/* Above the stacking width, `is-wide` gives every other project the same
-   shape the phone layout already uses: one full-width figure, thumbnails in a
-   strip beneath it. Taller than the side-rail variant, so the two alternate
-   as a rhythm rather than reading as two sizes of the same block. */
-@media (min-width: 641px) {
-  .gallery-split.is-wide { grid-template-columns: minmax(0, 1fr); }
-  .gallery-split.is-wide .lead-btn { height: 460px; }
-  .gallery-split.is-wide .thumb-rail {
-    grid-auto-flow: column;
-    grid-auto-columns: 152px;
-    max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-right: 0;
-    padding-bottom: 4px;
+/* ── The stage ──────────────────────────────────────────
+   Every project is one figure and its numbers. On a desktop the figure takes
+   the left column on a white stage and holds still (sticky) while the
+   reading column beside it carries the heading, the prose and the metric
+   table, so a figure and the claim it supports are on screen together.
+   Inside the stage the thumbnails always run as a strip under the figure:
+   the 172px side rail would leave a ~400px figure in a ~600px column.
+
+   Below 1000px there is not room for both side by side, and two things
+   cannot share a 390px screen and stay readable, so the section stacks the
+   way it always did: reading column first, figure after it. */
+.proj-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 2.5vw, 30px);
+}
+.proj-read { order: -1; display: flex; flex-direction: column; min-width: 0; }
+.proj-metrics { display: grid; margin-top: 22px; }
+.proj-stage .gallery-split { grid-template-columns: minmax(0, 1fr); }
+.proj-stage .thumb-rail {
+  grid-auto-flow: column;
+  grid-auto-columns: 132px;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-right: 0;
+  padding-bottom: 4px;
+}
+@media (min-width: 1000px) {
+  .proj-split {
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    gap: clamp(36px, 4vw, 64px);
   }
+  .proj-stage { position: sticky; top: 76px; align-self: start; }
+  .proj-read { order: 0; }
+  /* Heading and prose at the top, numbers at the foot: the column reads as
+     a spec sheet the height of the figure beside it. */
+  .proj-metrics { margin-top: auto; padding-top: 28px; }
+  .proj-stage .lead-btn { height: clamp(340px, 56svh, 560px); }
+}
+
+/* ── The revision record ───────────────────────────────── */
+.rev { margin-top: 30px; }
+.rev-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 6px;
+}
+.rev-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+.rev-toggle { display: inline-flex; border: 1px solid var(--ink); }
+.rev-toggle button {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  min-height: 36px;
+  padding: 6px 13px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.rev-toggle button + button { border-left: 1px solid var(--ink); }
+.rev-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.rev-toggle button:active { transform: scale(0.97); }
+.rev-note {
+  margin: 12px 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+/* The superseded number is struck through, so a glance at the table says
+   "this was wrong" before the note says why. */
+.rev.is-superseded .metric-row:first-child span:last-child { text-decoration: line-through; text-decoration-thickness: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .rev-toggle button[aria-pressed="false"]:hover { background: var(--border-light); }
+}
+@media (max-width: 640px), (pointer: coarse) {
+  .rev-toggle button { min-height: 44px; }
 }
 
 /* ── Scroll reveals ──────────────────────────────────────
@@ -2128,6 +2203,29 @@ const PROJECTS = [
       { k: 'Factor of safety', v: '7.12' },
       { k: 'Wall temperature', v: '527\u00a0°C' }
     ],
+    // From the repository's README, "What changed in v2.0": v1.0 reported
+    // 42.70 at the throat, on an assessed quantity that was not a classified
+    // stress; v2.0 reads linearised membrane plus bending at the junction.
+    revisions: {
+      title: 'Revision record',
+      initial: 'v2.0',
+      releases: [
+        { id: 'v2.0', tab: 'v2.0 · current',
+          note: 'Read on a through-wall path at the chamber-to-converging junction, where the stress governs.',
+          values: [
+            { k: 'Factor of safety', v: '7.12' },
+            { k: 'Assessed at', v: 'Junction' },
+            { k: 'Stress quantity', v: 'Membrane + bending' }
+          ] },
+        { id: 'v1.0', tab: 'v1.0 · superseded', superseded: true,
+          note: 'Read at the throat, on a quantity that is not a classified stress: about six times too high.',
+          values: [
+            { k: 'Factor of safety', v: '42.70' },
+            { k: 'Assessed at', v: 'Throat' },
+            { k: 'Stress quantity', v: 'Not classified' }
+          ] }
+      ]
+    },
     views: [
       { label: 'CFD · Mach contour', src: 'figures/nozzle/cfd-figures-mach-contour.png', caption: 'Mach contour — converged Fluent solution, 88,800-cell structured mesh' },
       { label: 'CAD · Dimensioned profile', src: 'figures/nozzle/cad-cad_dimensions.png', caption: 'Half-section contour sketch — 90\u00a0mm chamber, R22.50 converging fillet into an R5.73 throat, 183.44\u00a0mm overall' },
@@ -2298,33 +2396,14 @@ function mediaTag(view, styleStr, opts) {
 // foreground); there's only ever one lead video on screen at a time, so
 // the extra decode cost is small.
 function leadMediaMarkup(view) {
+  // The figure on its own, matted by padding on a white stage. The 64px
+  // blurred copy behind it and the drop shadow under it existed to give
+  // white figures an edge against a near-white page; on the grey ground the
+  // white stage is that edge, and the padding reads as a mount around a
+  // print rather than as empty space.
   const pad = 'clamp(14px,2.4vw,30px)';
-  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`;
-  // Blur radius has to be strong enough to erase recognisable shape, not
-  // just soften it — a source whose subject already fills most of its own
-  // frame (a CFD mesh, a CAD render) will otherwise show a legible cropped
-  // duplicate of itself behind the sharp image, reading as a ghosted
-  // second copy rather than ambient colour. 64px reduces even hard-edged
-  // content (mesh gridlines, machined edges) to a colour wash.
-  // Painted as a background rather than an <img> scaled past its own box.
-  // `object-fit:cover` + `transform:scale(1.2)` gave the element a bounding
-  // box 20% wider than the frame that clips it: invisible on the page, but
-  // a real box reaching ~56px outside the page's 1240px column, which any
-  // measurement of the page's margins reads as content sitting off-centre.
-  // `background-size:120%` overscans the painting by the same amount and
-  // leaves the box exactly on its parent. The aspect distortion that costs
-  // is undetectable under a 64px blur, which is a colour wash by design.
-  const backdropStyle = 'position:absolute;inset:0;display:block;background-position:center;background-repeat:no-repeat;background-size:120% 120%;filter:blur(64px) brightness(0.8);';
-  const backdropDiv = (src) => `<div aria-hidden="true" style="${backdropStyle}background-image:url('${src}');"></div>`;
-  if (view.video) {
-    // A still frame is enough under a 64px blur, and it spares a second
-    // full download of the clip. Falls back to the clip if no poster.
-    const backdrop = view.poster
-      ? backdropDiv(view.poster)
-      : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);"></video>`;
-    return backdrop + mediaTag(view, fgStyle, { eager: true });
-  }
-  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true });
+  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;`;
+  return mediaTag(view, fgStyle, { eager: true });
 }
 
 // Update gallery state in-place — no innerHTML rebuild on thumb strip
@@ -2579,19 +2658,64 @@ function buildProjectGrid() {
   }
 }
 
+// One project's metric table. Shared by the build and by the revision
+// toggle, which re-renders its own table in place.
+function metricRows(values) {
+  return values.map((v, ri) => `
+    <div class="metric-row" style="--ri:${ri};display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:10px 0;border-top:1px solid var(--border);">
+      <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">${v.k}</span>
+      <span style="font-family:var(--font-sans);font-size:var(--fs-lead);font-weight:600;letter-spacing:-0.02em;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;">${dataValue(v.v)}</span>
+    </div>`).join('');
+}
+
+// The main table, minus any row the revision record carries: otherwise the
+// nozzle's factor of safety appears twice, a few lines apart.
+function tableValues(p) {
+  if (!p.revisions) return p.values;
+  const own = new Set(p.revisions.releases.flatMap(r => r.values.map(v => v.k)));
+  return p.values.filter(v => !own.has(v.k));
+}
+
+// ── The revision record ────────────────────────────────
+// The page's thesis is that results get revised and both versions stay on
+// the record. Where a project carries a revision, the reader can switch the
+// three values that changed between releases and read why. Only values the
+// project actually published for each release appear; nothing is carried
+// across from the other release to fill a row. Without script the project's
+// own prose already states both numbers, so nothing is lost.
+function revisionMarkup(p, pi) {
+  const r = p.revisions;
+  if (!r) return '';
+  const first = r.releases.find(x => x.id === r.initial) || r.releases[0];
+  return `
+    <div class="rev" id="rev-${pi}">
+      <div class="rev-head">
+        <span class="rev-title">${r.title}</span>
+        <div class="rev-toggle" role="group" aria-label="${r.title}: choose a release">
+          ${r.releases.map(x => `<button type="button" data-rev="${x.id}" aria-pressed="${x.id === first.id}" onclick="setRevision(${pi},'${x.id}')">${x.tab}</button>`).join('')}
+        </div>
+      </div>
+      <div class="rev-table" id="rev-table-${pi}" aria-live="polite">${metricRows(first.values)}</div>
+      <p class="rev-note" id="rev-note-${pi}">${first.note}</p>
+    </div>`;
+}
+
+function setRevision(pi, id) {
+  const r = PROJECTS[pi] && PROJECTS[pi].revisions;
+  const rel = r && r.releases.find(x => x.id === id);
+  if (!rel) return;
+  document.getElementById(`rev-table-${pi}`).innerHTML = metricRows(rel.values);
+  document.getElementById(`rev-note-${pi}`).textContent = rel.note;
+  document.querySelectorAll(`#rev-${pi} .rev-toggle button`).forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
+  document.getElementById(`rev-${pi}`).classList.toggle('is-superseded', !!rel.superseded);
+}
+
 function buildProjects() {
   const container = document.getElementById('projects-container');
   container.innerHTML = PROJECTS.map((p, pi) => {
     const hasThumbs = p.views.length > 1;
-    // Every other project runs its figure the full width of the column with
-    // the thumbnails as a strip underneath, instead of the 172px side rail.
-    // Seven sections of one composition read as a template however good the
-    // composition is, and this is the one variation that changes the shape of
-    // the section without moving the heading, the prose or the metric table,
-    // so nothing the reader is hunting for shifts between projects.
-    const splitClass = hasThumbs
-      ? (pi % 2 ? 'gallery-split is-wide' : 'gallery-split')
-      : 'gallery-split no-thumbs';
+    const splitClass = hasThumbs ? 'gallery-split' : 'gallery-split no-thumbs';
     const kickerHtml = p.kicker.map(k => `<span class="kicker-chip">${k}</span>`).join('');
 
     const thumbsHtml = hasThumbs ? `
@@ -2605,39 +2729,43 @@ function buildProjects() {
           </button>`).join('')}
       </div>` : '';
 
+    // The stage: the figure and its thumbnails, held in place on a desktop
+    // while the reading column beside it carries the heading, the prose and
+    // the numbers. Before, the figure sat under the text and the two scrolled
+    // apart, so the contour plot had left the screen by the time a reader
+    // reached the factor of safety it supports. It comes first in source so
+    // it takes the left column; on a phone the reading column is moved above
+    // it with `order`, which keeps the stacked layout that was already there.
     return `
-    <section id="${p.anchor}" data-section="${p.anchor}" class="section-reveal" style="padding:clamp(32px,4.5vw,68px) 0 clamp(24px,3vw,44px);border-bottom:1px solid var(--border);">
+    <section id="${p.anchor}" data-section="${p.anchor}" class="section-reveal proj-section" style="padding:clamp(32px,4.5vw,68px) 0 clamp(24px,3vw,44px);border-bottom:1px solid var(--border);">
+      <div class="proj-split">
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,3vw,40px);align-items:end;margin-bottom:clamp(18px,2.5vw,30px);">
-        <div>
+        <div class="proj-stage">
+          <div class="${splitClass}">
+            <button type="button" class="lead-btn" onclick="openLightbox(${pi})" title="Click to enlarge">
+              <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
+              <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
+                <span id="lead-cap-${pi}" class="lead-cap"></span>
+                <span style="flex:none;">⤢ Enlarge${p.views.length > 1 ? ` · ${p.views.length} figures` : ''}</span>
+              </div>
+            </button>
+            ${thumbsHtml}
+          </div>
+        </div>
+
+        <div class="proj-read">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
             <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.16em;text-transform:uppercase;color:var(--label);">${p.num}</span>
             <div class="kicker-chips">${p.wip ? '<span class="kicker-chip is-wip">In progress</span>' : ''}${kickerHtml}</div>
           </div>
           <h2 style="font-family:var(--font-sans);font-weight:600;font-size:var(--fs-h2);line-height:1.04;letter-spacing:-0.03em;margin:0 0 12px;max-width:22ch;text-wrap:balance;">${p.title}</h2>
           <p style="font-size:var(--fs-body);line-height:1.58;color:var(--muted);margin:0 0 16px;max-width:54ch;text-wrap:pretty;">${p.story}</p>
-          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--link);">Full working on GitHub →</a>` : `<span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
+          ${p.repo ? `<a href="${p.repo}" class="hero-cta-link" style="align-self:flex-start;font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--rust);padding-bottom:3px;color:var(--link);">Full working on GitHub →</a>` : `<span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.08em;text-transform:uppercase;color:var(--muted-2);">${p.repoNote || 'Hardware build — no repository'}</span>`}
+          <div class="proj-metrics">${metricRows(tableValues(p))}</div>
+          ${revisionMarkup(p, pi)}
         </div>
-        <div style="display:grid;gap:0;align-content:end;justify-items:stretch;">
-          ${p.values.map((v, ri) => `
-            <div class="metric-row" style="--ri:${ri};display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:10px 0;border-top:1px solid var(--border);">
-              <span style="font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-2);">${v.k}</span>
-              <span style="font-family:var(--font-sans);font-size:var(--fs-lead);font-weight:600;letter-spacing:-0.02em;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;">${dataValue(v.v)}</span>
-            </div>`).join('')}
-        </div>
-      </div>
 
-      <div class="${splitClass}">
-        <button type="button" class="lead-btn" onclick="openLightbox(${pi})" title="Click to enlarge">
-          <div id="lead-img-${pi}" class="lead-media-area" style="display:block;background:var(--surface);min-height:0;overflow:hidden;box-sizing:border-box;"></div>
-          <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border-light);padding:12px clamp(14px,2vw,22px);font-family:var(--font-sans);font-size:var(--fs-micro);letter-spacing:0.1em;text-transform:uppercase;color:var(--muted-2);">
-            <span id="lead-cap-${pi}" class="lead-cap"></span>
-            <span style="flex:none;">⤢ Enlarge${p.views.length > 1 ? ` · ${p.views.length} figures` : ''}</span>
-          </div>
-        </button>
-        ${thumbsHtml}
       </div>
-
     </section>`;
   }).join('');
 
