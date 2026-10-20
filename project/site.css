@@ -38,6 +38,8 @@
   --surface: #FFFFFF;
   --bg: #F7F3ED;
   --nav-bg: rgba(247, 243, 237, 0.92);
+  --scroll-thumb: #E2DAD0;          /* the border colour, as shadcn's bg-border */
+  --scroll-thumb-active: #CFC4B7;   /* one quiet step darker while held */
 
   /* The two type families. Weights and spacing stay per element. */
   --font-sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -68,6 +70,8 @@
    --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
    text pairs clear AA (4.5:1). */
 [data-theme="dark"] {
+  --scroll-thumb: #303B4A;
+  --scroll-thumb-active: #3E4B5E;
   --rust: #D68A63;          /* primary accent: muted copper */
   --rust-dim: #C07752;
   --ink: #F3F2EE;           /* main text: soft white */
@@ -1707,4 +1711,46 @@ main > section:last-child { border-bottom: 0 !important; }
 }
 @media (max-width: 720px) {
   .cv-section { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── Scroll area (the thumbnail strips) ─────────────────
+   After shadcn/ui's ScrollArea, which is Radix's: the platform scrollbar is
+   hidden and replaced by a 10px track with a 1px inset and a fully rounded
+   thumb in the border colour, so it reads as part of the page in either
+   theme rather than as a high-contrast system control. Like Radix's default
+   ("hover"), it shows while the strip is hovered or scrolling and fades
+   600ms after. It sits under the strip, not over the labels. */
+.scroll-area { position: relative; min-width: 0; padding-bottom: 12px; }
+.scroll-area > .thumb-rail { padding-bottom: 0; scrollbar-width: none; }
+.scroll-area > .thumb-rail::-webkit-scrollbar { display: none; }
+.scroll-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  padding: 1px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid transparent;
+  touch-action: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+}
+.scroll-area:not(.has-overflow) .scroll-bar { display: none; }
+.scroll-area.is-active .scroll-bar { opacity: 1; }
+.scroll-thumb {
+  flex: 1;
+  width: 0;
+  border-radius: 9999px;
+  background: var(--scroll-thumb);
+  transition: background-color 150ms var(--ease-out);
+}
+.scroll-area.is-dragging .scroll-thumb { background: var(--scroll-thumb-active); }
+@media (hover: hover) and (pointer: fine) {
+  .scroll-thumb:hover { background: var(--scroll-thumb-active); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-bar, .scroll-thumb { transition: none; }
 }

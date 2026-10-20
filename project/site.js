@@ -676,6 +676,86 @@ window.addEventListener('wheel', (e) => {
   wheelGesture.t = e.timeStamp;
 }, { capture: true, passive: true });
 
+// ── Scroll area ────────────────────────────────────────
+// shadcn/ui's ScrollArea (Radix) for a sideways strip, without React: the
+// strip keeps its native scrolling (wheel, swipe, keys) and only the bar is
+// drawn here. The thumb is sized to the visible share of the strip and
+// dragged with pointer events, so mouse, pen and touch all work; a press on
+// the track jumps the thumb's centre to that point, as Radix does.
+function scrollArea(rail) {
+  const root = document.createElement('div');
+  root.className = 'scroll-area';
+  rail.parentNode.insertBefore(root, rail);
+  root.appendChild(rail);
+  const bar = document.createElement('div');
+  bar.className = 'scroll-bar';
+  bar.setAttribute('aria-hidden', 'true');
+  const thumb = document.createElement('div');
+  thumb.className = 'scroll-thumb';
+  bar.appendChild(thumb);
+  root.appendChild(bar);
+
+  const max = () => rail.scrollWidth - rail.clientWidth;
+  const track = () => bar.clientWidth - 2;   // inside the 1px inset
+  let dragging = false, startX = 0, startLeft = 0, hideTimer = 0;
+
+  const sync = () => {
+    const m = max();
+    root.classList.toggle('has-overflow', m > 1);
+    if (m <= 1) return;
+    const w = Math.max(18, track() * rail.clientWidth / rail.scrollWidth);
+    thumb.style.width = `${w}px`;
+    thumb.style.transform = `translateX(${(track() - w) * (rail.scrollLeft / m)}px)`;
+  };
+  const show = () => { clearTimeout(hideTimer); root.classList.add('is-active'); };
+  const hideSoon = () => {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      if (!dragging && !root.matches(':hover')) root.classList.remove('is-active');
+    }, 600);
+  };
+
+  rail.addEventListener('scroll', () => { sync(); show(); hideSoon(); }, { passive: true });
+  root.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') show(); });
+  root.addEventListener('pointerleave', hideSoon);
+
+  thumb.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragging = true;
+    startX = e.clientX;
+    startLeft = rail.scrollLeft;
+    thumb.setPointerCapture(e.pointerId);
+    root.classList.add('is-dragging');
+    show();
+  });
+  thumb.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const free = Math.max(1, track() - thumb.offsetWidth);
+    rail.scrollLeft = startLeft + (e.clientX - startX) * (max() / free);
+  });
+  const endDrag = () => {
+    if (!dragging) return;
+    dragging = false;
+    root.classList.remove('is-dragging');
+    hideSoon();
+  };
+  thumb.addEventListener('pointerup', endDrag);
+  thumb.addEventListener('pointercancel', endDrag);
+
+  bar.addEventListener('pointerdown', (e) => {
+    if (e.target === thumb) return;
+    const b = bar.getBoundingClientRect();
+    const free = Math.max(1, track() - thumb.offsetWidth);
+    const x = e.clientX - b.left - 1 - thumb.offsetWidth / 2;
+    rail.scrollLeft = Math.max(0, Math.min(1, x / free)) * max();
+  });
+
+  if ('ResizeObserver' in window) new ResizeObserver(sync).observe(rail);
+  window.addEventListener('resize', sync);
+  sync();
+}
+
 function wheelToHorizontal(el) {
   let target = null, raf = 0, last = 0;
   const max = () => el.scrollWidth - el.clientWidth;
@@ -894,6 +974,7 @@ function buildProjects() {
     window.addEventListener('resize', sync);
     sync();
     wheelToHorizontal(rail);
+    scrollArea(rail);
   });
 
   // Thumbnail-strip videos are muted previews, not the active view — play only
