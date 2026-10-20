@@ -271,7 +271,7 @@ button { font-family: inherit; }
 }
 .nav-cta.btn-cta { height: auto; padding: 5px 11px; gap: 7px; font-size: var(--fs-micro); }
 /* See the four analyses, as first built: a solid rust block, white label,
-   2px corners, darkening to ink on hover; the arrow stays. */
+   2px corners, one shade deeper on hover. */
 .btn-solid {
   min-height: 44px;
   height: auto;
@@ -283,6 +283,18 @@ button { font-family: inherit; }
 }
 .btn .icon-gmail { width: 16px; height: 12px; }
 .btn-solid:has(> svg) { padding-inline: 16px 18px; }
+/* The arrow sits in its own square well at the trailing end, a shade
+   darker than whatever the button is, so it reads on rust and on the
+   hover's deeper rust alike. The well fills the button's height minus 6px. */
+.btn-well { padding: 6px 6px 6px 18px; gap: 14px; }
+.btn-well .well {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 1px;
+  background: rgb(0 0 0 / 0.16);
+}
 .btn-outline {
   background: var(--surface);
   border-color: var(--border);
@@ -390,12 +402,23 @@ button { font-family: inherit; }
   background: var(--surface);
   color: var(--muted);
 }
+/* Framed like a drawing sheet: the outer border carries a centring mark at
+   the middle of each edge, as ASME Y14.1 sheets do, and the plot sits in its
+   own hairline inside the margin. The marks are four background strokes, so
+   they cost no markup and stay inside the padding, clear of the content. */
 .hero-fig {
   margin: 0;
-  background: var(--surface);
+  background:
+    linear-gradient(var(--muted-2), var(--muted-2)) 50% 0 / 1px 10px,
+    linear-gradient(var(--muted-2), var(--muted-2)) 50% 100% / 1px 10px,
+    linear-gradient(var(--muted-2), var(--muted-2)) 0 50% / 10px 1px,
+    linear-gradient(var(--muted-2), var(--muted-2)) 100% 50% / 10px 1px,
+    var(--surface);
+  background-repeat: no-repeat;
   border: 1px solid var(--border);
   padding: clamp(12px, 1.6vw, 20px);
 }
+.hero-fig .callout-fig img { box-shadow: 0 0 0 1px var(--border-light); }
 .hero-fig figcaption {
   margin-top: 12px;
   padding-top: 12px;
@@ -1357,15 +1380,59 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 /* The number to remember, pinned to the foot of the card so the numbers
    line up across a row however many lines the sentences above them take. */
+.proj-card-foot { margin-top: auto; }
 .proj-card-key {
-  margin-top: auto;
   font-size: var(--fs-small);
   color: var(--muted);
   line-height: 1.35;
+  text-wrap: balance;
 }
 .proj-card-num { font-size: var(--fs-lead); font-weight: 600; color: var(--rust); letter-spacing: -0.02em; }
 .proj-card-status { display: block; color: var(--rust); font-weight: 600; margin-bottom: 2px; }
 .proj-card-check { margin-top: 6px; font-size: var(--fs-micro); color: var(--muted-2); }
+
+/* ── The work: size says status ────────────────────────
+   Four equal cards read as four equal claims. The nozzle leads the site, so
+   its card spans the grid with its picture at full width; the two finished
+   analyses keep the standard card; the bracket, still open, is a strip.
+   Feature and strip share one body: the sentence on the left, the number
+   and its check on the right. Phones keep the snap rail (site-mobile.css). */
+@media (min-width: 641px) {
+  .proj-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proj-card.is-feature,
+  .proj-card.is-compact { grid-column: 1 / -1; }
+  .proj-card.is-feature .proj-card-thumb { aspect-ratio: 1920 / 918; }
+  .proj-card.is-feature .proj-card-body,
+  .proj-card.is-compact .proj-card-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) fit-content(44%);
+    grid-template-areas: "title foot" "result foot";
+    grid-template-rows: auto 1fr;
+    column-gap: clamp(20px, 3vw, 40px);
+  }
+  .proj-card.is-feature .proj-card-body { padding: 20px 24px 22px; }
+  .proj-card.is-feature .proj-card-title,
+  .proj-card.is-compact .proj-card-title { grid-area: title; }
+  .proj-card.is-feature .proj-card-result,
+  .proj-card.is-compact .proj-card-result { grid-area: result; margin: 0; }
+  .proj-card.is-feature .proj-card-result { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.35; text-wrap: balance; }
+  /* Still open, so its load case is a figure, not a result: one step down. */
+  .proj-card.is-compact .proj-card-num { font-size: clamp(17px, 1.4vw, 20px); }
+  .proj-card.is-feature .proj-card-foot,
+  .proj-card.is-compact .proj-card-foot {
+    grid-area: foot;
+    align-self: end;
+    padding-left: clamp(16px, 2vw, 24px);
+    border-left: 1px solid var(--border-light);
+  }
+  .proj-card.is-compact { flex-direction: row; }
+  .proj-card.is-compact .proj-card-thumb {
+    flex: 0 0 clamp(112px, 22%, 196px);
+    aspect-ratio: auto;
+    min-height: 116px;
+  }
+  .proj-card.is-compact .proj-card-body { flex: 1; padding: 14px 18px 16px; }
+}
 .tools-title {
   font-family: var(--font-sans);
   font-size: var(--fs-h2);   /* a section heading, like "Internships" */

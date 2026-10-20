@@ -92,6 +92,27 @@ header#top { letter-spacing: 0.16em; }
   @starting-style {
     nav.nav-collapsed.nav-open .nav-scroll { opacity: 0; transform: translateY(-6px); }
   }
+  /* Then the links settle a row at a time, 30ms apart, so the eye reads the
+     panel top-down; the last row lands by 300ms. Only opacity and transform
+     carry the delay, so the active-section colour still changes at once. */
+  nav.nav-collapsed .nav-scroll .nav-link {
+    transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out),
+                background-color 150ms var(--ease-out),
+                opacity 180ms var(--ease-out) var(--d, 0ms),
+                transform 180ms var(--ease-out) var(--d, 0ms);
+  }
+  nav.nav-collapsed .nav-scroll > :nth-child(n+3) { --d: 30ms; }
+  nav.nav-collapsed .nav-scroll > :nth-child(n+5) { --d: 60ms; }
+  nav.nav-collapsed .nav-scroll > :nth-child(n+8) { --d: 90ms; }
+  nav.nav-collapsed .nav-scroll > :nth-child(n+10) { --d: 120ms; }
+  @starting-style {
+    nav.nav-collapsed.nav-open .nav-scroll .nav-link { opacity: 0; transform: translateY(4px); }
+  }
+  /* The global reduced-motion rule shortens durations but not delays, so
+     the rows would still appear one after another; here they open at once. */
+  @media (prefers-reduced-motion: reduce) {
+    nav.nav-collapsed .nav-scroll .nav-link { transition-delay: 0s; transform: none; }
+  }
   /* In the strip the 44px tap area comes from a ::after reaching 8px past
      the link on each side, which is free when the links sit in one row. In a
      stacked panel those areas would overlap by 14px and a tap near a

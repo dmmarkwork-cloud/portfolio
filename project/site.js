@@ -6,6 +6,9 @@ const PROJECTS = [
     result: 'Stress governs at the chamber junction: a factor of safety of 7.12.',
     key: { v: '7.12', k: 'factor of safety; v1.0 said 42.70' },
     check: 'Hand calcs and 17 FEA validation gates',
+    // The hero above already shows the von Mises plot; the feature card
+    // shows the hardware that result belongs to, filling its frame.
+    gridThumb: 'dfm/images/exploded-view.png', gridFit: 'cover',
     layers: [
       ['Problem', 'Can an uncooled SS316 nozzle hold 2\u00a0MPa and 800\u00a0K at the design point, and can it be made and inspected?'],
       ['Approach', 'Hand calculations first, then 2D axisymmetric CFD in Fluent, mapped one-way onto a thermal and structural model in Mechanical. The result is carried into a GD&T drawing set to ASME Y14.5-2018.'],
@@ -566,9 +569,12 @@ function buildProjectGrid() {
   const flagships = PROJECTS.filter(p => p.group === 'flagship');
   // The chapters live on the projects page; from anywhere else, link there.
   const chapterPage = document.getElementById('projects-container') ? '' : 'projects';
+  // Size says status: the lead analysis spans the grid, finished ones are
+  // standard cards, one still open is a slim strip. Phones keep one rail.
+  const size = (p, ci) => ci === 0 ? ' is-feature' : p.wip ? ' is-compact' : '';
   container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
-    const isPng = media && media.src && media.src.toLowerCase().endsWith('.png');
+    const isPng = media && media.src && media.src.toLowerCase().endsWith('.png') && p.gridFit !== 'cover';
     const imgStyle = isPng
       ? 'width:100%;height:100%;object-fit:contain;object-position:center center;display:block;padding:10px;'
       : `width:100%;height:100%;object-fit:cover;object-position:${p.gridFocus || 'center'};display:block;`;
@@ -578,13 +584,15 @@ function buildProjectGrid() {
           : `<img src="${media.src}" alt="" loading="lazy"${isPng ? ' data-fit="contain"' : ''} style="${imgStyle}">`)
       : '';
     return `
-      <a class="proj-card" href="${chapterPage}#${p.anchor}" style="--ci:${ci}">
+      <a class="proj-card${size(p, ci)}" href="${chapterPage}#${p.anchor}" style="--ci:${ci}">
         <div class="proj-card-thumb">${thumb}</div>
         <div class="proj-card-body">
           <h3 class="proj-card-title">${p.title}</h3>
           <p class="proj-card-result">${p.result}</p>
-          <div class="proj-card-key">${p.wip ? '<span class="proj-card-status">Analysis in progress</span>' : ''}<span class="proj-card-num">${dataValue(p.key.v)}</span> ${p.key.k}</div>
-          <div class="proj-card-check">${p.check}</div>
+          <div class="proj-card-foot">
+            <div class="proj-card-key">${p.wip ? '<span class="proj-card-status">Analysis in progress</span>' : ''}<span class="proj-card-num">${dataValue(p.key.v)}</span> ${p.key.k}</div>
+            <div class="proj-card-check">${p.check}</div>
+          </div>
         </div>
       </a>`;
   }).join('');
