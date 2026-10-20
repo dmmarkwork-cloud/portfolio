@@ -109,7 +109,9 @@ body {
    with a single scrolling row the CTA and the toggle sat ~500px off the
    right edge of a sticky bar — effectively absent on every phone. */
 .nav-inner {
-  max-width: 1240px;
+  /* The page column's content width (1240px less its side padding), so the
+     first link starts level with the headings and text below. */
+  max-width: calc(1240px - 2 * clamp(18px, 4vw, 56px));
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -142,38 +144,15 @@ body {
    nearest scroll container, and .nav-scroll is one, so nav's would not
    reach a swipe that starts on a link. */
 nav, .nav-scroll { touch-action: pan-x; }
+/* A link's text sits 8px inside its chip; pull the strip back by that so
+   the first word, not the chip's edge, lines up with the column. */
+@media (min-width: 641px) { .nav-scroll { margin-left: -8px; } }
 .nav-scroll::-webkit-scrollbar { display: none; }
 /* Brand: the MLY grid monogram beside the name in the top bar. Drawn without
    its grid at this size (the hairlines turn to noise under ~32px tall) and
    coloured by the theme tokens, so it follows light and dark. */
 .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); }
 .brand-mark { height: 18px; width: auto; flex: none; display: block; }
-/* Home: same round outline as the theme toggle, centred between the bar's
-   left edge and "01 Bracket". With P the nav's side padding (the inline
-   clamp on <nav>) and G the old 8-14px gap, the links keep their place and
-   the button gets (P + G) / 2 of air on each side: margin-left pulls it
-   back into the padding by (P - G) / 2. Past ~1350px the bar content is a
-   centred 1240px column; initNavHome() then shifts the button to the true
-   midpoint between the bar's left edge and the chip. */
-.nav-home {
-  --nav-pad: clamp(18px, 4vw, 56px);
-  --home-gap: clamp(8px, 1.2vw, 14px);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  margin-left: calc((var(--home-gap) - var(--nav-pad)) / 2);
-  margin-right: calc((var(--nav-pad) + var(--home-gap)) / 2);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--muted-2);
-  text-decoration: none;
-  transition: border-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
-}
-.nav-home:active { transform: scale(0.93); }
 .nav-actions {
   display: flex;
   align-items: center;
@@ -930,6 +909,18 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   transition: border-color 180ms var(--ease-out), color 180ms var(--ease-out), background 180ms var(--ease-out), transform 140ms var(--ease-out);
 }
 .footer-cta-btn:active { transform: scale(0.98); }
+/* On the inner pages the footer's Get in touch is the same control as the
+   nav's: a rust outline that fills on hover. */
+.footer-cta-btn.footer-cta-primary {
+  border-color: var(--rust);
+  background: transparent;
+  color: var(--rust);
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  /* Four classes, to outrank the page-wide a:not(...):hover colour rule. */
+  .footer-grid .footer-cta .footer-cta-btn.footer-cta-primary:hover { background: var(--rust); border-color: var(--rust); color: var(--on-accent); }
+}
 
 /* ── Footer layout ──────────────────────────────────────
    Left column: the heading at the top, numbers and copyright pinned to the
@@ -991,7 +982,6 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   .footer-cta-btn:hover { border-color: var(--cta-hover, var(--rust)); color: var(--cta-hover, var(--rust)); }
   a:not(.nav-link):not(.nav-cta):not(.footer-link):hover { color: var(--ink); }
   .theme-toggle:hover { border-color: var(--rust); color: var(--rust); }
-  .nav-home:hover { border-color: var(--rust); color: var(--rust); }
   .hero-cta-link:hover { transform: translateX(3px); }
 }
 

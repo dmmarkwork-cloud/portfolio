@@ -1352,36 +1352,6 @@ function initHashTarget() {
   window.addEventListener('load', () => { if (!taken) jump(); }, { once: true });
 }
 
-// Home button: its centre sits on the midpoint between the nav bar's left
-// edge and the left edge of the "01 Bracket" chip, measured live. The CSS
-// margins already give that on screens up to ~1350px, where the bar's edge
-// is the screen edge; wider, the links sit in a centred 1240px column and
-// this shift is what carries the button to the true midpoint. Uses the
-// `translate` property, not `transform`, so the :active press scale still
-// applies. The chip's resting position is used (scrollLeft added back), so
-// swiping the link strip on a phone does not drag the button.
-function initNavHome() {
-  const nav = document.querySelector('nav');
-  const home = document.getElementById('nav-home');
-  const strip = document.getElementById('nav-scroll');
-  const first = strip && strip.querySelector('.nav-link');
-  if (!nav || !home || !first) return;
-  const place = () => {
-    home.style.translate = '';
-    // Below 640px the strip is a closed panel (display:none), so the first
-    // chip has no box and the midpoint arithmetic would resolve against zero
-    // and throw the button across the bar. Nothing to centre against: leave it.
-    if (!first.getClientRects().length) return;
-    const edge = nav.getBoundingClientRect().left;
-    const chip = first.getBoundingClientRect().left + strip.scrollLeft;
-    const h = home.getBoundingClientRect();
-    const dx = (edge + chip) / 2 - (h.left + h.width / 2);
-    if (Math.abs(dx) > 0.25) home.style.translate = `${dx.toFixed(2)}px 0`;
-  };
-  new ResizeObserver(place).observe(nav);
-  place();
-}
-
 // In-page links (nav chips, home, "see the projects", contact) always
 // scroll, whatever the distance. The browser's own smooth scroll gets slower
 // the further it goes (~7,000px from About back to the top), which is why
@@ -2074,7 +2044,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCalloutFigures();
   buildSoftware();
   initNav();
-  initNavHome();
   initReveal();
   initLightboxZoom();
   initHashTarget();

@@ -113,7 +113,6 @@ header#top { letter-spacing: 0.16em; }
   .carousel-arrow.arrow-next { right: 6px; }
   .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
   .theme-toggle { width: 40px; height: 40px; }
-  .nav-home { width: 40px; height: 40px; }
 
   /* Inline text links sit in running copy, so they can't grow a box without
      shifting the paragraph. Pad the tap area vertically only. */
