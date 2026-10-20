@@ -1014,12 +1014,19 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   filter: blur(0);
   pointer-events: auto;
 }
+/* The caption reserves the bottom 40px for the slide dots, which sit in that
+   row beneath the text. They used to float 36px up, over the caption, which
+   held while every caption fit one line; at 13px the longer ones wrap, and
+   the second line ran straight into the dots. Reserving the row means the
+   two cannot meet however many lines a caption takes, and the scrim covers
+   both, so the dots read on any photograph. */
 .hobby-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 28px 12px 10px;
+  padding: 32px 14px 40px;
+  line-height: 1.35;
   background: linear-gradient(transparent, rgba(0,0,0,0.62));
   font-family: var(--font-sans);
   font-size: var(--fs-micro);
@@ -1069,6 +1076,23 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   display: block;
   transition: transform 300ms var(--ease-out);
 }
+/* Behind a contained render that leaves a gap (see fitBackdrop). The same
+   treatment as the project figures, scaled to a card: a smaller frame needs
+   less blur to turn the copy into a wash, and a wider overscan so its crop
+   never lines up with the sharp image in front of it. */
+.thumb-backdrop {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 135% 135%;
+  filter: blur(36px) brightness(0.8);
+}
+.proj-card-thumb.is-letterboxed img {
+  position: relative;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
+}
+.proj-card-num { z-index: 1; }
 @media (hover: hover) and (pointer: fine) {
   .proj-card:hover .proj-card-thumb img,
   .proj-card:hover .proj-card-thumb video {
@@ -1899,7 +1923,7 @@ setTimeout(function(){
           <button type="button" id="dornier-next" class="carousel-arrow arrow-next" aria-label="Next slide">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
-          <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
+          <div class="carousel-dots" style="position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
             <button class="internship-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
             <button class="internship-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -2007,7 +2031,7 @@ setTimeout(function(){
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
             <!-- Dot indicators -->
-            <div class="carousel-dots" style="position:absolute;bottom:36px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
+            <div class="carousel-dots" style="position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:18px;pointer-events:none;z-index:2;">
               <button class="hobby-dot" aria-label="Slide 1" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 2" style="pointer-events:auto;"></button>
               <button class="hobby-dot" aria-label="Slide 3" style="pointer-events:auto;"></button>
@@ -2564,6 +2588,42 @@ function dataValue(v) {
   return NUMERIC_VALUE.test(v) ? `<span class="data">${v}</span>` : v;
 }
 
+// ── A backdrop where a contained image leaves a gap ─────
+// The cards show renders whole (object-fit: contain), so a render whose
+// shape is not the frame's 3:2 leaves bands of bare card colour: the Mach
+// contour, at 2.4:1, sat on a cream strip above and below. Those frames get
+// the blurred, cover-fit copy of the image behind them that the project
+// figures use; a render that already fills its frame gets nothing, so the
+// effect never appears where there is no gap to fill. The test is in
+// pixels, not ratios, and re-runs whenever the frame resizes: the same
+// render can fill a card on a desktop and leave a band in the phone rail.
+function fitBackdrop(img) {
+  const frame = img.parentElement;
+  const sync = () => {
+    if (!img.naturalWidth || !frame.clientWidth) return;
+    const cs = getComputedStyle(img);
+    const fw = frame.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const fh = frame.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const r = img.naturalWidth / img.naturalHeight;
+    // Empty space the contained image leaves, across its short axis.
+    const gap = Math.max(fw - Math.min(fw, fh * r), fh - Math.min(fh, fw / r));
+    const needs = gap > 6;
+    let bd = frame.querySelector(':scope > .thumb-backdrop');
+    if (needs && !bd) {
+      bd = document.createElement('div');
+      bd.className = 'thumb-backdrop';
+      bd.setAttribute('aria-hidden', 'true');
+      bd.style.backgroundImage = `url("${img.getAttribute('src')}")`;
+      frame.prepend(bd);
+    } else if (!needs && bd) {
+      bd.remove();
+    }
+    frame.classList.toggle('is-letterboxed', needs);
+  };
+  if (img.complete) sync(); else img.addEventListener('load', sync, { once: true });
+  new ResizeObserver(sync).observe(frame);
+}
+
 function buildProjectGrid() {
   const container = document.getElementById('project-grid-container');
   if (!container) return;
@@ -2588,7 +2648,7 @@ function buildProjectGrid() {
     const thumb = media
       ? (media.type === 'video'
           ? `<video src="${media.src}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-          : `<img src="${media.src}" alt="${p.title}" loading="lazy" style="${imgStyle}">`)
+          : `<img src="${media.src}" alt="${p.title}" loading="lazy"${isPng ? ' data-fit="contain"' : ''} style="${imgStyle}">`)
       : '';
     const kickers = (p.wip ? '<span class="proj-card-kicker is-wip">In progress</span>' : '')
       + p.kicker.map(k => `<span class="proj-card-kicker">${k}</span>`).join('');
@@ -2617,6 +2677,8 @@ function buildProjectGrid() {
       </div>
       <div class="proj-grid">${cards}</div>
     </section>`;
+
+  container.querySelectorAll('.proj-card-thumb img[data-fit="contain"]').forEach(fitBackdrop);
 
   if (!reducedMotion) {
     const cardEls = [...container.querySelectorAll('.proj-card')];
