@@ -129,6 +129,7 @@ header#top { letter-spacing: 0.16em; }
   /* Buttons reach 44px where a thumb does the pressing. The nav's Contact
      keeps its 32px look and takes the extra through its hit area. */
   .btn-lg, .proj-repo-btn.btn-sm { height: 44px; }
+  .btn-solid { min-height: 44px; }
   .work-more { position: relative; }
   .work-more::after { content: ''; position: absolute; inset: -12px -4px; }
 

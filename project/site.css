@@ -38,7 +38,6 @@
   --surface: #FFFFFF;
   --bg: #F7F3ED;
   --nav-bg: rgba(247, 243, 237, 0.92);
-  --btn-accent-fg: #96401A;         /* primary button label: rust-dim on its tint */
   --scroll-thumb: #E2DAD0;          /* the border colour, as shadcn's bg-border */
   --scroll-thumb-active: #CFC4B7;   /* one quiet step darker while held */
 
@@ -71,7 +70,6 @@
    --surface; muted 7.5 / 6.5; muted-2 6.0 / 5.2; copper 6.5 / 5.6. All
    text pairs clear AA (4.5:1). */
 [data-theme="dark"] {
-  --btn-accent-fg: #D68A63;
   --scroll-thumb: #303B4A;
   --scroll-thumb-active: #3E4B5E;
   --rust: #D68A63;          /* primary accent: muted copper */
@@ -219,9 +217,9 @@ button { font-family: inherit; }
 /* ── Buttons ───────────────────────────────────────────
    One system, after shadcn/ui's Button: an inline row of a 16px icon and a
    label, 6px corners, three heights (32 / 36 / 40px) and two variants.
-   Primary is the rust fill, for the one action a page asks for: See the four
-   analyses, Get in touch. Outline is the quiet one: a surface fill and the
-   border colour, for the GitHub links and the footer's other rows. shadcn's
+   Outline is the quiet one: a surface fill and the border colour, for the
+   GitHub links and the footer's other rows. Get in touch and See the four
+   analyses keep their own looks (.btn-cta, .btn-solid) on the same base. shadcn's
    1px resting shadow is left off: nothing here floats. shadcn's 3px focus ring in the focus colour; the
    page's 0.97 press. Transitions name their properties, never `all`. */
 .btn {
@@ -262,24 +260,37 @@ button { font-family: inherit; }
 .btn-sm:has(> svg) { padding-inline: 10px; }
 .btn-lg { height: 40px; padding: 0 24px; }
 .btn-lg:has(> svg) { padding-inline: 16px; }
-/* Primary is a tint, not a fill: the accent at 12% over the surface, a
-   28% edge, and the label in the accent's text shade. The full rust block
-   was the loudest thing on every screen; this keeps it the one coloured
-   control while sitting at the page's own contrast. Mixed from the theme
-   tokens, so the same rule gives a rust tint on the light page and a copper
-   one on the dark page. Label contrast, measured: 5.8:1 light, 4.7:1 dark. */
-.btn-primary {
-  background: color-mix(in srgb, var(--rust) 12%, var(--surface));
-  border-color: color-mix(in srgb, var(--rust) 28%, var(--surface));
-  color: var(--btn-accent-fg);
+/* Get in touch, as the live site had it before the redesign: a 1px rust
+   outline, rust label, square corners, filling rust on hover, with the
+   Gmail mark. Small in the nav; a full row in the inner pages' footers. */
+.btn-cta {
+  border-color: var(--rust);
+  border-radius: 0;
+  background: transparent;
+  color: var(--rust);
 }
+.nav-cta.btn-cta { height: auto; padding: 5px 11px; gap: 7px; font-size: var(--fs-micro); }
+/* See the four analyses, as first built: a solid rust block, white label,
+   2px corners, darkening to ink on hover; the arrow stays. */
+.btn-solid {
+  min-height: 44px;
+  height: auto;
+  padding: 10px 18px;
+  border-radius: 2px;
+  background: var(--rust);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.btn .icon-gmail { width: 16px; height: 12px; }
+.btn-solid:has(> svg) { padding-inline: 16px 18px; }
 .btn-outline {
   background: var(--surface);
   border-color: var(--border);
   color: var(--ink);
 }
 @media (hover: hover) and (pointer: fine) {
-  .btn-primary:hover { background: color-mix(in srgb, var(--rust) 20%, var(--surface)); color: var(--btn-accent-fg); }
+  .btn-cta:hover { background: var(--rust); color: var(--surface); }
+  .btn-solid:hover { background: var(--ink); color: var(--surface); }
   /* One tone step toward the border colour: darker on the light page,
      lighter on the dark one, as shadcn's outline hover is in each theme. */
   .btn:hover .icon-down { transform: translateY(2px); }
