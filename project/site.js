@@ -353,11 +353,15 @@ function renderGallery(pi) {
 
   const captionEl = document.getElementById(`lead-cap-${pi}`);
   if (captionEl) captionEl.textContent = lead.caption;
-  const keyEl = document.getElementById(`lead-key-${pi}`);
-  if (keyEl) {
+  // The key is written twice: inside the figure's frame (wider screens) and
+  // under the thumbnail strip (phones, where the 300px frame cannot hold a
+  // caption, a key and a readable figure). CSS shows one of them.
+  [`lead-key-${pi}`, `lead-key-below-${pi}`].forEach(id => {
+    const keyEl = document.getElementById(id);
+    if (!keyEl) return;
     keyEl.innerHTML = lead.callouts ? calloutKey(lead) : '';
     keyEl.hidden = !lead.callouts;
-  }
+  });
 
   // Update thumb borders and opacity in-place (no rebuild)
   const thumbsEl = document.getElementById(`thumbs-${pi}`);
@@ -975,6 +979,7 @@ function buildProjects() {
               </div>
             </button>
             ${thumbsHtml}
+            <span id="lead-key-below-${pi}" class="callout-key key-below" role="list" hidden></span>
           </div>
         </div>
 
@@ -1221,9 +1226,13 @@ function initNav() {
     // A short last section never reaches the trigger line, because the page
     // ends first: the home page's contact footer stayed unlit at the bottom.
     // Scrolled to the end, the last section is the current one.
-    const sections = document.querySelectorAll('[data-section]');
-    if (sections.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
-      best = sections[sections.length - 1].getAttribute('data-section');
+    // Only sections the nav links to count: an inner page's footer has a
+    // data-section but no link, and lighting it left the phone menu saying
+    // "Jump to a section" at the bottom of the page.
+    const linked = [...document.querySelectorAll('[data-section]')]
+      .filter(s => document.querySelector(`[data-nav="${s.getAttribute('data-section')}"]`));
+    if (linked.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+      best = linked[linked.length - 1].getAttribute('data-section');
     }
     let activeEl = null;
     document.querySelectorAll('[data-nav]').forEach(a => {

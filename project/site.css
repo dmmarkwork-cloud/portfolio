@@ -447,6 +447,9 @@ button { font-family: inherit; }
 /* In a project the key sits in the caption row, inside the figure's fixed
    height, so switching to a figure without callouts moves nothing below. */
 .lead-cap-row .callout-key { flex-basis: 100%; margin: 6px 0 0; gap: 6px; }
+.key-below { margin-top: 14px; }
+@media (min-width: 641px) { .key-below { display: none !important; } }
+@media (max-width: 640px) { .lead-cap-row .callout-key { display: none !important; } }
 
 /* ── The work ──────────────────────────────────────────
    Four analysis cards, two by two, with the hand builds and the turntable
@@ -1647,7 +1650,8 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
 .page-head .hero-lede { max-width: 60ch; margin: 0; }
 .work-more { display: inline-block; margin-top: 14px; }
 /* The footer brings its own top rule, so the last section drops its own. */
-main > section:last-child { border-bottom: 0 !important; }
+main > section:last-child,
+#projects-container > .proj-section:last-child { border-bottom: 0 !important; }
 
 /* ── Internships and About pages ──────────────────────── */
 .page-kicker { font-size: var(--fs-micro); color: var(--label); margin-bottom: 18px; }

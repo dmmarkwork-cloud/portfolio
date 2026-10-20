@@ -123,7 +123,14 @@ header#top { letter-spacing: 0.16em; }
   .carousel-arrow.arrow-prev { left: 6px; }
   .carousel-arrow.arrow-next { right: 6px; }
   .carousel-playpause { width: 40px; height: 40px; top: 8px; right: 8px; }
-  .theme-toggle { width: 40px; height: 40px; }
+  .carousel-playpause::after { content: ''; position: absolute; inset: -2px; }
+  .theme-toggle { width: 44px; height: 44px; }
+
+  /* Buttons reach 44px where a thumb does the pressing. The nav's Contact
+     keeps its 32px look and takes the extra through its hit area. */
+  .btn-lg, .proj-repo-btn.btn-sm { height: 44px; }
+  .work-more { position: relative; }
+  .work-more::after { content: ''; position: absolute; inset: -12px -4px; }
 
 }
 
