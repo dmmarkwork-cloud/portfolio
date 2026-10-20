@@ -2727,8 +2727,9 @@ function buildProjectGrid() {
 // only by shift+wheel, a trackpad swipe or its scrollbar, and an ordinary
 // mouse over it did nothing. Over a strip, vertical wheel travel now moves
 // it sideways. Three rules keep that from becoming a trap:
-//  - At either end the event is left alone, so the page carries on
-//    scrolling rather than the wheel going dead over the strip.
+//  - Whatever was under the cursor when a spin began owns the whole spin
+//    (see wheelGesture below). A spin that starts at a strip's end, or
+//    anywhere off a strip, scrolls the page.
 //  - Sideways input (trackpad swipe, shift+wheel, tilt wheel) is already
 //    native, so it is left to the browser.
 //  - Small deltas (trackpads, free-spinning wheels) move the strip 1:1:
@@ -2736,6 +2737,31 @@ function buildProjectGrid() {
 //    finger. A notched wheel sends ~100px jumps that read as teleporting, so
 //    those glide instead, with an exponential approach that retargets on
 //    each notch, so a fast spin adds up rather than queueing.
+// ── Who owns a spin ────────────────────────────────────
+// A wheel spin is a stream of events, and deciding each one on its own let
+// one spin do two things. Spun over a strip, it ran the strip to its end and
+// the rest of the same spin then scrolled the page (measured: 1000px of
+// unwanted page travel from one spin). Spun on the page, it scrolled until a
+// strip came under the cursor, and the strip then took the wheel and
+// stalled the page mid-scroll. The project figure is pinned, so the strip
+// stays under the cursor while the page moves, which made both common.
+//
+// Nested scroll areas on macOS and iOS settle this one way, and so does
+// this: whatever is under the cursor when a spin starts owns the whole
+// spin. A pause of WHEEL_GAP ends the spin. Recorded on window in the
+// capture phase, which runs before any strip's own listener.
+const WHEEL_GAP = 300;
+const wheelGesture = { t: -Infinity, owner: 'page' };
+window.addEventListener('wheel', (e) => {
+  if (e.timeStamp - wheelGesture.t > WHEEL_GAP) {
+    // A new spin. Over a strip, the strip decides whether it wants it;
+    // anywhere else the page has it.
+    const onStrip = e.target instanceof Element && e.target.closest('.thumb-rail');
+    wheelGesture.owner = onStrip ? 'pending' : 'page';
+  }
+  wheelGesture.t = e.timeStamp;
+}, { capture: true, passive: true });
+
 function wheelToHorizontal(el) {
   let target = null, raf = 0, last = 0;
   const max = () => el.scrollWidth - el.clientWidth;
@@ -2760,11 +2786,20 @@ function wheelToHorizontal(el) {
     if (e.ctrlKey) return;                                   // pinch-zoom
     if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;    // already sideways
     const m = max();
-    if (m <= 1) return;                                      // nothing to scroll
     const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? el.clientWidth : 1;
     const dy = e.deltaY * unit;
     const from = target ?? el.scrollLeft;
-    if ((dy < 0 && from <= 2) || (dy > 0 && from >= m - 2)) return;
+    if (wheelGesture.owner === 'pending') {
+      // First event of a spin that began on this strip: claim it only if
+      // the strip can move that way. A strip that fits, or one already at
+      // the end the wheel points to, hands this spin to the page.
+      const canMove = m > 1 && (dy < 0 ? from > 2 : from < m - 2);
+      wheelGesture.owner = canMove ? el : 'page';
+    }
+    if (wheelGesture.owner !== el || !e.cancelable) return;
+    // Owned: every event of this spin stays on the strip, including those
+    // that arrive once it has reached its end. Those do nothing, and the
+    // page waits for the next spin.
     e.preventDefault();
     const next = Math.max(0, Math.min(m, from + dy));
     if (reducedMotion || Math.abs(dy) < 40) {
