@@ -123,7 +123,7 @@ const PROJECTS = [
       { k: 'Service ceiling', v: '9,536\u00a0ft' }
     ],
     views: [
-      { label: 'Final configuration concept', src: 'figures/mk10/concept-render.jpg', caption: 'MK-10 Wooden Aircraft Model: Final Configuration Concept' },
+      { label: 'Final configuration concept', src: 'figures/mk10/concept-render-1800.jpg', caption: 'MK-10 Wooden Aircraft Model: Final Configuration Concept' },
       { label: 'Carved airframe', src: 'figures/mk10/carved-airframe.jpg', caption: 'MK-10 Wooden Aircraft Model: Carved and Sanded Airframe' },
       { label: 'Three-view', src: 'figures/drawings-3d-view.png', caption: 'Final three-view — low straight-tapered wing, fixed tricycle gear, 1,649\u00a0lb gross' },
       { label: 'V-n envelope', src: 'analysis/plots/vn-diagram.png', caption: 'V-n envelope — maneuver and gust cases, design limit load 4.936' },
@@ -172,15 +172,15 @@ const PROJECTS = [
       { k: 'Actuation', v: '4 micro servos' }
     ],
     views: [
-      { label: 'Built airframe · side', src: 'figures/uav/build-side.jpg', caption: 'The finished airframe — foam board over a spar, tricycle gear, pull-pull rudder cable' },
-      { label: 'Built airframe · top', src: 'figures/uav/build-top.jpg', caption: 'Plan view of the completed aircraft — constant-chord wing, taped center section' },
-      { label: 'Built airframe · front', src: 'figures/uav/build-front.jpg', caption: 'Head-on with the motor and prop fitted, gear down' },
+      { label: 'Built airframe · side', src: 'figures/uav/build-side-1800.jpg', caption: 'The finished airframe — foam board over a spar, tricycle gear, pull-pull rudder cable' },
+      { label: 'Built airframe · top', src: 'figures/uav/build-top-1800.jpg', caption: 'Plan view of the completed aircraft — constant-chord wing, taped center section' },
+      { label: 'Built airframe · front', src: 'figures/uav/build-front-1800.jpg', caption: 'Head-on with the motor and prop fitted, gear down' },
       { label: 'Exploded CAD', src: 'figures/docs-exploded-view.png', caption: 'Exploded isometric of the master assembly — airframe, propulsion, avionics, linkages' },
-      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout.jpg', caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
-      { label: 'Servo install', src: 'figures/uav/tail-servos.jpg', caption: 'Elevator and rudder servos bedded into the rear fuselage, leads run forward' },
-      { label: 'Linkage detail', src: 'figures/uav/servo-linkage.jpg', caption: 'Servo horn and pushrod as built — the linkage that was modeled in CAD' },
-      { label: 'Receiver', src: 'figures/uav/receiver-r88.jpg', caption: 'RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle' },
-      { label: 'Landing gear', src: 'figures/uav/wheels.jpg', caption: 'Main wheels and the sprung tail wheel assembly' },
+      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout-1800.jpg', caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
+      { label: 'Servo install', src: 'figures/uav/tail-servos-1800.jpg', caption: 'Elevator and rudder servos bedded into the rear fuselage, leads run forward' },
+      { label: 'Linkage detail', src: 'figures/uav/servo-linkage-1800.jpg', caption: 'Servo horn and pushrod as built — the linkage that was modeled in CAD' },
+      { label: 'Receiver', src: 'figures/uav/receiver-r88-1800.jpg', caption: 'RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle' },
+      { label: 'Landing gear', src: 'figures/uav/wheels-1800.jpg', caption: 'Main wheels and the sprung tail wheel assembly' },
       { label: 'On the bench', src: 'figures/uav/build-bench.jpg', caption: 'Build night — servo bays cut and glued by hand' }
     ]
   },
@@ -201,12 +201,12 @@ const PROJECTS = [
     ],
     views: [
       { label: 'Carved rotor', src: 'figures/rotor/carved-rotor.jpg', caption: 'The finished two-blade rotor, carved and sanded, held over the drafting table and the orthographic sheets it was drawn on' },
-      { label: 'Prop on drawing', src: 'figures/rotor/prop-on-drawing.jpg', caption: 'Carved wooden two-blade rotor laid on the printed orthographic drawing sheet — front and top views' },
+      { label: 'Prop on drawing', src: 'figures/rotor/prop-on-drawing-1800.jpg', caption: 'Carved wooden two-blade rotor laid on the printed orthographic drawing sheet — front and top views' },
       { label: 'CAD four-view', src: 'figures/rotor/cad-four-view.jpg', caption: 'SolidWorks four-view drawing — top, front, isometric and right views with key dimensions' },
       { label: 'Planform detail', src: 'figures/rotor/planform-detail.jpg', caption: 'Chord station table — blade width at each radial station from root to tip' },
       { label: 'Drawing layout', src: 'figures/rotor/drawing-layout.jpg', caption: 'CAD drawing sheet layout — all four standard projection views on one sheet' },
-      { label: '3D model', src: 'figures/rotor/cad-3d.jpg', caption: 'SolidWorks 3D shaded view — hub and blade assembly' },
-      { label: 'Blade section sketch', src: 'figures/rotor/blade-section.jpg', caption: 'Airfoil section profile modeled in sketch — camber and twist geometry driving the 3D blade' }
+      { label: '3D model', src: 'figures/rotor/cad-3d-1800.jpg', caption: 'SolidWorks 3D shaded view — hub and blade assembly' },
+      { label: 'Blade section sketch', src: 'figures/rotor/blade-section-1800.jpg', caption: 'Airfoil section profile modeled in sketch — camber and twist geometry driving the 3D blade' }
     ]
   },
   {
@@ -216,7 +216,7 @@ const PROJECTS = [
     title: 'High-Lift Wing Rig',
     story: 'A sectioned wing built in cardboard and skinned in aluminum foil, mounted on its own stand so it can be demonstrated at eye level. Servos embedded in the section drive the ailerons and leading-edge slats from an Arduino Uno sketch, with a dedicated control interface on the base, so these are high-lift devices you can watch deploy instead of read about.',
     repo: null,
-    gridThumb: 'figures/wing/servo-bay.jpg',
+    gridThumb: 'figures/wing/servo-bay-1800.jpg',
     values: [
       { k: 'Moving surfaces', v: 'Ailerons + slats' },
       { k: 'Controller', v: 'Arduino Uno' },
@@ -224,9 +224,9 @@ const PROJECTS = [
     ],
     views: [
       { label: 'Slats & ailerons moving', video: 'figures/wing/demo.mp4', poster: 'figures/wing/demo-poster.jpg', caption: 'The rig running — slats and ailerons driven from the control interface on the stand' },
-      { label: 'Section on its stand', src: 'figures/wing/section-profile.jpg', caption: 'The finished section in profile, mounted on its presentation stand' },
-      { label: 'Servo bay open', src: 'figures/wing/servo-bay.jpg', caption: 'Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back' },
-      { label: 'Servo control bench', src: 'figures/wing/arduino-bench.jpg', caption: 'Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section' }
+      { label: 'Section on its stand', src: 'figures/wing/section-profile-1800.jpg', caption: 'The finished section in profile, mounted on its presentation stand' },
+      { label: 'Servo bay open', src: 'figures/wing/servo-bay-1800.jpg', caption: 'Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back' },
+      { label: 'Servo control bench', src: 'figures/wing/arduino-bench-1800.jpg', caption: 'Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section' }
     ]
   }
 ];
@@ -241,6 +241,20 @@ const PROJECTS = [
 const viewIndex = PROJECTS.map(() => 0);
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Smaller copies made by tools/make-images.py: a gallery strip's thumbnail
+// (thumbs/) and a home-page card's picture (cards/), each a WebP mirroring
+// the figure's path (a photo's -1800 dropped). The strip used to load every
+// full-size figure, camera photos of 1.3–1.7 MB among them, to show it 62px
+// tall. A copy that is missing (a figure added without running the script)
+// falls back to the full figure.
+const variant = (dir, src) => `${dir}/${src.replace(/(-1800)?\.[a-z0-9]+$/i, '.webp')}`;
+document.addEventListener('error', (e) => {
+  const img = e.target;
+  if (img instanceof HTMLImageElement && img.dataset.full && img.getAttribute('src') !== img.dataset.full) {
+    img.src = img.dataset.full;
+  }
+}, true);
+
 function mediaTag(view, styleStr, opts) {
   opts = opts || {};
   // Always contain, never crop. A type-based cover/contain split was tried
@@ -253,9 +267,14 @@ function mediaTag(view, styleStr, opts) {
   // and pick cover/contain per file type; that one is unaffected.
   const fit = 'object-fit:contain;';
   if (view.video) {
-    const autoplay = (opts.autoplay === false || reducedMotion) ? '' : 'autoplay';
-    const preload = opts.autoplay === false ? ' preload="metadata"' : '';
-    const poster = view.poster ? ` poster="${view.poster}"` : '';
+    // A project's lead clip waits, poster showing, until its figure is on
+    // screen (watchLeadClip); built ahead of the reader in idle time, it
+    // used to fetch its whole file at once. A strip's thumbnail loads only
+    // its metadata and plays on hover.
+    const autoplay = (opts.autoplay === false || opts.lead || reducedMotion) ? '' : 'autoplay';
+    const preload = opts.lead ? ' preload="none" data-lead' : opts.autoplay === false ? ' preload="metadata"' : '';
+    const posterSrc = view.poster && opts.thumb ? variant('thumbs', view.poster) : view.poster;
+    const poster = posterSrc ? ` poster="${posterSrc}"` : '';
     return `<video src="${view.video}"${poster} ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
   }
   const alt = (view.caption || view.label || '').replace(/"/g, '&quot;');
@@ -266,7 +285,20 @@ function mediaTag(view, styleStr, opts) {
   // thumbnails and the lightbox stay lazy since those are genuinely
   // numerous/off-screen.
   const loading = opts.eager ? 'eager' : 'lazy';
-  return `<img src="${view.src}" alt="${alt}" loading="${loading}" decoding="async" style="${fit}${styleStr}">`;
+  const src = opts.thumb ? `${variant('thumbs', view.src)}" data-full="${view.src}` : view.src;
+  return `<img src="${src}" alt="${alt}" loading="${loading}" decoding="async" style="${fit}${styleStr}">`;
+}
+
+// A lead clip plays only while a quarter of it is on screen.
+const leadClips = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => entries.forEach(e => {
+  if (e.isIntersecting && !reducedMotion) e.target.play().catch(() => {});
+  else e.target.pause();
+}), { threshold: 0.25 }) : null;
+function watchLeadClip(area) {
+  const clip = area && area.querySelector('video[data-lead]');
+  if (!clip) return;
+  if (leadClips) leadClips.observe(clip);
+  else if (!reducedMotion) clip.play().catch(() => {});
 }
 
 // Lead display only: a blurred, cover-fit backdrop behind the sharp
@@ -303,9 +335,9 @@ function leadMediaMarkup(view) {
     const backdrop = view.poster
       ? backdropDiv(view.poster)
       : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);"></video>`;
-    return backdrop + mediaTag(view, fgStyle, { eager: true });
+    return backdrop + mediaTag(view, fgStyle, { eager: true, lead: true });
   }
-  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true });
+  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true, lead: true });
 }
 
 // ── Drawing callouts ───────────────────────────────────
@@ -357,8 +389,10 @@ function renderGallery(pi) {
 
   const leadArea = document.getElementById(`lead-img-${pi}`);
   if (leadArea) {
+    if (leadClips) leadArea.querySelectorAll('video[data-lead]').forEach(v => leadClips.unobserve(v));
     leadArea.innerHTML = leadMediaMarkup(lead) + (lead.callouts ? calloutMarkup(lead) : '');
     if (lead.callouts) fitCallouts(leadArea);
+    watchLeadClip(leadArea);
   }
 
   const captionEl = document.getElementById(`lead-cap-${pi}`);
@@ -703,7 +737,7 @@ function buildProjectGrid() {
   container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
     const thumb = media
-      ? `<img class="ledger-thumb${contained(p, media) ? ' is-contain' : ''}" src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
+      ? `<img class="ledger-thumb${contained(p, media) ? ' is-contain' : ''}" src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" style="object-position:${p.gridFocus || 'center'};">`
       : '';
     return `
       <li><a class="ledger-row" href="${chapterPage}#${p.anchor}" data-i="${ci}">
@@ -724,7 +758,7 @@ function buildProjectGrid() {
     frame.innerHTML = flagships.map((p, ci) => {
       const media = firstImage(p);
       return media
-        ? `<img src="${media.src}" alt="" loading="lazy" class="${contained(p, media) ? 'is-contain' : ''}${ci === 0 ? ' is-on' : ''}" style="object-position:${p.gridFocus || 'center'};">`
+        ? `<img src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" class="${contained(p, media) ? 'is-contain' : ''}${ci === 0 ? ' is-on' : ''}" style="object-position:${p.gridFocus || 'center'};">`
         : '<span></span>';
     }).join('');
     const rows = [...container.querySelectorAll('.ledger-row')];
@@ -751,7 +785,7 @@ function buildProjectGrid() {
     built.innerHTML = PROJECTS.filter(p => p.group === 'built').map(p => {
       const media = firstImage(p);
       const thumb = media
-        ? `<img src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
+        ? `<img src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" style="object-position:${p.gridFocus || 'center'};">`
         : '<span></span>';
       return `
         <li><a class="built-row" href="${chapterPage}#${p.anchor}">
@@ -1352,7 +1386,7 @@ function buildProjects() {
         ${p.views.map((v, i) => `
           <button type="button" class="thumb-btn" onclick="selectView(${pi},${i})">
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
-              ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
+              ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false, thumb: true })}
             </div>
             <span class="thumb-label">${v.label}</span>
           </button>`).join('')}
@@ -1380,7 +1414,7 @@ function buildProjects() {
           <p class="sec-lede">Three projects where the drawing became a thing on a bench: a foam-board UAV, a carved rotor and a servo-driven wing section.</p>
         </header>
         <nav class="col-side rv" style="--rv:1" aria-label="The three builds"><ul class="built-jump">${builds.map(q => `
-          <li><a href="#${q.anchor}"><img src="${pic(q)}" alt="" loading="lazy" style="object-position:${q.gridFocus || 'center'};"><span>${q.short}</span></a></li>`).join('')}
+          <li><a href="#${q.anchor}"><img src="${variant('cards', pic(q))}" data-full="${pic(q)}" alt="" loading="lazy" decoding="async" style="object-position:${q.gridFocus || 'center'};"><span>${q.short}</span></a></li>`).join('')}
         </ul></nav>
       </div>
     </div>` : '';
@@ -2814,6 +2848,18 @@ function initTheme() {
   });
 }
 
+// ── Printing ───────────────────────────────────────────
+// Figures are built, and sections revealed, as the reader scrolls to
+// them; a reader who prints straight away would get empty frames and blank
+// sections. Before printing, everything is drawn and shown.
+function initPrint() {
+  window.addEventListener('beforeprint', () => {
+    if (window.ensureLeadsBetween) window.ensureLeadsBetween(-Infinity, Infinity);
+    document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; });
+    document.querySelectorAll('.section-reveal').forEach(s => s.classList.add('visible'));
+  });
+}
+
 // ── Copy the address ───────────────────────────────────
 // "Email me" opens a mail app, which on a computer without one set up does
 // nothing a visitor can see, and many people would rather paste an address
@@ -2980,5 +3026,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel({ prefix: 'dornier', slide: 'internship-slide', dot: 'internship-dot', minDelay: 3200, spread: 2200 });
   initInViewVideos();
   initCopy();
+  initPrint();
   initTheme();
 });

@@ -1421,3 +1421,74 @@ nav.bar { view-transition-name: site-bar; }
   .odo-col { transition: opacity 200ms ease; }
   .rig-strike, .rig-num.is-withdrawn .rig-strike { transition: none; }
 }
+
+/* ── Print ────────────────────────────────────────────────
+   For a reader who prints a page or saves it as a PDF for a hiring file.
+   The controls go (the bar, menus, thumbnail strips, toggles, the viewer,
+   the 3D turntable, the slideshow's buttons), grounds print white in the
+   light palette whatever the theme, every section is shown however far
+   the reader scrolled, each project starts a page with its figure kept
+   whole beside its table, and the addresses behind the links are printed
+   in full. Type steps down to print sizes. The name and the address head
+   the first page; the site and the page number foot every page. */
+.print-head { display: none; }
+@media print {
+  :root, [data-theme="dark"] {
+    color-scheme: light;
+    --bg: #FFFFFF; --surface: #EEF0EE; --ink: #1B1E20; --muted: #565D60;
+    --accent: #F2C230; --accent-ink: #1B1E20; --accent-deep: #7A5C00;
+    --step-small: 11px; --step-body: 13.5px; --step-lead: 17px; --step-head: 26px; --step-display: 40px;
+    --section: 28px;
+  }
+  @page {
+    margin: 14mm 14mm 16mm;
+    @bottom-left { content: "Mark Lorenz Yamanaka, www.mlyamanaka.com"; font: 8.5pt "Atkinson Hyperlegible Next", sans-serif; color: #565D60; }
+    @bottom-right { content: counter(page) " / " counter(pages); font: 8.5pt "Atkinson Hyperlegible Next", sans-serif; color: #565D60; }
+  }
+  html { scroll-behavior: auto; }
+  body { background: #FFFFFF; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .print-head { display: block; margin: 0 0 6mm; color: var(--muted); font-size: var(--step-small); }
+
+  nav.bar, .skip, #lightbox, .jump-menu, .rig-switch, .ledger-preview, .holo, .beyond-graph, .graph-cap,
+  .scroll-area, .thumb-rail, .lead-enlarge, .key-below, .rev-toggle, .built-jump, .band-actions, .copy-btn,
+  .carousel-playpause, .carousel-arrow, .carousel-dots, .foot-links, .foot-quote, .theme-toggle,
+  .hero-actions, .nf-action { display: none !important; }
+  /* The page-head photographs (the hangar door, the portrait) at a size
+     that leaves the page for its text. */
+  .page-photo img { width: auto; max-width: 100%; max-height: 95mm; }
+
+  .js-reveal .section-reveal .rv, .section-reveal .rv { opacity: 1 !important; transform: none !important; }
+  .hero { min-height: 0; }
+  .hero-rig, .band, .proj-section:nth-of-type(even), .proj-section { background: none !important; }
+  .hero-copy, .hero-rig { padding-top: 0; padding-bottom: 6mm; }
+  .page-head { padding: 0 0 6mm; }
+  .sec { padding: 6mm 0; }
+
+  /* A project chapter: its own page, the figure whole and its callouts on
+     it. The figure prints at its own shape, so the callout layer (laid
+     over a letterboxed frame on screen) simply covers the picture. */
+  .proj-section { padding: 0; break-before: page; }
+  .built-head { break-before: page; padding: 0 0 4mm; }
+  .built-head + .proj-section { break-before: auto; }
+  .proj-stage { position: static !important; }
+  .lead-btn { height: auto !important; display: block; background: none !important; cursor: auto; transform: none !important; }
+  .lead-media-area { height: auto !important; min-height: 0 !important; width: fit-content; max-width: 100%; margin: 0 auto; background: none !important; overflow: visible !important; }
+  .lead-media-area > div:not(.callouts) { display: none !important; }
+  .lead-media-area > img, .lead-media-area > video {
+    position: static !important; display: block; width: auto !important; height: auto !important;
+    max-width: 100%; max-height: 105mm; margin: 0 auto; padding: 0 !important; filter: none !important; visibility: visible !important;
+  }
+  .lead-media-area > .callouts { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; }
+  .lead-cap-row { padding: 2mm 0 0; }
+  .lead-btn, .metrics, .rev, .proj-layers dt, figure, .intern-photos figure, .hobby-strip li { break-inside: avoid; }
+  .proj-title, .sec-title, .intern-title, .proj-layers dt { break-after: avoid; }
+
+  /* The links' destinations, spelled out. */
+  .proj-repo-btn { min-height: 0; padding: 0; gap: 0; background: none !important; }
+  .proj-repo-btn svg { margin-right: 8px; }
+  .proj-repo-btn::after { content: ": " attr(href); font-weight: 400; }
+  .band-links a[href^="http"]::after { content: " (" attr(href) ")"; }
+  .band { padding: 6mm 0 0; break-inside: avoid; }
+  .site-foot { padding: 4mm 0 0; }
+}
