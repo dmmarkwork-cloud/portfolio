@@ -18,7 +18,7 @@
   .nav-inner { gap: 12px; }
   .btn-ghost { position: relative; min-height: 36px; padding: 0 12px; }
   .btn-ghost::after { content: ''; position: absolute; inset: -4px -2px; }
-  .nav-here { display: none; }
+  .nav-jump-wrap { display: none; }
 
   nav.nav-collapsed .nav-menu-btn {
     display: inline-flex;
@@ -79,6 +79,12 @@
     nav.nav-collapsed .nav-scroll .nav-link { transition-delay: 0s; transform: none; }
   }
   html.menu-open { overflow: hidden; }
+}
+
+/* Between phone and desktop the bar keeps the mark and drops the name, so
+   the four pages, the chapter jumper and the action share one row. */
+@media (min-width: 760.02px) and (max-width: 999.98px) {
+  .brand > span { display: none; }
 }
 
 /* ── Home on a phone: the title first, then the evidence ─

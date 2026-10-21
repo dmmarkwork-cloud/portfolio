@@ -638,6 +638,19 @@ function buildProjectGrid() {
 // The projects page opens on an index of all seven, grouped as the page
 // is, each with its number.
 function buildProjectIndex() {
+  // The same list fills the bar's jump menu, where each row carries the
+  // chapter it opens so the current one can be marked.
+  const jump = document.getElementById('jump-list');
+  if (jump) {
+    let group = null;
+    jump.innerHTML = PROJECTS.map(p => {
+      const head = p.group !== group
+        ? `<li role="presentation"><p class="grp">${p.group === 'flagship' ? 'Analyses' : 'Built by hand'}</p></li>` : '';
+      group = p.group;
+      const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
+      return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
+    }).join('');
+  }
   const index = document.getElementById('proj-index');
   if (index) {
     let group = null;
@@ -649,6 +662,65 @@ function buildProjectIndex() {
       return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
   }
+}
+
+// The project chapter crossing the reading line (42% down the screen), or
+// null above the first one.
+function currentChapter() {
+  const mid = window.innerHeight * 0.42;
+  let cur = null;
+  document.querySelectorAll('.proj-section').forEach(s => {
+    const r = s.getBoundingClientRect();
+    if (r.top <= mid && r.bottom >= mid) cur = s.id;
+  });
+  return cur;
+}
+
+// ── The jump menu ───────────────────────────────────────
+// On the projects page the bar's "/ chapter" opens a list of all seven, so
+// a reader deep in one chapter can go to another without scrolling back to
+// the index. It opens from its button, closes on a choice, Escape, or a
+// click elsewhere, and the arrow keys move through it.
+function initJumpMenu() {
+  const btn = document.getElementById('nav-jump');
+  const menu = document.getElementById('jump-menu');
+  if (!btn || !menu) return;
+  const links = () => [...menu.querySelectorAll('a')];
+  // The chapter crossing the reading line is the one marked.
+  const mark = () => {
+    const cur = currentChapter();
+    links().forEach(a => a.classList.toggle('is-here', !!cur && a.getAttribute('href') === '#' + cur));
+  };
+  const open = (focusFirst) => {
+    mark();
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    if (focusFirst) (menu.querySelector('a.is-here') || links()[0]).focus();
+  };
+  const close = (returnFocus) => {
+    if (menu.hidden) return;
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    if (returnFocus) btn.focus();
+  };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.hidden) open(e.detail === 0); else close(false);
+  });
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) close(false); });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && e.target !== btn) close(false); });
+  document.addEventListener('keydown', (e) => {
+    if (menu.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const all = links();
+      const i = all.indexOf(document.activeElement);
+      const n = e.key === 'ArrowDown' ? (i + 1) % all.length : (i - 1 + all.length) % all.length;
+      all[n].focus();
+    }
+  });
+  menu.addEventListener('focusout', (e) => { if (!menu.contains(e.relatedTarget) && e.relatedTarget !== btn) close(false); });
 }
 
 // ── Wheel on a sideways strip ──────────────────────────
@@ -1298,7 +1370,9 @@ function initNav() {
     // On the projects page the bar names the chapter you are reading after
     // the page's own name, so a long page always says where you are.
     if (hereEl) {
-      const next = activeEl ? activeEl.textContent.trim() : '';
+      const cur = currentChapter();
+      const p = cur && PROJECTS.find(x => x.anchor === cur);
+      const next = p ? p.short : 'Jump to a project';
       if (hereEl.textContent !== next) hereEl.textContent = next;
     }
     if (nav) nav.classList.toggle('is-stuck', window.scrollY > 4);
@@ -1644,14 +1718,13 @@ function initReveal() {
   window.addEventListener('load', sweep, { once: true });
 }
 
-// Node graph for the "beyond the desk" interests: centre, category hubs,
-// and each interest wired only to its own hub.
+// The interests as a small tree: the centre, five kinds of thing, and each
+// interest on its own branch. It is also the index of the photo strip above
+// it: an interest with a photo there has a yellow dot, pointing at it lights
+// that photo, and pointing at a photo lights its branch. Nothing moves on
+// its own; the branches lean from the pointer and a single signal runs out
+// to the interest you choose.
 function initHobbyGraph() {
-  // A small "network" of interests, after a citation-graph look: one
-  // centre, five category hubs on a ring, each interest fanned out from its
-  // hub. Hover (or touch) an
-  // interest to light its path back to the centre; the pointer still nudges
-  // nearby nodes, and faint signals travel the edges while it is on screen.
   const wrap = document.getElementById('hobby-graph');
   const canvas = document.getElementById('hobby-graph-canvas');
   if (!wrap || !canvas) return;
@@ -1664,8 +1737,9 @@ function initHobbyGraph() {
     { label: 'Tech',     items: ['Quadcopter build', 'Cybersecurity', 'Gaming'] },
     { label: 'Culture',  items: ['Fragrance collecting', 'Dystopian films'] },
   ];
-  // Colours come from the page's own tokens, so the graph follows the
-  // theme: rust on warm white in light, sky on navy in dark.
+  const ITEM_FONT = 15, HUB_FONT = 14;
+
+  // Colours from the page's tokens, so the graph follows the theme.
   const rgb = (hex) => {
     const h = hex.trim().replace('#', '');
     const f = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
@@ -1675,23 +1749,18 @@ function initHobbyGraph() {
   function readColors() {
     const cs = getComputedStyle(document.documentElement);
     const v = (n) => cs.getPropertyValue(n).trim();
-    C = {
-      edge: rgb(v('--rust')),
-      accent: v('--rust'),
-      node: v('--muted'),
-      hot: v('--ink'),
-      surface: v('--surface'),
-      label: v('--ink'),
-      labelDim: `rgba(${rgb(v('--muted-2'))},0.45)`,
-      hub: v('--rust'),
-    };
+    C = { ink: v('--ink'), inkRGB: rgb(v('--ink')), muted: v('--muted'), mutedRGB: rgb(v('--muted')),
+          surface: v('--surface'), accent: v('--accent') };
   }
   readColors();
   const FONT = getComputedStyle(document.documentElement).getPropertyValue('--font-sans');
 
-  // Seeded RNG: the same jitter, and the same drawing, on every visit.
+  // The strip's photos, keyed by the interest each one shows.
+  const photos = new Map([...document.querySelectorAll('.hobby-strip [data-interest]')]
+    .map(li => [li.dataset.interest, li]));
+  const stripList = document.querySelector('.hobby-strip');
+
   const seeded = (k) => () => { k = k + 0x6D2B79F5 | 0; let t = Math.imul(k ^ k >>> 15, 1 | k); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  const rand = seeded(7);
 
   // Centre -> category hub -> that category's interests. No other edges.
   const nodes = [];
@@ -1701,32 +1770,31 @@ function initHobbyGraph() {
   const interests = [];
   GROUPS.forEach((g) => {
     g.hub = add({ kind: 'hub', label: g.label, r: 0 });
-    edges.push({ a: centre, b: g.hub, w: 1 });
+    edges.push({ a: centre, b: g.hub });
     g.ids = g.items.map((label) => {
-      const i = add({ kind: 'interest', label, hub: g.hub, r: 3.6 });
-      edges.push({ a: g.hub, b: i, w: 0.8 });
+      const i = add({ kind: 'interest', label, hub: g.hub, r: 4, photo: photos.has(label) });
+      edges.push({ a: g.hub, b: i });
       interests.push(i);
       return i;
     });
   });
+  const byLabel = new Map(interests.map(i => [nodes[i].label, i]));
   // Wide panels split the categories either side of the centre; narrow ones
   // (phones) run a single column with every label on the right.
   const LEFT = GROUPS.filter(g => g.label === 'Sport' || g.label === 'Tech');
   const RIGHT = GROUPS.filter(g => !LEFT.includes(g));
 
-  // A hub is drawn as a chip carrying its category name, so the name is the
-  // node and its own lines end under it. Interest labels sit left (L) or
-  // right (R) of the dot, always on the side facing away from the hub.
+  // A hub is its category name on the panel's own colour, so the lines that
+  // meet it stop at the word. Interest labels sit on the side away from it.
   const labelW = {};
   function labelBox(n) {
     const w = labelW[n.label], x = n.ax, y = n.ay;
-    if (n.kind === 'interest') return n.side === 'L' ? [x - w - 11, y - 8, x - 5, y + 8] : [x + 5, y - 8, x + w + 11, y + 8];
-    if (n.kind === 'hub') return [x - w / 2 - 7, y - 9, x + w / 2 + 7, y + 9];
+    if (n.kind === 'interest') return n.side === 'L' ? [x - w - 13, y - 10, x - 6, y + 10] : [x + 6, y - 10, x + w + 13, y + 10];
+    if (n.kind === 'hub') return [x - w / 2 - 8, y - 11, x + w / 2 + 8, y + 11];
     return null;
   }
   const grow = (r, m) => [r[0] - m, r[1] - m, r[2] + m, r[3] + m];
   const boxesMeet = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
-  // Segment p-q against a rectangle (Liang-Barsky clip).
   function segHitsBox(px, py, qx, qy, r) {
     let t0 = 0, t1 = 1;
     const dx = qx - px, dy = qy - py;
@@ -1746,11 +1814,10 @@ function initHobbyGraph() {
   const orient = (A, B, P) => (B.ax - A.ax) * (P.ay - A.ay) - (B.ay - A.ay) * (P.ax - A.ax);
   const segsCross = (A, B, P, Q) => orient(A, B, P) * orient(A, B, Q) < 0 && orient(P, Q, A) * orient(P, Q, B) < 0;
 
-  // Number of collisions in the current anchors: a label or chip over a
-  // line it does not belong to, over a dot or another label; a dot on a
-  // line it is not part of; two lines crossing; anything outside the panel
-  // or under the corner hint.
-  let W = 0, H = 0, hint = null;
+  // Collisions in the current anchors: a label over a line it does not
+  // belong to, over a dot or another label; a dot on a foreign line; two
+  // lines crossing; anything outside the panel.
+  let W = 0, H = 0;
   function collisions() {
     let bad = 0;
     const boxes = nodes.map(labelBox);
@@ -1759,7 +1826,6 @@ function initHobbyGraph() {
       const b = boxes[i];
       if (!b) return;
       if (b[0] < 4 || b[2] > W - 4 || b[1] < 4 || b[3] > H - 4) bad++;
-      if (hint && boxesMeet(b, hint)) bad++;
       const g = grow(b, 3);
       edges.forEach(e => {
         if (n.kind === 'hub' && (e.a === i || e.b === i)) return;
@@ -1773,7 +1839,6 @@ function initHobbyGraph() {
     });
     edges.forEach((e, ei) => {
       const A = nodes[e.a], B = nodes[e.b];
-      if (hint && segHitsBox(A.ax, A.ay, B.ax, B.ay, hint)) bad++;
       nodes.forEach((n, k) => { if (n.kind !== 'hub' && k !== e.a && k !== e.b && distToSeg(n.ax, n.ay, A, B) < n.r + 5) bad++; });
       edges.forEach((f, fi) => {
         if (fi > ei && f.a !== e.a && f.a !== e.b && f.b !== e.a && f.b !== e.b && segsCross(A, B, nodes[f.a], nodes[f.b])) bad++;
@@ -1782,27 +1847,23 @@ function initHobbyGraph() {
     return bad;
   }
 
-  // Place everything for the current panel. Interests stack in a column per
-  // side with the labels pointing outward, so every line reaches a dot from
-  // the side away from its label; each hub fans out to its own block of
-  // rows, so fans never cross. jitter() adds the irregularity; with R
-  // unset it is zero and the result is the plain, clean-by-construction
-  // tree.
+  // Interests stack in a column per side with their labels pointing out;
+  // each hub fans out to its own block of rows, so fans never cross.
   let twoSided = true;
   function place(R) {
     const jit = (a) => R ? (R() - 0.5) * 2 * a : 0;
     const widest = (gs) => Math.max(...gs.flatMap(g => g.items.map(l => labelW[l])));
-    const topRight = hint ? hint[3] + 12 : 16, bottom = H - 16;
+    const top = 22, bottom = H - 22;
     const sides = twoSided
-      ? [{ dir: -1, groups: LEFT, col: 16 + widest(LEFT), top: 16 }, { dir: 1, groups: RIGHT, col: W - 16 - widest(RIGHT), top: topRight }]
-      : [{ dir: 1, groups: GROUPS, col: W - 16 - widest(GROUPS), top: topRight }];
+      ? [{ dir: -1, groups: LEFT, col: 20 + widest(LEFT) + 14 }, { dir: 1, groups: RIGHT, col: W - 20 - widest(RIGHT) - 14 }]
+      : [{ dir: 1, groups: GROUPS, col: W - 20 - widest(GROUPS) - 14 }];
     const c = nodes[centre];
-    c.ax = twoSided ? (sides[0].col + sides[1].col) / 2 : 24;
+    c.ax = twoSided ? (sides[0].col + sides[1].col) / 2 : 26;
     c.ay = H / 2 + jit(10);
-    sides.forEach(({ dir, groups, col, top }) => {
+    sides.forEach(({ dir, groups, col }) => {
       const gap = twoSided ? 0.8 : 1;
       const slots = groups.reduce((t, g) => t + g.items.length, 0) - 1 + gap * (groups.length - 1);
-      const step = Math.min(32, (bottom - top) / slots);
+      const step = Math.min(38, (bottom - top) / slots);
       let y = top + (bottom - top - step * slots) / 2;
       const reach = Math.abs(col - c.ax);
       groups.forEach(g => {
@@ -1811,13 +1872,13 @@ function initHobbyGraph() {
           const n = nodes[id];
           n.side = dir < 0 ? 'L' : 'R';
           n.ax = col - dir * Math.abs(jit(9));
-          n.ay = y + jit(step * 0.12);
+          n.ay = y + jit(step * 0.1);
           sum += n.ay;
           y += step;
         });
         y += step * (gap - 1) + step;
         const h = nodes[g.hub];
-        h.ax = c.ax + dir * reach * (0.48 + jit(0.1));
+        h.ax = c.ax + dir * reach * (0.5 + jit(0.1));
         h.ay = sum / g.ids.length + jit(6);
       });
     });
@@ -1827,18 +1888,17 @@ function initHobbyGraph() {
     const rect = wrap.getBoundingClientRect();
     if (!rect.width || (rect.width === W && rect.height === H)) return;
     W = rect.width; H = rect.height;
-    ctx.font = `600 11.5px ${FONT}`;
+    ctx.font = `600 ${ITEM_FONT}px ${FONT}`;
     GROUPS.forEach(g => g.items.forEach(l => { labelW[l] = ctx.measureText(l).width; }));
-    ctx.font = `600 10px ${FONT}`;
-    GROUPS.forEach(g => { labelW[g.label] = ctx.measureText(g.label.toUpperCase()).width; });
+    ctx.font = `600 ${HUB_FONT}px ${FONT}`;
+    GROUPS.forEach(g => { labelW[g.label] = ctx.measureText(g.label).width; });
     const widest = (gs) => Math.max(...gs.flatMap(g => g.items.map(l => labelW[l])));
-    // Two columns need room for both label stacks plus the hubs between them.
-    const mode = (W - 32 - widest(LEFT) - widest(RIGHT)) >= 190;
+    const mode = (W - 68 - widest(LEFT) - widest(RIGHT)) >= 260;
     if (mode !== twoSided || !wrap.dataset.mode) {
       twoSided = mode;
       wrap.dataset.mode = mode ? 'two' : 'one';
-      // One column holds 15 rows: give it the height it needs (20px a row).
-      wrap.style.height = mode ? '' : `${Math.ceil(56 + 20 * (15 - 1 + GROUPS.length - 1))}px`;
+      // One column holds all fifteen rows: give it the height they need.
+      wrap.style.height = mode ? '' : `${Math.ceil(56 + 30 * (15 - 1 + GROUPS.length - 1))}px`;
       const r2 = wrap.getBoundingClientRect();
       W = r2.width; H = r2.height;
     }
@@ -1846,11 +1906,8 @@ function initHobbyGraph() {
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // The hint text in the top-right corner is a fixed obstacle.
-    const hintEl = wrap.querySelector('.graph-hint');
-    hint = hintEl ? [W - hintEl.offsetWidth - 20, 0, W, hintEl.offsetTop + hintEl.offsetHeight + 6] : null;
-    // First jittered variant with no collisions wins; the unjittered tree is
-    // the fallback, and the least-bad of all if even that collides.
+    // First jittered variant with no collisions wins; the plain tree is the
+    // fallback, and the least-bad of all if even that collides.
     let best = null, bestBad = Infinity;
     for (let k = 1; k <= 40 && bestBad > 0; k++) {
       place(seeded(k * 97));
@@ -1862,168 +1919,159 @@ function initHobbyGraph() {
       if (collisions() < bestBad) best = nodes.map(n => [n.ax, n.ay, n.side]);
     }
     best.forEach((v, i) => { nodes[i].ax = v[0]; nodes[i].ay = v[1]; nodes[i].side = v[2]; });
-    // With reduced motion nothing animates toward the anchors, so jump there.
-    nodes.forEach(n => { if (reducedMotion || (!n.x && !n.y)) { n.x = n.ax; n.y = n.ay; } });
+    nodes.forEach(n => { n.x = n.ax; n.y = n.ay; n.vx = n.vy = 0; });
   }
-  new ResizeObserver(layout).observe(wrap);
-  layout();
 
   const mouse = { x: -9999, y: -9999, active: false };
-  const setPointer = (e) => {
-    const r = wrap.getBoundingClientRect();
-    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
-  };
-  wrap.addEventListener('pointermove', setPointer, { passive: true });
-  wrap.addEventListener('pointerdown', setPointer, { passive: true });
-  wrap.addEventListener('pointerleave', () => { mouse.active = false; });
-  wrap.addEventListener('pointercancel', () => { mouse.active = false; });
+  let pinned = -1;          // an interest lit from its photo
+  let shown = -1;           // the interest currently traced
+  let pulse = null;         // one signal, centre -> hub -> interest
 
-  // Hit-test the dot and its label together, so the label is a target too.
   function hovered() {
     if (!mouse.active) return -1;
-    ctx.font = `500 11.5px ${FONT}`;
+    ctx.font = `500 ${ITEM_FONT}px ${FONT}`;
     for (const i of interests) {
       const n = nodes[i];
       const w = ctx.measureText(n.label).width;
       const left = n.side === 'L';
-      const x0 = left ? n.x - w - 12 : n.x - 8, x1 = left ? n.x + 8 : n.x + w + 12;
-      if (mouse.x > x0 && mouse.x < x1 && Math.abs(mouse.y - n.y) < 11) return i;
+      const x0 = left ? n.x - w - 14 : n.x - 9, x1 = left ? n.x + 9 : n.x + w + 14;
+      if (mouse.x > x0 && mouse.x < x1 && Math.abs(mouse.y - n.y) < 13) return i;
     }
     return -1;
   }
+  const current = () => { const h = hovered(); return h >= 0 ? h : pinned; };
 
-  function step(t, hi) {
-    for (let idx = 0; idx < nodes.length; idx++) {
-      const n = nodes[idx];
-      if (n.kind === 'centre') { n.x = n.ax; n.y = n.ay; continue; }
-      const k = 0.05;
-      n.vx += (n.ax - n.x) * k;
-      n.vy += (n.ay - n.y) * k;
-      if (!reducedMotion) {
-        const s = idx * 0.37;
-        n.vx += Math.sin(t * 0.0005 + s) * 0.03;
-        n.vy += Math.cos(t * 0.0006 + s * 1.3) * 0.03;
-      }
-      // A slight lean away from the pointer: at most 3px (force / spring),
-      // inside the clearance layout() leaves, so nothing lands on a line.
-      // Off while a node is traced, so the target stays under the cursor.
+  // Light the traced interest's photo and step the others back.
+  function syncStrip(hi) {
+    if (!stripList) return;
+    const li = hi >= 0 ? photos.get(nodes[hi].label) : null;
+    stripList.classList.toggle('is-tracing', !!li);
+    photos.forEach(p => p.classList.toggle('is-on', p === li));
+  }
+
+  // Branches lean a little from the pointer and spring back; returns whether
+  // anything is still moving.
+  function step(hi) {
+    let moving = false;
+    for (const n of nodes) {
+      if (n.kind === 'centre') continue;
+      n.vx += (n.ax - n.x) * 0.08;
+      n.vy += (n.ay - n.y) * 0.08;
       if (mouse.active && hi < 0) {
         const dx = n.x - mouse.x, dy = n.y - mouse.y;
         const d = Math.hypot(dx, dy) || 1;
-        if (d < 60) { const f = (60 - d) / 60 * 0.15; n.vx += dx / d * f; n.vy += dy / d * f; }
+        if (d < 64) { const f = (64 - d) / 64 * 0.18; n.vx += dx / d * f; n.vy += dy / d * f; }
       }
-      n.vx *= 0.82; n.vy *= 0.82;
+      n.vx *= 0.78; n.vy *= 0.78;
       n.x += n.vx; n.y += n.vy;
+      if (Math.abs(n.vx) > 0.01 || Math.abs(n.vy) > 0.01 || Math.abs(n.ax - n.x) > 0.05 || Math.abs(n.ay - n.y) > 0.05) moving = true;
     }
-  }
-
-  // Signals: a bright point running centre -> hub -> interest.
-  const pulses = [];
-  let lastPulse = 0;
-  function spawnPulse(t) {
-    const i = interests[Math.floor(rand() * interests.length)];
-    pulses.push({ path: [centre, nodes[i].hub, i], t0: t });
+    return moving;
   }
 
   function draw(hi, t) {
     ctx.clearRect(0, 0, W, H);
     const lit = new Set();
     if (hi >= 0) { lit.add(hi); lit.add(nodes[hi].hub); lit.add(centre); }
-    const isLit = (e) => lit.has(e.a) && lit.has(e.b);
+    const tracing = hi >= 0;
 
-    // edges
     for (const e of edges) {
       const a = nodes[e.a], b = nodes[e.b];
-      const on = hi >= 0 && isLit(e);
-      const alpha = on ? 0.95 : hi >= 0 ? 0.1 : 0.22 + e.w * 0.3;
-      ctx.strokeStyle = `rgba(${C.edge},${alpha})`;
-      ctx.lineWidth = on ? 1.6 : e.w > 0.5 ? 0.9 : 0.6;
+      const on = tracing && lit.has(e.a) && lit.has(e.b);
+      ctx.strokeStyle = on ? C.ink : `rgba(${C.mutedRGB},${tracing ? 0.18 : 0.45})`;
+      ctx.lineWidth = on ? 2 : 1;
       ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
     }
 
-    // signals
-    if (!reducedMotion) {
-      for (let p = pulses.length - 1; p >= 0; p--) {
-        const u = (t - pulses[p].t0) / 1400;
-        if (u >= 1) { pulses.splice(p, 1); continue; }
-        const seg = u < 0.5 ? 0 : 1, f = u < 0.5 ? u * 2 : (u - 0.5) * 2;
-        const a = nodes[pulses[p].path[seg]], b = nodes[pulses[p].path[seg + 1]];
-        const x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
-        const g = ctx.createRadialGradient(x, y, 0, x, y, 7);
-        g.addColorStop(0, `rgba(${C.edge},0.95)`); g.addColorStop(1, `rgba(${C.edge},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill();
+    // The signal: one solid dot along the traced path.
+    if (pulse) {
+      const u = Math.min(1, (t - pulse.t0) / 420);
+      const seg = u < 0.5 ? 0 : 1, f = u < 0.5 ? u * 2 : (u - 0.5) * 2;
+      const a = nodes[pulse.path[seg]], b = nodes[pulse.path[seg + 1]];
+      const e = 1 - Math.pow(1 - f, 3);
+      ctx.fillStyle = C.accent; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(a.x + (b.x - a.x) * e, a.y + (b.y - a.y) * e, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      if (u >= 1) pulse = null;
+    }
+
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      if (n.kind === 'centre') {
+        ctx.fillStyle = C.ink;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+      } else if (n.kind === 'hub') {
+        const hw = labelW[n.label] / 2 + 8;
+        ctx.fillStyle = C.surface;
+        ctx.fillRect(n.x - hw, n.y - 11, hw * 2, 22);
+      } else {
+        const on = lit.has(i);
+        const r = n.r + (on ? 1.5 : 0);
+        ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        if (n.photo) {
+          ctx.fillStyle = C.accent; ctx.fill();
+          ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.stroke();
+        } else {
+          ctx.fillStyle = on ? C.ink : tracing ? `rgba(${C.mutedRGB},0.5)` : C.muted; ctx.fill();
+        }
       }
     }
 
-    // nodes
-    for (let i = 0; i < nodes.length; i++) {
-      const n = nodes[i];
-      const dim = hi >= 0 && !lit.has(i);
-      ctx.globalAlpha = dim ? 0.4 : 1;
-      if (n.kind === 'centre') {
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, 16);
-        g.addColorStop(0, `rgba(${C.edge},0.55)`); g.addColorStop(1, `rgba(${C.edge},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, 16, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = C.accent;
-      } else if (n.kind === 'hub') {
-        // Chip: an opaque surface first, so the lines that end at the hub
-        // stop at its border, then the tint, rule and name.
-        const hw = labelW[n.label] / 2 + 7, x0 = n.x - hw, y0 = n.y - 9;
-        const chip = () => { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, y0, hw * 2, 18, 9) : ctx.rect(x0, y0, hw * 2, 18); };
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = C.surface; chip(); ctx.fill();
-        ctx.globalAlpha = dim ? 0.4 : 1;
-        ctx.fillStyle = `rgba(${C.edge},${lit.has(i) && hi >= 0 ? 0.2 : 0.09})`; chip(); ctx.fill();
-        ctx.strokeStyle = `rgba(${C.edge},0.75)`; ctx.lineWidth = 1; chip(); ctx.stroke();
-        ctx.globalAlpha = 1;
-        continue;
-      } else ctx.fillStyle = lit.has(i) ? C.hot : C.node;
-      ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (lit.has(i) && n.kind === 'interest' ? 1.4 : 0), 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-
-    // labels last, so no edge crosses over text
+    // Labels last, so no line crosses a word.
     ctx.textBaseline = 'middle';
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
+      const dim = tracing && !lit.has(i);
       if (n.kind === 'hub') {
-        ctx.font = `600 10px ${FONT}`;
-        ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.hub;
+        ctx.font = `600 ${HUB_FONT}px ${FONT}`;
+        ctx.fillStyle = dim ? C.muted : C.ink;
         ctx.textAlign = 'center';
-        ctx.fillText(n.label.toUpperCase(), n.x, n.y + 0.5);
+        ctx.fillText(n.label, n.x, n.y + 0.5);
       } else if (n.kind === 'interest') {
         const left = n.side === 'L';
-        ctx.font = `${lit.has(i) ? 600 : 500} 11.5px ${FONT}`;
-        ctx.fillStyle = hi >= 0 && !lit.has(i) ? C.labelDim : C.label;
+        ctx.font = `${lit.has(i) ? 600 : 400} ${ITEM_FONT}px ${FONT}`;
+        ctx.fillStyle = dim ? C.muted : C.ink;
         ctx.textAlign = left ? 'right' : 'left';
-        ctx.fillText(n.label, n.x + (left ? -8 : 8), n.y + 0.5);
+        ctx.fillText(n.label, n.x + (left ? -10 : 10), n.y + 0.5);
       }
     }
   }
 
-  let visible = true;
-  new IntersectionObserver((es) => { es.forEach(e => { visible = e.isIntersecting; }); }, { rootMargin: '80px' }).observe(wrap);
+  // Drawn on demand: a frame loop runs only while something is moving.
+  let raf = 0;
+  const frame = (t) => {
+    raf = 0;
+    const hi = current();
+    if (hi !== shown) {
+      shown = hi;
+      syncStrip(hi);
+      pulse = hi >= 0 && !reducedMotion ? { path: [centre, nodes[hi].hub, hi], t0: t } : null;
+    }
+    const moving = reducedMotion ? false : step(hi);
+    draw(hi, t);
+    if (moving || pulse) raf = requestAnimationFrame(frame);
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
-  if (reducedMotion) {
-    draw(-1, 0);
-    wrap.addEventListener('pointermove', () => draw(hovered(), 0), { passive: true });
-    wrap.addEventListener('pointerdown', () => draw(hovered(), 0), { passive: true });
-    wrap.addEventListener('pointerleave', () => draw(-1, 0));
-    new ResizeObserver(() => draw(-1, 0)).observe(wrap);
-  } else {
-    const tick = (t) => {
-      requestAnimationFrame(tick);
-      if (!visible) return;
-      t = t || 0;
-      if (t - lastPulse > 650) { spawnPulse(t); lastPulse = t; }
-      const hi = hovered();
-      step(t, hi);
-      draw(hi, t);
-    };
-    requestAnimationFrame(tick);
-  }
+  const setPointer = (e) => {
+    const r = wrap.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
+    kick();
+  };
+  wrap.addEventListener('pointermove', setPointer, { passive: true });
+  wrap.addEventListener('pointerdown', setPointer, { passive: true });
+  const leave = () => { mouse.active = false; kick(); };
+  wrap.addEventListener('pointerleave', leave);
+  wrap.addEventListener('pointercancel', leave);
+  // The other direction: a photo lights its own branch.
+  photos.forEach((li, label) => {
+    li.addEventListener('pointerenter', () => { pinned = byLabel.get(label); kick(); });
+    li.addEventListener('pointerleave', () => { pinned = -1; kick(); });
+  });
 
-  window.updateHobbyGraphTheme = () => { readColors(); if (reducedMotion) draw(-1, 0); };
+  new ResizeObserver(() => { layout(); kick(); }).observe(wrap);
+  layout();
+  kick();
+  window.updateHobbyGraphTheme = () => { readColors(); kick(); };
 }
 
 // ── Slide carousels ────────────────────────────────────
@@ -2173,6 +2221,7 @@ function initInViewVideos() {
 document.addEventListener('DOMContentLoaded', () => {
   buildProjectGrid();
   buildProjectIndex();
+  initJumpMenu();
   buildProjects();
   initCalloutFigures();
   initRevisionSwitch();
