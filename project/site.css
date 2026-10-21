@@ -13,20 +13,20 @@
 }
 
 /* ── Tokens ──────────────────────────────────────────────
-   Bare alclad aluminium and the primer inside every airframe: a white
-   ground, one aluminium step for surfaces, graphite ink, and the primer's
-   yellow-green as the one accent. The accent fills things (the action, the
-   switch, the closing band); where the same hue has to read as a line or a
-   word on the ground it is --accent-deep. */
+   Bare alclad aluminium and the airfield: a white ground, one aluminium
+   step for surfaces, graphite ink, and taxiway yellow as the one accent,
+   black on yellow as an airfield's direction signs are. The accent fills
+   things (the action, the switch, the closing band); where the same hue has
+   to read as a line or a word on the ground it is --accent-deep. */
 :root {
   color-scheme: light;
   --bg: #FFFFFF;
   --surface: #EEF0EE;
   --ink: #1B1E20;
   --muted: #565D60;
-  --accent: #C8D15A;
+  --accent: #F2C230;
   --accent-ink: #1B1E20;
-  --accent-deep: #5F6720;
+  --accent-deep: #7A5C00;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -63,9 +63,9 @@
   --surface: #1B1F21;
   --ink: #E7EAE8;
   --muted: #9EA6A8;
-  --accent: #BCC45C;
+  --accent: #E8B923;
   --accent-ink: #121517;
-  --accent-deep: #D5DC7E;
+  --accent-deep: #F0CF5E;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -229,8 +229,8 @@ nav.bar.is-stuck { background: var(--surface); }
 }
 
 /* ── Buttons ──────────────────────────────────────────────
-   Square corners, decided once. One filled primary (primer on the page, ink
-   on the primer band), one outlined action in the bar, one quiet tone-step
+   Square corners, decided once. One filled primary (yellow on the page, ink
+   on the yellow band), one outlined action in the bar, one quiet tone-step
    button for repositories. Presses scale to 0.97 on the way down. */
 .btn {
   display: inline-flex;
@@ -623,7 +623,7 @@ holo-bay:defined .holo-fallback { display: none; }
 .tool-icon .initials { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: var(--muted); }
 
 /* ── The closing band ─────────────────────────────────────
-   Every page ends on the primer: the one place the accent floods. */
+   Every page ends on the yellow: the one place the accent floods. */
 .band { background: var(--accent); color: var(--accent-ink); padding: clamp(64px, 8vw, 128px) 0; }
 .band-title { font-size: var(--step-head); line-height: 1.04; letter-spacing: -0.025em; max-width: 16ch; }
 .band-text { margin-top: 16px; max-width: 34ch; font-size: var(--step-lead); line-height: 1.35; text-wrap: pretty; }
@@ -640,7 +640,7 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 .band-bases { display: grid; gap: 14px; font-size: var(--step-small); line-height: 1.5; }
 .band-bases span { display: block; }
-/* On the primer the button is the band's own dark ink in both themes. */
+/* On the yellow the button is the band's own dark ink in both themes. */
 .band .btn-ink { background: var(--accent-ink); color: var(--accent); }
 @media (hover: hover) and (pointer: fine) {
   .band .btn-ink:hover { background: color-mix(in srgb, var(--accent-ink) 82%, var(--accent)); }
