@@ -67,6 +67,11 @@
           here. There are ~150 inline styles in this file.
      ───────────────────────────────────────────────────────── -->
 <link rel="stylesheet" href="site-mobile.css" id="mobile-overrides">
+<!-- Hold the first paint until the band after the chapters has been read
+     in. The script just before it builds the chapters (and lands on a
+     #chapter address) as the page loads, so the page appears whole; without
+     this it showed the band in the first screen, then pushed it away. -->
+<link rel="expect" href="#contact" blocking="render">
 <script>(function(){
 // Light is the default for every visit, whatever the OS setting. A dark
 // choice made with the toggle lasts for this tab only (sessionStorage), so a
@@ -135,8 +140,10 @@ setTimeout(function(){
   </div>
 </header>
 
-<!-- The chapters, rendered by buildProjects() -->
+<!-- The chapters, rendered by buildProjects(). The script is here, not at
+     the end of the page, so it builds them while the page is still loading. -->
 <div id="projects-container"></div>
+<script src="site.js"></script>
 
 <!-- The close: every page ends on the yellow, the one place the accent
      floods, with the one action and the ways to reach him. -->
@@ -193,6 +200,5 @@ setTimeout(function(){
   </div>
 </div>
 
-<script src="site.js"></script>
 </body>
 </html>

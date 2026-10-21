@@ -2306,11 +2306,47 @@ function initInViewVideos() {
   vids.forEach(v => { v.preload = 'metadata'; io.observe(v); });
 }
 
+// ── Projects: built before the first paint ─────────────
+// On the projects page this script sits straight after the chapters'
+// container, and the page's head holds its first paint until the band after
+// it has been read in (<link rel="expect" blocking="render">). So the
+// chapters are built here, while the page is still loading, and a #chapter
+// address is landed on before anything is drawn: the page appears whole and
+// already at the chapter. It used to paint the yellow band halfway down the
+// first screen and then push it away when the chapters arrived (a layout
+// shift of 0.55), and a result clicked on Home showed the page's top for a
+// few frames before jumping 2,212px to its chapter.
+const pageYOf = (n) => { let y = 0; for (; n; n = n.offsetParent) y += n.offsetTop; return y; };
+const builtEarly = document.readyState === 'loading' && !!document.getElementById('projects-container');
+if (builtEarly) {
+  buildProjectIndex();
+  buildProjects();
+  const vh = window.innerHeight;
+  const id = decodeURIComponent(location.hash.slice(1));
+  const target = id && document.getElementById(id);
+  let landY = window.scrollY;
+  if (target) {
+    landY = Math.max(0, pageYOf(target) - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0));
+    // Instant, stated: the page's scroll-behavior is smooth, and a bare
+    // scrollTo here would start a glide that the first paint catches at 0.
+    window.scrollTo({ top: landY, behavior: 'instant' });
+    if (window.ensureLeadsBetween) window.ensureLeadsBetween(landY - vh, landY + vh * 1.5);
+  }
+  // Whatever will be on screen is shown at once: its parts would otherwise
+  // sit at opacity 0 until initReveal runs, after the rest of the page is in.
+  document.querySelectorAll('.section-reveal').forEach(s => {
+    const top = pageYOf(s) - landY;
+    if (top < vh && top + s.offsetHeight > 0) s.classList.add('visible', 'reveal-instant');
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    document.querySelectorAll('.reveal-instant').forEach(s => s.classList.remove('reveal-instant'))));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildProjectGrid();
-  buildProjectIndex();
+  if (!builtEarly) buildProjectIndex();
   initJumpMenu();
-  buildProjects();
+  if (!builtEarly) buildProjects();
   initCalloutFigures();
   initRevisionSwitch();
   buildSoftware();
