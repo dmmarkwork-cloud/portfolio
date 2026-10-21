@@ -1371,6 +1371,11 @@ nav.bar { view-transition-name: site-bar; }
 ::view-transition-old(site-bar) { animation: none; opacity: 0; }
 ::view-transition-new(site-bar) { animation: none; }
 ::view-transition-group(nav-mark) { animation-duration: 300ms; animation-timing-function: var(--ease-in-out); }
+/* The nozzle plot carried from the hero into its chapter (initPlotFlight):
+   400ms on the drawer curve, a little longer than the pages' own change, so
+   it lands after they have settled. */
+::view-transition-group(nozzle-plot) { animation-duration: 400ms; animation-timing-function: var(--ease-drawer); }
+::view-transition-old(nozzle-plot), ::view-transition-new(nozzle-plot) { animation-duration: 400ms; }
 /* The theme switch keeps its plain crossfade of the whole page. */
 .theme-swap::view-transition-old(root) { animation: 220ms ease both vt-out; }
 .theme-swap::view-transition-new(root) { animation: 220ms ease both vt-fade-in; }

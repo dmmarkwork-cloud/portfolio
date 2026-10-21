@@ -2904,6 +2904,60 @@ if (builtEarly) {
     document.querySelectorAll('.reveal-instant').forEach(s => s.classList.remove('reveal-instant'))));
 }
 
+// ── The plot carried across ────────────────────────────
+// The home page's nozzle plot links to the nozzle chapter, where the same
+// plot is the chapter's figure. Followed from the plot, the change of page
+// carries it: the plot flies from the hero to its place in the chapter
+// while the pages crossfade around it, so the claim and its evidence join
+// up. Only on that link, once per click; browsers without cross-page view
+// transitions, and reduced motion, get the ordinary change of page.
+// On the home page the plot is named for the transition as it is clicked.
+function initPlotFlight() {
+  const fig = document.querySelector('.rig-fig');
+  const img = fig && fig.querySelector('img');
+  if (!img || reducedMotion) return;
+  fig.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    img.style.viewTransitionName = 'nozzle-plot';
+    try { sessionStorage.setItem('plot-flight', String(Date.now())); } catch (_) {}
+  });
+  // Back on this page (from the cache), the name is dropped again.
+  window.addEventListener('pageshow', () => { img.style.viewTransitionName = ''; });
+}
+// On the projects page, just before the first frame: a copy of the plot is
+// laid exactly over the chapter's figure and given the same name, the
+// figure and its callouts are hidden under it, and all of it is put back
+// once the plot has landed. The copy matters because the figure shows the
+// plot inside a padded frame; the copy is the plot alone, the same shape as
+// the one that left.
+if (builtEarly) {
+  window.addEventListener('pagereveal', (e) => {
+    let t = 0;
+    try { t = +sessionStorage.getItem('plot-flight') || 0; sessionStorage.removeItem('plot-flight'); } catch (_) {}
+    if (!e.viewTransition || reducedMotion || Date.now() - t > 5000 || location.hash !== '#p-nozzle') return;
+    const real = leadMedia(PROJECTS.findIndex(p => p.anchor === 'p-nozzle'));
+    if (!real) return;
+    const view = PROJECTS.find(p => p.anchor === 'p-nozzle').views[0];
+    const r = shownRect(real, view.size);
+    if (!r) return;
+    const copy = document.createElement('img');
+    copy.src = real.getAttribute('src');
+    copy.alt = '';
+    copy.setAttribute('aria-hidden', 'true');
+    copy.style.cssText = `position:fixed;left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;z-index:30;pointer-events:none;view-transition-name:nozzle-plot;`;
+    document.body.appendChild(copy);
+    const layer = real.parentElement.querySelector('.callouts');
+    real.style.visibility = 'hidden';
+    if (layer) layer.style.visibility = 'hidden';
+    const land = () => {
+      copy.remove();
+      real.style.visibility = '';
+      if (layer) { layer.style.visibility = ''; layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease' }); }
+    };
+    e.viewTransition.finished.then(land, land);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildProjectGrid();
   if (!builtEarly) buildProjectIndex();
@@ -2911,6 +2965,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!builtEarly) buildProjects();
   initCalloutFigures();
   initRevisionSwitch();
+  initPlotFlight();
   buildSoftware();
   initNav();
   initReveal();
