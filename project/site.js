@@ -280,7 +280,7 @@ function mediaTag(view, styleStr, opts) {
 // the extra decode cost is small.
 function leadMediaMarkup(view) {
   const pad = 'clamp(14px,2.4vw,30px)';
-  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`;
+  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`; // taste-skill-ignore: lifts the figure off its blurred backdrop inside the viewer (data-ui)
   // Blur radius has to be strong enough to erase recognisable shape, not
   // just soften it — a source whose subject already fills most of its own
   // frame (a CFD mesh, a CAD render) will otherwise show a legible cropped
@@ -397,7 +397,6 @@ function renderGallery(pi) {
   }
 }
 
-// Crossfade lead image: ease-in on exit, ease-out on entry
 // ── Settle ─────────────────────────────────────────────
 // Content swapped in place (a figure, its caption, a release's numbers)
 // arrives at once and settles from 0.6 opacity over 150ms on the page's
@@ -457,6 +456,12 @@ function lbStep(d) {
   viewIndex[lbProject] = (viewIndex[lbProject] + d + p.views.length) % p.views.length;
   lbRender();
   renderGallery(lbProject);
+  // The page's figure under the viewer is now the new one; it stays hidden
+  // like the one opened, ready for the viewer to close into.
+  if (lbHidden) {
+    const s = leadMedia(lbProject);
+    if (s) { s.style.visibility = 'hidden'; lbHidden = s; }
+  }
 }
 
 // Only the backdrop closes. The frame itself used to close on any click, which
@@ -466,9 +471,56 @@ function lbBackdrop(e) {
   if (e.target === document.getElementById('lightbox')) closeLightbox();
 }
 
+// ── The viewer opens out of its figure ─────────────────
+// "Enlarge" used to fade the viewer in from the middle of the screen,
+// unconnected to the figure pressed. Now the figure itself grows from its
+// place on the page into the viewer while the backdrop darkens around it,
+// and shrinks back into its place on closing, so the reader keeps track of
+// which piece of evidence they opened. The viewer is laid out first, drawn
+// back over the figure, then let go (FLIP). Steps between figures stay
+// instant. Reduced motion keeps the plain fade.
+const LB_BG = 'rgba(14, 16, 17, 0.9)';
+let lbFlight = null;
+const lbChrome = () => ['lb-close', 'lb-prev', 'lb-next'].map(id => document.getElementById(id))
+  .concat([document.querySelector('.lb-caption-row')]).filter(Boolean);
+const leadMedia = (pi) => {
+  const area = document.getElementById(`lead-img-${pi}`);
+  return area && area.querySelector(':scope > img, :scope > video');
+};
+// The rectangle a picture covers inside an element that shows it whole
+// (object-fit: contain) within its padding, in viewport pixels.
+function shownRect(el, nat) {
+  const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+  const pl = parseFloat(cs.paddingLeft), pt = parseFloat(cs.paddingTop);
+  const bw = r.width - pl - parseFloat(cs.paddingRight), bh = r.height - pt - parseFloat(cs.paddingBottom);
+  const [nw, nh] = nat;
+  if (!nw || !nh || bw <= 0 || bh <= 0) return null;
+  const s = Math.min(bw / nw, bh / nh), w = nw * s, h = nh * s;
+  return { x: r.left + pl + (bw - w) / 2, y: r.top + pt + (bh - h) / 2, w, h, top: r.top, bottom: r.bottom };
+}
+// The transform (origin at the element's top-left) that lays the picture
+// shown in `el` over the rectangle `to`.
+function flipOnto(el, nat, to) {
+  const box = el.getBoundingClientRect();
+  const from = shownRect(el, nat);
+  if (!from || !to) return null;
+  const k = to.w / from.w;
+  return `translate(${to.x - box.left - k * (from.x - box.left)}px, ${to.y - box.top - k * (from.y - box.top)}px) scale(${k})`;
+}
+const onScreen = (r) => r && r.bottom > 0 && r.top < window.innerHeight;
+function lbLand() {
+  if (!lbFlight) return;
+  const f = lbFlight;
+  lbFlight = null;
+  f.anims.forEach(a => a.cancel());
+  if (f.src) f.src.style.visibility = '';
+  document.getElementById('lightbox').classList.remove('lb-flip');
+}
+
 function openLightbox(pi) {
+  lbLand();
+  if (lbHidden) { lbHidden.style.visibility = ''; lbHidden = null; }
   lbProject = pi;
-  const stage = document.getElementById('lightbox-media');
   // Sizing moved to .lb-media-el so the mobile stage can take a definite
   // height (panning needs somewhere to pan to) without touching the desktop
   // layout, where the container still hugs the image. eager, because this
@@ -477,23 +529,95 @@ function openLightbox(pi) {
   const lb = document.getElementById('lightbox');
   lbReturnFocus = document.activeElement;
   lb.inert = false;
-  lb.classList.add('open');
+  const src = leadMedia(pi);
+  const el = lbEl();
+  const nat = src ? [src.naturalWidth || src.videoWidth, src.naturalHeight || src.videoHeight] : [0, 0];
+  const start = src && !reducedMotion && el && el.animate ? shownRect(src, nat) : null;
+  if (onScreen(start)) {
+    lb.classList.add('lb-flip', 'open');
+    const from = flipOnto(el, nat, start);
+    if (from) {
+      src.style.visibility = 'hidden';
+      const anims = [
+        el.animate([{ transform: from }, { transform: 'none' }], { duration: 320, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' }),
+        lb.animate([{ backgroundColor: 'rgba(14, 16, 17, 0)' }, { backgroundColor: LB_BG }], { duration: 260, easing: 'ease' }),
+        ...lbChrome().map(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 160, easing: 'ease', fill: 'backwards' }))
+      ];
+      lbFlight = { anims, src: null };
+      anims[0].onfinish = () => { if (lbFlight && lbFlight.anims === anims) lbFlight = null; lb.classList.remove('lb-flip'); };
+    } else {
+      lb.classList.remove('lb-flip');
+    }
+  } else {
+    lb.classList.add('open');
+  }
+  // The figure on the page stays hidden while the viewer shows it, the way
+  // a photo leaves its place in a phone's library while it is open.
+  if (src && lb.classList.contains('lb-flip')) lbHidden = src;
   document.documentElement.classList.add('lb-open');
   lb.focus({ preventScroll: true });
   document.addEventListener('keydown', onLbKey);
 }
+let lbHidden = null;
 
 function closeLightbox() {
   const lb = document.getElementById('lightbox');
-  lb.classList.remove('open');
-  lb.classList.remove('is-zoomed');
-  lb.inert = true;
-  document.documentElement.classList.remove('lb-open');
-  lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
+  const pi = lbProject;
+  const el = lbEl();
+  const finish = () => {
+    lb.classList.remove('open');
+    lb.classList.remove('is-zoomed');
+    lb.inert = true;
+    document.documentElement.classList.remove('lb-open');
+    lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
+    lbDrag.x = 0; lbDrag.y = 0; lbDrag.axis = null;
+    lb.style.backgroundColor = '';
+    lbChrome().forEach(c => { c.style.opacity = ''; });
+    if (lbHidden) { lbHidden.style.visibility = ''; lbHidden = null; }
+  };
   document.removeEventListener('keydown', onLbKey);
   lbProject = null;
   if (lbReturnFocus && lbReturnFocus.focus) lbReturnFocus.focus({ preventScroll: true });
   lbReturnFocus = null;
+  // Back into its place on the page, from wherever it is now: mid-opening,
+  // or dragged down by a finger. Zoomed in, it simply fades.
+  const src = pi !== null ? leadMedia(pi) : null;
+  if (!reducedMotion && src && el && el.animate && lbZoom.scale <= 1.01) {
+    const nat = [src.naturalWidth || src.videoWidth, src.naturalHeight || src.videoHeight];
+    const now = getComputedStyle(el).transform;
+    const bg = getComputedStyle(lb).backgroundColor;
+    lbLand();
+    el.style.transform = 'none';
+    const home = shownRect(src, nat);
+    const to = onScreen(home) ? flipOnto(el, nat, home) : null;
+    if (to) {
+      lb.inert = true;
+      lb.classList.add('lb-flip');
+      if (lbHidden && lbHidden !== src) lbHidden.style.visibility = '';
+      lbHidden = src;
+      src.style.visibility = 'hidden';
+      const anims = [
+        el.animate([{ transform: now === 'none' ? 'none' : now }, { transform: to }], { duration: 260, easing: EASE_OUT, fill: 'forwards' }),
+        lb.animate([{ backgroundColor: bg }, { backgroundColor: 'rgba(14, 16, 17, 0)' }], { duration: 220, easing: 'ease', fill: 'forwards' }),
+        ...lbChrome().map(c => c.animate([{ opacity: getComputedStyle(c).opacity }, { opacity: 0 }], { duration: 120, fill: 'forwards' }))
+      ];
+      lbFlight = { anims, src: null };
+      anims[0].onfinish = () => {
+        if (!lbFlight || lbFlight.anims !== anims) return;
+        finish();
+        // Read the closed style while lb-flip still holds the transitions
+        // off; lifted in the same pass, the viewer would fade out for 150ms
+        // with the figure back at full size.
+        void getComputedStyle(lb).opacity;
+        lbLand();
+        el.style.transform = '';
+      };
+      return;
+    }
+    el.style.transform = '';
+  }
+  lbLand();
+  finish();
 }
 
 function onLbKey(e) {
@@ -1392,7 +1516,8 @@ function buildProjects() {
     const btn = area && area.closest('.lead-btn');
     if (!btn) return;
     const step = (d) => selectView(pi, (viewIndex[pi] + d + p.views.length) % p.views.length);
-    attachSwipe(btn, () => step(-1), () => step(1));
+    attachSwipe(btn, () => step(-1), () => step(1),
+      () => [...area.querySelectorAll(':scope > img, :scope > video, :scope > .callouts')]);
   });
 }
 
@@ -1622,15 +1747,30 @@ function initNav() {
 // try. Distance OR velocity decides, so a quick flick does not have to cross
 // half the element. The axis is locked on the first 10px of travel and pan-y
 // leaves vertical scrolling to the browser, so the page never feels sticky.
-function attachSwipe(el, onPrev, onNext) {
+// The picture follows the finger the whole way (it used to change only on
+// release, with nothing moving underneath), then carries on out or springs
+// back.
+function attachSwipe(el, onPrev, onNext, follow) {
   if (!el) return;
   el.classList.add('swipe-x');
   let id = null, x0 = 0, y0 = 0, t0 = 0, axis = null, swiped = false;
+  // What follows the finger (from `follow`), how far it has been moved, and
+  // the spring taking it back, if one is running: a new touch stops it
+  // where it is and the drag carries on from there.
+  let moving = null, off = 0, from = 0, back = null, hist = [];
+  const put = (x) => { off = x; if (moving) moving.forEach(m => { m.style.transform = x ? `translateX(${x}px)` : ''; }); };
 
   el.addEventListener('pointerdown', (e) => {
     if (id !== null) return;                // a second finger mid-swipe would jump
     if (e.pointerType === 'mouse') return;  // a mouse has the arrows
     id = e.pointerId; x0 = e.clientX; y0 = e.clientY; t0 = e.timeStamp; axis = null;
+    // A touch swipe usually ends with no click at all, and the flag below
+    // then ate the next real tap (it took two to open the viewer after a
+    // swipe). A new touch means the swipe's click is not coming.
+    swiped = false;
+    if (back) { back.stop(); back = null; }
+    from = off;
+    hist = [{ t: e.timeStamp, x: e.clientX, y: 0 }];
   }, { passive: true });
 
   el.addEventListener('pointermove', (e) => {
@@ -1638,22 +1778,64 @@ function attachSwipe(el, onPrev, onNext) {
     const dx = e.clientX - x0, dy = e.clientY - y0;
     if (axis === null && Math.abs(dx) + Math.abs(dy) > 10) {
       axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-      if (axis === 'x') { try { el.setPointerCapture(id); } catch (_) {} }
+      if (axis === 'x') {
+        try { el.setPointerCapture(id); } catch (_) {}
+        if (follow && !reducedMotion && !moving) moving = follow();
+      }
     }
+    if (axis !== 'x') return;
+    hist.push({ t: e.timeStamp, x: e.clientX, y: 0 });
+    if (hist.length > 8) hist.shift();
+    put(from + dx);
   }, { passive: true });
 
   const end = (e) => {
     if (e.pointerId !== id) return;
     const dx = e.clientX - x0;
     const v = Math.abs(dx) / Math.max(1, e.timeStamp - t0);
+    const fling = recentVelocity(hist).x;
     if (axis === 'x' && (Math.abs(dx) > 45 || v > 0.11)) {
       swiped = true;
-      (dx < 0 ? onNext : onPrev)();
+      const go = dx < 0 ? onNext : onPrev;
+      if (moving) {
+        // On out at the finger's speed, then the next comes in from the
+        // other side: the one that leaves and the one that arrives move the
+        // same way.
+        const dir = dx < 0 ? 1 : -1;
+        const w = el.getBoundingClientRect().width;
+        const gone = moving;
+        const dur = Math.max(90, Math.min(170, (w * 0.5 - Math.abs(off)) / Math.max(Math.abs(fling), 1.2)));
+        let left = gone.length;
+        gone.forEach(m => {
+          const a = m.animate([{ transform: `translateX(${off}px)`, opacity: 1 }, { transform: `translateX(${-dir * w * 0.5}px)`, opacity: 0 }],
+            { duration: dur, easing: 'linear', fill: 'forwards' });
+          a.onfinish = () => {
+            if (--left) return;
+            go();
+            const next = follow();
+            next.forEach(n => n.animate([{ transform: `translateX(${dir * Math.min(80, w * 0.2)}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+              { duration: 240, easing: EASE_OUT }));
+            // Whatever stays in the page (a carousel's slide) drops its
+            // held pose once its own fade has hidden it.
+            setTimeout(() => gone.forEach(g => { g.style.transform = ''; g.getAnimations().forEach(x => x.cancel()); }), 340);
+          };
+        });
+        moving = null; off = 0;
+      } else {
+        go();
+      }
+    } else if (axis === 'x' && moving) {
+      const held = moving;
+      back = spring2({ x: off, y: 0 }, { x: 0, y: 0 }, { x: fling * 1000, y: 0 },
+        (p) => put(p.x), () => { back = null; put(0); if (moving === held) moving = null; });
     }
     id = null; axis = null;
   };
   el.addEventListener('pointerup', end);
-  el.addEventListener('pointercancel', () => { id = null; axis = null; });
+  el.addEventListener('pointercancel', () => {
+    id = null; axis = null;
+    if (moving && off) { const held = moving; back = spring2({ x: off, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, (p) => put(p.x), () => { back = null; put(0); if (moving === held) moving = null; }); }
+  });
 
   // A swipe that started on a button (the gallery lead opens the lightbox)
   // still ends in a click. Swallow exactly that one.
@@ -1715,8 +1897,53 @@ function lbResetZoom(settle) {
   lbApply(settle);
 }
 
+// ── Springs ────────────────────────────────────────────
+// A critically damped spring (no overshoot), for whatever a finger lets
+// go of: it starts at the finger's own speed, so there is no seam between
+// the drag and the motion, and settles on its target in about `response`
+// seconds. X and Y are two springs, since each axis has its own speed.
+// Grabbing again stops it where it is and the drag carries on from there.
+function spring2(from, to, v, onFrame, done, response = 0.36) {
+  const w = 2 * Math.PI / response;
+  const axis = (x0, v0) => ({ x0, v0, c: v0 + w * x0 });
+  const ax = axis(from.x - to.x, v.x), ay = axis(from.y - to.y, v.y);
+  const pos = (a, t) => (a.x0 + a.c * t) * Math.exp(-w * t);
+  const vel = (a, t) => (a.v0 - w * a.c * t) * Math.exp(-w * t);
+  let raf = 0, t0 = 0, stopped = false;
+  const frame = (now) => {
+    if (stopped) return;
+    if (!t0) t0 = now;
+    const t = (now - t0) / 1000;
+    const x = pos(ax, t), y = pos(ay, t);
+    const still = Math.abs(x) < 0.4 && Math.abs(y) < 0.4 && Math.abs(vel(ax, t)) < 20 && Math.abs(vel(ay, t)) < 20;
+    if (still || t > 1.5) { stopped = true; onFrame({ x: to.x, y: to.y }); if (done) done(); return; }
+    onFrame({ x: to.x + x, y: to.y + y });
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+  return { stop() { stopped = true; cancelAnimationFrame(raf); } };
+}
+// Resistance past an edge: the further past, the less it follows (Apple's
+// rubber band, c = 0.55).
+const rubber = (over, dim) => (over * dim * 0.55) / (dim + 0.55 * over);
+// Velocity from the last ~90ms of a pointer's samples, in px/ms.
+function recentVelocity(hist) {
+  const last = hist[hist.length - 1];
+  if (!last) return { x: 0, y: 0 };
+  let i = hist.length - 1;
+  while (i > 0 && last.t - hist[i - 1].t <= 90) i--;
+  const first = hist[i === hist.length - 1 ? Math.max(0, i - 1) : i];
+  const dt = Math.max(1, last.t - first.t);
+  return { x: (last.x - first.x) / dt, y: (last.y - first.y) / dt };
+}
+
+// The unzoomed figure under a finger in the viewer: across steps to the
+// next figure, down closes the viewer.
+const lbDrag = { x: 0, y: 0, axis: null };
+
 function initLightboxZoom() {
   const stage = document.getElementById('lightbox-media');
+  const lb = document.getElementById('lightbox');
   const closeBtn = document.getElementById('lb-close');
   if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
   [['lb-prev', -1], ['lb-next', 1]].forEach(([id, d]) => {
@@ -1727,7 +1954,8 @@ function initLightboxZoom() {
 
   const coarse = window.matchMedia('(pointer: coarse)');
   const pts = new Map();
-  let base = null, lastTap = 0, dragged = false;
+  let base = null, lastTap = 0, dragged = false, hist = [], moving = null;
+  const stop = () => { if (moving) { moving.stop(); moving = null; } };
 
   const local = (e) => {
     const r = stage.getBoundingClientRect();
@@ -1744,41 +1972,136 @@ function initLightboxZoom() {
     const a = Array.from(pts.values());
     return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
   };
+  const many = () => lbProject !== null && PROJECTS[lbProject].views.length > 1;
+
+  // Draws the unzoomed drag. Across: the figure follows the finger (with
+  // resistance when there is no other figure to step to). Down: it follows
+  // freely and shrinks a little, the backdrop and the controls fading with
+  // the distance; up resists.
+  const showDrag = () => {
+    const m = lbEl();
+    if (!m) return;
+    m.classList.remove('settling');
+    if (lbDrag.axis === 'y') {
+      const down = Math.max(0, lbDrag.y);
+      const y = lbDrag.y >= 0 ? lbDrag.y : -rubber(-lbDrag.y, m.offsetHeight);
+      const s = 1 - Math.min(0.25, down / (window.innerHeight * 1.2));
+      m.style.transform = `translate(${lbDrag.x + (1 - s) * m.offsetWidth / 2}px, ${y + (1 - s) * m.offsetHeight / 2}px) scale(${s})`;
+      const k = Math.min(1, down / (window.innerHeight * 0.45));
+      lb.style.backgroundColor = `rgba(14, 16, 17, ${(0.9 * (1 - k)).toFixed(3)})`;
+      lbChrome().forEach(c => { c.style.opacity = String(1 - Math.min(1, down / 120)); });
+    } else {
+      const x = many() ? lbDrag.x : Math.sign(lbDrag.x) * rubber(Math.abs(lbDrag.x), m.offsetWidth);
+      m.style.transform = x ? `translateX(${x}px)` : '';
+    }
+  };
+  const clearDrag = () => {
+    const m = lbEl();
+    if (m) m.style.transform = '';
+    lb.style.backgroundColor = '';
+    lbChrome().forEach(c => { c.style.opacity = ''; });
+    lbDrag.x = 0; lbDrag.y = 0; lbDrag.axis = null;
+  };
+  // Zoomed in: the pan resists past the picture's edges instead of
+  // stopping dead, and on release coasts with the finger's speed to where
+  // that speed would carry it (Apple's projection, deceleration 0.996/ms),
+  // springing back inside the edges if it would have gone past them.
+  const bounds = () => {
+    const m = lbEl();
+    return m ? { x: m.offsetWidth * (1 - lbZoom.scale), y: m.offsetHeight * (1 - lbZoom.scale), w: m.offsetWidth, h: m.offsetHeight } : null;
+  };
+  const band = (v, lo, dim) => v > 0 ? rubber(v, dim) : v < lo ? lo - rubber(lo - v, dim) : v;
+  const panTo = (x, y) => {
+    const b = bounds();
+    if (!b) return;
+    lbZoom.tx = band(x, b.x, b.w);
+    lbZoom.ty = band(y, b.y, b.h);
+    lbApply(false);
+  };
+  const coast = (v) => {
+    const b = bounds();
+    if (!b) return;
+    const reach = 0.996 / (1 - 0.996);
+    const clamp = (p, lo) => Math.min(0, Math.max(lo, p));
+    const to = { x: clamp(lbZoom.tx + v.x * reach, b.x), y: clamp(lbZoom.ty + v.y * reach, b.y) };
+    moving = spring2({ x: lbZoom.tx, y: lbZoom.ty }, to, { x: v.x * 1000, y: v.y * 1000 },
+      (p) => { lbZoom.tx = p.x; lbZoom.ty = p.y; lbApply(false); }, () => { moving = null; }, 0.5);
+  };
+  // Released across: past 45px or flicked (the page's thresholds), the
+  // figure carries on out at the finger's speed and the next comes in from
+  // the other side; otherwise it springs back.
+  const releaseAcross = (avg, v) => {
+    const m = lbEl();
+    if (!m) return;
+    if (many() && (Math.abs(lbDrag.x) > 45 || avg > 0.11)) {
+      const dir = lbDrag.x < 0 ? 1 : -1;
+      const w = m.offsetWidth + 40;
+      const dur = Math.max(90, Math.min(180, (w - Math.abs(lbDrag.x)) / Math.max(Math.abs(v.x), 1.2)));
+      const out = m.animate([{ transform: `translateX(${lbDrag.x}px)` }, { transform: `translateX(${-dir * w}px)` }],
+        { duration: dur, easing: 'linear', fill: 'forwards' });
+      out.onfinish = () => {
+        clearDrag();
+        lbStep(dir);
+        const n = lbEl();
+        if (n) n.animate([{ transform: `translateX(${dir * Math.min(120, w * 0.25)}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+          { duration: 240, easing: EASE_OUT });
+      };
+      return;
+    }
+    moving = spring2({ x: lbDrag.x, y: 0 }, { x: 0, y: 0 }, { x: v.x * 1000, y: 0 },
+      (p) => { lbDrag.x = p.x; showDrag(); }, () => { moving = null; clearDrag(); });
+  };
+  // Released after a drag down: far enough, or flicked down, closes the
+  // viewer into the figure's place on the page; otherwise everything
+  // springs back.
+  const releaseDown = (v) => {
+    if (lbDrag.y > 110 || (v.y > 0.5 && lbDrag.y > 30)) { closeLightbox(); return; }
+    moving = spring2({ x: lbDrag.x, y: lbDrag.y }, { x: 0, y: 0 }, { x: v.x * 1000, y: v.y * 1000 },
+      (p) => { lbDrag.x = p.x; lbDrag.y = p.y; showDrag(); }, () => { moving = null; clearDrag(); });
+  };
 
   stage.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse') return;
+    stop();
     pts.set(e.pointerId, local(e));
     dragged = false;
+    hist = [{ t: e.timeStamp, ...local(e) }];
     try { stage.setPointerCapture(e.pointerId); } catch (_) {}
     base = (pts.size === 2)
       ? { d: spread(), s: lbZoom.scale, pinch: true }
-      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e), t: e.timeStamp };
+      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e), t: e.timeStamp, ox: lbDrag.x, oy: lbDrag.y };
   });
 
   stage.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !base) return;
-    pts.set(e.pointerId, local(e));
+    const q = local(e);
+    pts.set(e.pointerId, q);
+    hist.push({ t: e.timeStamp, ...q });
+    if (hist.length > 8) hist.shift();
     if (pts.size >= 2 && base.pinch) {
       const c = centroid();
       lbSetScale(base.s * (spread() / base.d), c.x, c.y);
       dragged = true;
-    } else if (pts.size === 1 && lbZoom.scale > 1.01) {
-      const q = local(e);
-      lbZoom.tx = base.tx + (q.x - base.p.x);
-      lbZoom.ty = base.ty + (q.y - base.p.y);
-      lbClamp();
-      if (Math.abs(q.x - base.p.x) + Math.abs(q.y - base.p.y) > 6) dragged = true;
-    } else if (pts.size === 1) {
-      // Not zoomed: the same drag means "next figure" rather than "pan".
-      // Tracked here only so the release knows it was a drag and not a tap;
-      // nothing moves under the finger, because the step itself is instant.
-      const q = local(e);
-      if (Math.abs(q.x - base.p.x) > 10) dragged = true;
-      return;
-    } else {
+      lbApply(false);
       return;
     }
-    lbApply(false);
+    if (pts.size !== 1 || base.pinch) return;
+    const dx = q.x - base.p.x, dy = q.y - base.p.y;
+    if (base.s > 1.01) {
+      if (Math.abs(dx) + Math.abs(dy) > 6) dragged = true;
+      panTo(base.tx + dx, base.ty + dy);
+      return;
+    }
+    // Unzoomed. The direction is settled on the first 10px of travel.
+    if (!lbDrag.axis) {
+      if (Math.abs(dx) + Math.abs(dy) < 10) return;
+      lbDrag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    dragged = true;
+    if (reducedMotion) return;
+    lbDrag.x = base.ox + dx;
+    lbDrag.y = lbDrag.axis === 'y' ? base.oy + dy : 0;
+    showDrag();
   });
 
   const lift = (e) => {
@@ -1786,21 +2109,32 @@ function initLightboxZoom() {
     pts.delete(e.pointerId);
     if (pts.size === 1) {
       // Second finger lifted mid-pinch — re-anchor rather than let it jump.
-      const only = Array.from(pts.keys())[0];
-      base = { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: pts.get(only) };
+      const only = Array.from(pts.values())[0];
+      base = { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: only, t: e.timeStamp, ox: lbDrag.x, oy: lbDrag.y };
+      hist = [{ t: e.timeStamp, ...only }];
       return;
     }
     if (pts.size) return;
     const start = base;
     base = null;
-    if (lbZoom.scale < 1.02) lbResetZoom(true);
+    const v = recentVelocity(hist);
+    if (start && !start.pinch && start.s > 1.01 && dragged) { coast(v); return; }
+    // A pinch let go just above 1x snaps back to it.
+    if (lbZoom.scale !== 1 && lbZoom.scale < 1.02) lbResetZoom(true);
 
-    // Same thresholds as attachSwipe elsewhere on the page: distance OR
-    // velocity, so a flick does not have to cross the whole figure.
-    if (dragged && start && start.p && lbZoom.scale < 1.02) {
-      const dx = local(e).x - start.p.x;
-      const v = Math.abs(dx) / Math.max(1, e.timeStamp - (start.t || e.timeStamp));
-      if (Math.abs(dx) > 45 || v > 0.11) { lbStep(dx < 0 ? 1 : -1); return; }
+    if (dragged && start && !start.pinch && lbDrag.axis) {
+      if (reducedMotion) {
+        // No travel: a swipe across steps, a swipe down closes.
+        const dx = local(e).x - start.p.x, dy = local(e).y - start.p.y;
+        const axis = lbDrag.axis;
+        clearDrag();
+        if (axis === 'x' && Math.abs(dx) > 45) lbStep(dx < 0 ? 1 : -1);
+        else if (axis === 'y' && dy > 110) closeLightbox();
+        return;
+      }
+      const avg = Math.abs(lbDrag.x - start.ox) / Math.max(1, e.timeStamp - start.t);
+      if (lbDrag.axis === 'x') releaseAcross(avg, v); else releaseDown(v);
+      return;
     }
 
     if (!dragged) {
@@ -2398,7 +2732,9 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   const nextBtn = document.getElementById(`${prefix}-next`);
   if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
   if (nextBtn) nextBtn.addEventListener('click', () => step(1));
-  attachSwipe(carousel, () => step(-1), () => step(1));
+  attachSwipe(carousel, () => step(-1), () => step(1), () => [...slides[current].children]);
+  carousel.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') clearTimeout(timer); });
+  carousel.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') scheduleNext(); });
 
   const playPauseBtn = document.getElementById(`${prefix}-playpause`);
   if (playPauseBtn) {

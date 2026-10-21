@@ -1263,6 +1263,10 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   opacity: 1;
   transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
 }
+/* While the figure flies between the page and the viewer (openLightbox,
+   closeLightbox), the viewer's own fades are held off: the figure has to
+   stay opaque the whole way, and the backdrop is faded on its own. */
+#lightbox.lb-flip, #lightbox.lb-flip #lightbox-inner { transition: none; }
 .lb-caption-row {
   display: flex;
   justify-content: space-between;
