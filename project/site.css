@@ -87,6 +87,12 @@ a { color: inherit; }
 button { font-family: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 :focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
+/* On a yellow field the ring takes the field's own dark ink: the deep gold
+   is a pale yellow in the dark theme, 1.2:1 against the band. Over the
+   viewer's near-black backdrop it is the yellow itself. */
+.band :focus-visible,
+.jump-list a.is-here:focus-visible { outline-color: var(--accent-ink); }
+#lightbox :focus-visible { outline-color: var(--accent); }
 [data-section] { scroll-margin-top: calc(var(--bar-h) + 16px); }
 
 /* A number and its unit, kept on one line, in the text face's tabular
@@ -442,6 +448,27 @@ nav.bar.is-stuck { background: var(--surface); }
 .rig-switch button:active { transform: scale(0.97); }
 .rig-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .rig-switch .callout-balloon { position: static; margin: 0; width: 24px; height: 24px; }
+
+/* ── Segmented switches: one block that travels ───────────
+   The yellow block behind the hero switch and the revision toggles slides
+   to the button pressed, at the page's ease-in-out for things moving on
+   screen. Until the script has placed it (has-thumb), the pressed button
+   keeps its own fill, so the first paint already shows the state. */
+.rig-switch, .rev-toggle { position: relative; }
+.rig-switch button, .rev-toggle button { position: relative; z-index: 1; }
+.seg-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  background: var(--accent);
+  pointer-events: none;
+  transition: transform 240ms var(--ease-in-out), width 240ms var(--ease-in-out);
+}
+.rig-switch.has-thumb button[aria-pressed="true"],
+.rev-toggle.has-thumb button[aria-pressed="true"] { background: transparent; }
+
 .rig-read { display: grid; gap: 8px; }
 .rig-readout {
   display: flex;
@@ -450,19 +477,62 @@ nav.bar.is-stuck { background: var(--surface); }
   gap: 4px 14px;
 }
 .rig-num {
+  position: relative;
   font-size: var(--step-head);
   font-weight: 580;
   letter-spacing: -0.02em;
   line-height: 1;
   font-variant-numeric: tabular-nums lining-nums;
+  transition: color 200ms ease;
 }
-.rig-num.is-withdrawn {
-  color: var(--muted);
-  text-decoration: line-through;
-  text-decoration-thickness: 0.06em;
+.rig-num.is-withdrawn { color: var(--muted); }
+/* The rolling figures (odometer() in site.js): each column one figure wide
+   and one tall, its strip of digits moved under the opening. clip-path,
+   not overflow, so the column keeps its digits' baseline. */
+.odo { position: relative; display: inline-flex; align-items: baseline; }
+.odo-col {
+  display: inline-flex;
+  flex-direction: column;
+  width: var(--dw, 0.6em);
+  height: 1em;
+  clip-path: inset(0);
+  transition: width 560ms var(--ease-out), opacity 300ms ease;
 }
+.odo-col.is-blank { width: 0; opacity: 0; }
+.odo-strip { display: flex; flex-direction: column; }
+.odo-strip > span { display: block; height: 1em; text-align: center; }
+.odo-strip > span::before { content: attr(data-d); }
+/* Withdrawn, the struck line draws across the number once its figures have
+   landed, and goes back the way it came at once when the number changes
+   again. */
+.rig-strike {
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  top: 0.45em;
+  height: 0.06em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 140ms var(--ease-out);
+}
+.rig-num.is-withdrawn .rig-strike { transform: scaleX(1); transition: transform 220ms var(--ease-out) 440ms; }
 .rig-unit { color: var(--muted); font-size: var(--step-small); }
 .rig-note { max-width: 52ch; color: var(--muted); font-size: var(--step-small); line-height: 1.5; }
+/* Both releases' label and note share one cell; the one shown fades in
+   after the other has started out. */
+.rig-unit:has(> span), .rig-note:has(> span) { display: grid; }
+.rig-unit > span, .rig-note > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 140ms ease, visibility 0s linear 140ms;
+}
+.rig-unit > span.is-on, .rig-note > span.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease 100ms, visibility 0s;
+}
 .rig-cap { max-width: 46ch; font-size: var(--step-body); line-height: 1.5; text-wrap: pretty; }
 /* With no script the switch would do nothing, so it is only shown once the
    script has taken the figure over. Both callouts stay drawn either way. */
@@ -687,6 +757,36 @@ holo-bay:defined .holo-fallback { display: none; }
   text-underline-offset: 0.2em;
   overflow-wrap: anywhere;
 }
+/* Copy, beside the address: a quiet tone step on the yellow whose label
+   turns into "Copied" for a moment, the two labels crossfading through a
+   2px blur so they read as one label changing. Both share one cell, so the
+   button keeps its width. Shown only once the script can copy. */
+.band-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.copy-btn {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  background: rgb(0 0 0 / 0.1);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--step-small);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 120ms var(--ease-out);
+}
+.copy-btn[hidden] { display: none; }
+.copy-btn::after { content: ''; position: absolute; inset: -7px -4px; }
+.copy-btn:active { transform: scale(0.97); }
+.copy-btn > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 6px; transition: opacity 200ms ease, filter 200ms ease; }
+.copy-btn svg { width: 14px; height: 14px; flex: none; }
+.copy-btn .copy-done, .copy-btn.is-done .copy-idle { opacity: 0; filter: blur(2px); }
+.copy-btn.is-done .copy-done { opacity: 1; filter: blur(0); }
+@media (hover: hover) and (pointer: fine) {
+  .copy-btn:hover { background: rgb(0 0 0 / 0.16); }
+}
 .band-bases { display: grid; gap: 14px; font-size: var(--step-small); line-height: 1.5; }
 .band-bases span { display: block; }
 /* On the yellow the button is the band's own dark ink in both themes. */
@@ -729,6 +829,26 @@ holo-bay:defined .holo-fallback { display: none; }
 .page-lede { margin-top: clamp(16px, 1.8vw, 24px); max-width: 38ch; font-size: var(--step-lead); line-height: 1.35; text-wrap: pretty; }
 .proj-index.page-index { margin-top: clamp(32px, 4vw, 56px); max-width: 36rem; }
 .page-statement { margin-top: clamp(16px, 1.8vw, 24px); max-width: 30ch; font-size: var(--step-lead); line-height: 1.35; color: var(--muted); }
+.nf-action { margin-top: clamp(24px, 2.8vw, 36px); }
+/* The 404 page: the seven projects as pictures, two to a row, each with its
+   number, so a wrong address still lands among the work. */
+.nf-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px var(--gutter); }
+.nf-grid a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--step-small);
+  transition: transform 120ms var(--ease-out);
+}
+.nf-grid a:active { transform: scale(0.98); }
+.nf-grid img { grid-column: 1 / -1; display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface); }
+.nf-grid img.is-contain { object-fit: contain; padding: 10px; }
+.nf-grid .k { color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) {
+  .nf-grid a:hover .nf-name { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.2em; }
+}
 
 /* ── Projects: the index ──────────────────────────────── */
 .proj-index { list-style: none; margin: 0; padding: 0; display: grid; }
@@ -1193,6 +1313,10 @@ html.lb-open { overflow: hidden; scrollbar-gutter: stable; }
   opacity: 1;
   transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out);
 }
+/* While the figure flies between the page and the viewer (openLightbox,
+   closeLightbox), the viewer's own fades are held off: the figure has to
+   stay opaque the whole way, and the backdrop is faded on its own. */
+#lightbox.lb-flip, #lightbox.lb-flip #lightbox-inner { transition: none; }
 .lb-caption-row {
   display: flex;
   justify-content: space-between;
@@ -1227,6 +1351,8 @@ html:not(.intro-seen) .page-head .facts > div,
 html:not(.intro-seen) .page-photo,
 html:not(.intro-seen) .proj-index li { animation: part-in 420ms var(--ease-out) backwards; }
 html:not(.intro-seen) .page-photo { animation-delay: 140ms; }
+/* The 404 page's seven pictures arrive one after another, 45ms apart. */
+html:not(.intro-seen) .nf-grid li { animation: part-in 420ms var(--ease-out) backwards; animation-delay: calc(140ms + var(--i, 0) * 45ms); }
 html:not(.intro-seen) .page-head .facts > div { animation-delay: 200ms; }
 html:not(.intro-seen) .page-index li:nth-child(1), html:not(.intro-seen) .proj-index li:nth-child(-n+3) { animation-delay: 180ms; }
 html:not(.intro-seen) .page-index li:nth-child(2), html:not(.intro-seen) .proj-index li:nth-child(n+4) { animation-delay: 230ms; }
@@ -1267,6 +1393,11 @@ nav.bar { view-transition-name: site-bar; }
 ::view-transition-old(site-bar) { animation: none; opacity: 0; }
 ::view-transition-new(site-bar) { animation: none; }
 ::view-transition-group(nav-mark) { animation-duration: 300ms; animation-timing-function: var(--ease-in-out); }
+/* The nozzle plot carried from the hero into its chapter (initPlotFlight):
+   400ms on the drawer curve, a little longer than the pages' own change, so
+   it lands after they have settled. */
+::view-transition-group(nozzle-plot) { animation-duration: 400ms; animation-timing-function: var(--ease-drawer); }
+::view-transition-old(nozzle-plot), ::view-transition-new(nozzle-plot) { animation-duration: 400ms; }
 /* The theme switch keeps its plain crossfade of the whole page. */
 .theme-swap::view-transition-old(root) { animation: 220ms ease both vt-out; }
 .theme-swap::view-transition-new(root) { animation: 220ms ease both vt-fade-in; }
@@ -1285,12 +1416,101 @@ nav.bar { view-transition-name: site-bar; }
   transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out) !important;
 }
 
-/* ── Reduced motion: no travel, the fades stay short ───── */
+/* ── Reduced motion: no travel, short fades ──────────────
+   Movement goes: rises, slides, rolls, scaled entrances, the frame that
+   follows the ledger. Fades and colour changes that say something changed
+   stay, at 150–200ms. A blanket 0.01ms on every transition used to cut those
+   too, so the menus, the viewer and the theme snapped in as if broken. */
+@keyframes part-in-still { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
-  .js-reveal .section-reveal .rv { opacity: 1; transform: none; }
+  .js-reveal .section-reveal .rv { transform: none; transition: opacity 200ms ease; transition-delay: 0s; }
   .hero-title .line > span { animation: none !important; }
+  html:not(.intro-seen) .hero-lede, html:not(.intro-seen) .hero-actions, html:not(.intro-seen) .hero-creds,
+  html:not(.intro-seen) .hero-rig > *, html:not(.intro-seen) .page-title, html:not(.intro-seen) .page-lede,
+  html:not(.intro-seen) .page-statement, html:not(.intro-seen) .page-index li,
+  html:not(.intro-seen) .page-head .facts > div, html:not(.intro-seen) .page-photo,
+  html:not(.intro-seen) .proj-index li, html:not(.intro-seen) .nf-grid li { animation-name: part-in-still; animation-duration: 200ms; }
   .btn .icon-down { transform: none !important; }
   .ledger-frame { transition: none; }
+  .jump-menu { transition: opacity 160ms ease; }
+  .theme-toggle .icon-moon, .theme-toggle .icon-sun,
+  [data-theme="dark"] .theme-toggle .icon-moon,
+  [data-theme="dark"] .theme-toggle .icon-sun { transform: none; transition: opacity 200ms ease; }
+  #lightbox-inner, #lightbox.open #lightbox-inner { transform: none; }
+  .lb-media-el.settling { transition: none; }
+  .seg-thumb { transition: none; }
+  .odo-col { transition: opacity 200ms ease; }
+  .rig-strike, .rig-num.is-withdrawn .rig-strike { transition: none; }
+}
+
+/* ── Print ────────────────────────────────────────────────
+   For a reader who prints a page or saves it as a PDF for a hiring file.
+   The controls go (the bar, menus, thumbnail strips, toggles, the viewer,
+   the 3D turntable, the slideshow's buttons), grounds print white in the
+   light palette whatever the theme, every section is shown however far
+   the reader scrolled, each project starts a page with its figure kept
+   whole beside its table, and the addresses behind the links are printed
+   in full. Type steps down to print sizes. The name and the address head
+   the first page; the site and the page number foot every page. */
+.print-head { display: none; }
+@media print {
+  :root, [data-theme="dark"] {
+    color-scheme: light;
+    --bg: #FFFFFF; --surface: #EEF0EE; --ink: #1B1E20; --muted: #565D60;
+    --accent: #F2C230; --accent-ink: #1B1E20; --accent-deep: #7A5C00;
+    --step-small: 11px; --step-body: 13.5px; --step-lead: 17px; --step-head: 26px; --step-display: 40px;
+    --section: 28px;
+  }
+  @page {
+    margin: 14mm 14mm 16mm;
+    @bottom-left { content: "Mark Lorenz Yamanaka, www.mlyamanaka.com"; font: 8.5pt "Atkinson Hyperlegible Next", sans-serif; color: #565D60; }
+    @bottom-right { content: counter(page) " / " counter(pages); font: 8.5pt "Atkinson Hyperlegible Next", sans-serif; color: #565D60; }
+  }
+  html { scroll-behavior: auto; }
+  body { background: #FFFFFF; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .print-head { display: block; margin: 0 0 6mm; color: var(--muted); font-size: var(--step-small); }
+
+  nav.bar, .skip, #lightbox, .jump-menu, .rig-switch, .ledger-preview, .holo, .beyond-graph, .graph-cap,
+  .scroll-area, .thumb-rail, .lead-enlarge, .key-below, .rev-toggle, .built-jump, .band-actions, .copy-btn,
+  .carousel-playpause, .carousel-arrow, .carousel-dots, .foot-links, .foot-quote, .theme-toggle,
+  .hero-actions, .nf-action { display: none !important; }
+  /* The page-head photographs (the hangar door, the portrait) at a size
+     that leaves the page for its text. */
+  .page-photo img { width: auto; max-width: 100%; max-height: 95mm; }
+
+  .js-reveal .section-reveal .rv, .section-reveal .rv { opacity: 1 !important; transform: none !important; }
+  .hero { min-height: 0; }
+  .hero-rig, .band, .proj-section:nth-of-type(even), .proj-section { background: none !important; }
+  .hero-copy, .hero-rig { padding-top: 0; padding-bottom: 6mm; }
+  .page-head { padding: 0 0 6mm; }
+  .sec { padding: 6mm 0; }
+
+  /* A project chapter: its own page, the figure whole and its callouts on
+     it. The figure prints at its own shape, so the callout layer (laid
+     over a letterboxed frame on screen) simply covers the picture. */
+  .proj-section { padding: 0; break-before: page; }
+  .built-head { break-before: page; padding: 0 0 4mm; }
+  .built-head + .proj-section { break-before: auto; }
+  .proj-stage { position: static !important; }
+  .lead-btn { height: auto !important; display: block; background: none !important; cursor: auto; transform: none !important; }
+  .lead-media-area { height: auto !important; min-height: 0 !important; width: fit-content; max-width: 100%; margin: 0 auto; background: none !important; overflow: visible !important; }
+  .lead-media-area > div:not(.callouts) { display: none !important; }
+  .lead-media-area > img, .lead-media-area > video {
+    position: static !important; display: block; width: auto !important; height: auto !important;
+    max-width: 100%; max-height: 105mm; margin: 0 auto; padding: 0 !important; filter: none !important; visibility: visible !important;
+  }
+  .lead-media-area > .callouts { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; }
+  .lead-cap-row { padding: 2mm 0 0; }
+  .lead-btn, .metrics, .rev, .proj-layers dt, figure, .intern-photos figure, .hobby-strip li { break-inside: avoid; }
+  .proj-title, .sec-title, .intern-title, .proj-layers dt { break-after: avoid; }
+
+  /* The links' destinations, spelled out. */
+  .proj-repo-btn { min-height: 0; padding: 0; gap: 0; background: none !important; }
+  .proj-repo-btn svg { margin-right: 8px; }
+  .proj-repo-btn::after { content: ": " attr(href); font-weight: 400; }
+  .band-links a[href^="http"]::after { content: " (" attr(href) ")"; }
+  .band { padding: 6mm 0 0; break-inside: avoid; }
+  .site-foot { padding: 4mm 0 0; }
 }

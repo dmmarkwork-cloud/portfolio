@@ -49,6 +49,10 @@ const PROJECTS = [
     },
     views: [
       { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', size: [1632, 582],
+        // The inner wall from the junction reading to the throat reading,
+        // traced on this plot: the straight converging run, then the fillet
+        // into the throat. The hero's switch moves the reading along it.
+        wall: 'M843 113 L1000 282 Q1044 329 1121 329',
         caption: 'Governing stress at the chamber-to-converging junction: 29.6\u00a0MPa membrane plus bending on mesh J3. The 82.3\u00a0MPa peak at the sharp corner is singular and excluded.',
         callouts: [
           { x: 843, y: 113, bx: 700, by: 34, rev: 'v2.0', key: 'Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span>' },
@@ -119,7 +123,7 @@ const PROJECTS = [
       { k: 'Service ceiling', v: '9,536\u00a0ft' }
     ],
     views: [
-      { label: 'Final configuration concept', src: 'figures/mk10/concept-render.jpg', caption: 'MK-10 Wooden Aircraft Model: Final Configuration Concept' },
+      { label: 'Final configuration concept', src: 'figures/mk10/concept-render-1800.jpg', caption: 'MK-10 Wooden Aircraft Model: Final Configuration Concept' },
       { label: 'Carved airframe', src: 'figures/mk10/carved-airframe.jpg', caption: 'MK-10 Wooden Aircraft Model: Carved and Sanded Airframe' },
       { label: 'Three-view', src: 'figures/drawings-3d-view.png', caption: 'Final three-view — low straight-tapered wing, fixed tricycle gear, 1,649\u00a0lb gross' },
       { label: 'V-n envelope', src: 'analysis/plots/vn-diagram.png', caption: 'V-n envelope — maneuver and gust cases, design limit load 4.936' },
@@ -168,15 +172,15 @@ const PROJECTS = [
       { k: 'Actuation', v: '4 micro servos' }
     ],
     views: [
-      { label: 'Built airframe · side', src: 'figures/uav/build-side.jpg', caption: 'The finished airframe — foam board over a spar, tricycle gear, pull-pull rudder cable' },
-      { label: 'Built airframe · top', src: 'figures/uav/build-top.jpg', caption: 'Plan view of the completed aircraft — constant-chord wing, taped center section' },
-      { label: 'Built airframe · front', src: 'figures/uav/build-front.jpg', caption: 'Head-on with the motor and prop fitted, gear down' },
+      { label: 'Built airframe · side', src: 'figures/uav/build-side-1800.jpg', caption: 'The finished airframe — foam board over a spar, tricycle gear, pull-pull rudder cable' },
+      { label: 'Built airframe · top', src: 'figures/uav/build-top-1800.jpg', caption: 'Plan view of the completed aircraft — constant-chord wing, taped center section' },
+      { label: 'Built airframe · front', src: 'figures/uav/build-front-1800.jpg', caption: 'Head-on with the motor and prop fitted, gear down' },
       { label: 'Exploded CAD', src: 'figures/docs-exploded-view.png', caption: 'Exploded isometric of the master assembly — airframe, propulsion, avionics, linkages' },
-      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout.jpg', caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
-      { label: 'Servo install', src: 'figures/uav/tail-servos.jpg', caption: 'Elevator and rudder servos bedded into the rear fuselage, leads run forward' },
-      { label: 'Linkage detail', src: 'figures/uav/servo-linkage.jpg', caption: 'Servo horn and pushrod as built — the linkage that was modeled in CAD' },
-      { label: 'Receiver', src: 'figures/uav/receiver-r88.jpg', caption: 'RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle' },
-      { label: 'Landing gear', src: 'figures/uav/wheels.jpg', caption: 'Main wheels and the sprung tail wheel assembly' },
+      { label: 'Hardware laid out', src: 'figures/uav/hardware-layout-1800.jpg', caption: 'The full hardware set before install — 4 micro servos, 2200 KV brushless motor, 40 A ESC, Li-Po packs, prop, pushrods and horns' },
+      { label: 'Servo install', src: 'figures/uav/tail-servos-1800.jpg', caption: 'Elevator and rudder servos bedded into the rear fuselage, leads run forward' },
+      { label: 'Linkage detail', src: 'figures/uav/servo-linkage-1800.jpg', caption: 'Servo horn and pushrod as built — the linkage that was modeled in CAD' },
+      { label: 'Receiver', src: 'figures/uav/receiver-r88-1800.jpg', caption: 'RadioMaster R88 eight-channel receiver — the radio link for all three axes plus throttle' },
+      { label: 'Landing gear', src: 'figures/uav/wheels-1800.jpg', caption: 'Main wheels and the sprung tail wheel assembly' },
       { label: 'On the bench', src: 'figures/uav/build-bench.jpg', caption: 'Build night — servo bays cut and glued by hand' }
     ]
   },
@@ -197,12 +201,12 @@ const PROJECTS = [
     ],
     views: [
       { label: 'Carved rotor', src: 'figures/rotor/carved-rotor.jpg', caption: 'The finished two-blade rotor, carved and sanded, held over the drafting table and the orthographic sheets it was drawn on' },
-      { label: 'Prop on drawing', src: 'figures/rotor/prop-on-drawing.jpg', caption: 'Carved wooden two-blade rotor laid on the printed orthographic drawing sheet — front and top views' },
+      { label: 'Prop on drawing', src: 'figures/rotor/prop-on-drawing-1800.jpg', caption: 'Carved wooden two-blade rotor laid on the printed orthographic drawing sheet — front and top views' },
       { label: 'CAD four-view', src: 'figures/rotor/cad-four-view.jpg', caption: 'SolidWorks four-view drawing — top, front, isometric and right views with key dimensions' },
       { label: 'Planform detail', src: 'figures/rotor/planform-detail.jpg', caption: 'Chord station table — blade width at each radial station from root to tip' },
       { label: 'Drawing layout', src: 'figures/rotor/drawing-layout.jpg', caption: 'CAD drawing sheet layout — all four standard projection views on one sheet' },
-      { label: '3D model', src: 'figures/rotor/cad-3d.jpg', caption: 'SolidWorks 3D shaded view — hub and blade assembly' },
-      { label: 'Blade section sketch', src: 'figures/rotor/blade-section.jpg', caption: 'Airfoil section profile modeled in sketch — camber and twist geometry driving the 3D blade' }
+      { label: '3D model', src: 'figures/rotor/cad-3d-1800.jpg', caption: 'SolidWorks 3D shaded view — hub and blade assembly' },
+      { label: 'Blade section sketch', src: 'figures/rotor/blade-section-1800.jpg', caption: 'Airfoil section profile modeled in sketch — camber and twist geometry driving the 3D blade' }
     ]
   },
   {
@@ -212,7 +216,7 @@ const PROJECTS = [
     title: 'High-Lift Wing Rig',
     story: 'A sectioned wing built in cardboard and skinned in aluminum foil, mounted on its own stand so it can be demonstrated at eye level. Servos embedded in the section drive the ailerons and leading-edge slats from an Arduino Uno sketch, with a dedicated control interface on the base, so these are high-lift devices you can watch deploy instead of read about.',
     repo: null,
-    gridThumb: 'figures/wing/servo-bay.jpg',
+    gridThumb: 'figures/wing/servo-bay-1800.jpg',
     values: [
       { k: 'Moving surfaces', v: 'Ailerons + slats' },
       { k: 'Controller', v: 'Arduino Uno' },
@@ -220,9 +224,9 @@ const PROJECTS = [
     ],
     views: [
       { label: 'Slats & ailerons moving', video: 'figures/wing/demo.mp4', poster: 'figures/wing/demo-poster.jpg', caption: 'The rig running — slats and ailerons driven from the control interface on the stand' },
-      { label: 'Section on its stand', src: 'figures/wing/section-profile.jpg', caption: 'The finished section in profile, mounted on its presentation stand' },
-      { label: 'Servo bay open', src: 'figures/wing/servo-bay.jpg', caption: 'Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back' },
-      { label: 'Servo control bench', src: 'figures/wing/arduino-bench.jpg', caption: 'Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section' }
+      { label: 'Section on its stand', src: 'figures/wing/section-profile-1800.jpg', caption: 'The finished section in profile, mounted on its presentation stand' },
+      { label: 'Servo bay open', src: 'figures/wing/servo-bay-1800.jpg', caption: 'Upper surface opened up — servo and linkage bedded between the ribs, foil skin peeled back' },
+      { label: 'Servo control bench', src: 'figures/wing/arduino-bench-1800.jpg', caption: 'Bench setup — Arduino Uno, breadboard and a servo under test before it went into the section' }
     ]
   }
 ];
@@ -237,6 +241,20 @@ const PROJECTS = [
 const viewIndex = PROJECTS.map(() => 0);
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Smaller copies made by tools/make-images.py: a gallery strip's thumbnail
+// (thumbs/) and a home-page card's picture (cards/), each a WebP mirroring
+// the figure's path (a photo's -1800 dropped). The strip used to load every
+// full-size figure, camera photos of 1.3–1.7 MB among them, to show it 62px
+// tall. A copy that is missing (a figure added without running the script)
+// falls back to the full figure.
+const variant = (dir, src) => `${dir}/${src.replace(/(-1800)?\.[a-z0-9]+$/i, '.webp')}`;
+document.addEventListener('error', (e) => {
+  const img = e.target;
+  if (img instanceof HTMLImageElement && img.dataset.full && img.getAttribute('src') !== img.dataset.full) {
+    img.src = img.dataset.full;
+  }
+}, true);
+
 function mediaTag(view, styleStr, opts) {
   opts = opts || {};
   // Always contain, never crop. A type-based cover/contain split was tried
@@ -249,9 +267,14 @@ function mediaTag(view, styleStr, opts) {
   // and pick cover/contain per file type; that one is unaffected.
   const fit = 'object-fit:contain;';
   if (view.video) {
-    const autoplay = (opts.autoplay === false || reducedMotion) ? '' : 'autoplay';
-    const preload = opts.autoplay === false ? ' preload="metadata"' : '';
-    const poster = view.poster ? ` poster="${view.poster}"` : '';
+    // A project's lead clip waits, poster showing, until its figure is on
+    // screen (watchLeadClip); built ahead of the reader in idle time, it
+    // used to fetch its whole file at once. A strip's thumbnail loads only
+    // its metadata and plays on hover.
+    const autoplay = (opts.autoplay === false || opts.lead || reducedMotion) ? '' : 'autoplay';
+    const preload = opts.lead ? ' preload="none" data-lead' : opts.autoplay === false ? ' preload="metadata"' : '';
+    const posterSrc = view.poster && opts.thumb ? variant('thumbs', view.poster) : view.poster;
+    const poster = posterSrc ? ` poster="${posterSrc}"` : '';
     return `<video src="${view.video}"${poster} ${autoplay}${preload} loop muted playsinline style="${fit}${styleStr}"></video>`;
   }
   const alt = (view.caption || view.label || '').replace(/"/g, '&quot;');
@@ -262,7 +285,20 @@ function mediaTag(view, styleStr, opts) {
   // thumbnails and the lightbox stay lazy since those are genuinely
   // numerous/off-screen.
   const loading = opts.eager ? 'eager' : 'lazy';
-  return `<img src="${view.src}" alt="${alt}" loading="${loading}" decoding="async" style="${fit}${styleStr}">`;
+  const src = opts.thumb ? `${variant('thumbs', view.src)}" data-full="${view.src}` : view.src;
+  return `<img src="${src}" alt="${alt}" loading="${loading}" decoding="async" style="${fit}${styleStr}">`;
+}
+
+// A lead clip plays only while a quarter of it is on screen.
+const leadClips = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => entries.forEach(e => {
+  if (e.isIntersecting && !reducedMotion) e.target.play().catch(() => {});
+  else e.target.pause();
+}), { threshold: 0.25 }) : null;
+function watchLeadClip(area) {
+  const clip = area && area.querySelector('video[data-lead]');
+  if (!clip) return;
+  if (leadClips) leadClips.observe(clip);
+  else if (!reducedMotion) clip.play().catch(() => {});
 }
 
 // Lead display only: a blurred, cover-fit backdrop behind the sharp
@@ -276,7 +312,7 @@ function mediaTag(view, styleStr, opts) {
 // the extra decode cost is small.
 function leadMediaMarkup(view) {
   const pad = 'clamp(14px,2.4vw,30px)';
-  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`;
+  const fgStyle = `position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;padding:${pad};display:block;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.28));`; // taste-skill-ignore: lifts the figure off its blurred backdrop inside the viewer (data-ui)
   // Blur radius has to be strong enough to erase recognisable shape, not
   // just soften it — a source whose subject already fills most of its own
   // frame (a CFD mesh, a CAD render) will otherwise show a legible cropped
@@ -299,9 +335,9 @@ function leadMediaMarkup(view) {
     const backdrop = view.poster
       ? backdropDiv(view.poster)
       : `<video src="${view.video}" ${reducedMotion ? '' : 'autoplay'} loop muted playsinline aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;filter:blur(64px) brightness(0.8);"></video>`;
-    return backdrop + mediaTag(view, fgStyle, { eager: true });
+    return backdrop + mediaTag(view, fgStyle, { eager: true, lead: true });
   }
-  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true });
+  return backdropDiv(view.src) + mediaTag(view, fgStyle, { eager: true, lead: true });
 }
 
 // ── Drawing callouts ───────────────────────────────────
@@ -353,8 +389,10 @@ function renderGallery(pi) {
 
   const leadArea = document.getElementById(`lead-img-${pi}`);
   if (leadArea) {
+    if (leadClips) leadArea.querySelectorAll('video[data-lead]').forEach(v => leadClips.unobserve(v));
     leadArea.innerHTML = leadMediaMarkup(lead) + (lead.callouts ? calloutMarkup(lead) : '');
     if (lead.callouts) fitCallouts(leadArea);
+    watchLeadClip(leadArea);
   }
 
   const captionEl = document.getElementById(`lead-cap-${pi}`);
@@ -393,16 +431,15 @@ function renderGallery(pi) {
   }
 }
 
-// Crossfade lead image: ease-in on exit, ease-out on entry
 // ── Settle ─────────────────────────────────────────────
 // Content swapped in place (a figure, its caption, a release's numbers)
 // arrives at once and settles from 0.6 opacity over 150ms on the page's
 // ease-out curve, with a 2px blur to bridge a picture. Nothing waits for an
-// exit, and reduced motion skips it.
+// exit. Reduced motion keeps the fade, which says something changed.
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 function settle(el, blur) {
-  if (!el || reducedMotion || !el.animate) return;
-  el.animate(blur
+  if (!el || !el.animate) return;
+  el.animate(blur && !reducedMotion
     ? [{ opacity: 0.6, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0)' }]
     : [{ opacity: 0.6 }, { opacity: 1 }], { duration: 150, easing: EASE_OUT });
 }
@@ -453,6 +490,12 @@ function lbStep(d) {
   viewIndex[lbProject] = (viewIndex[lbProject] + d + p.views.length) % p.views.length;
   lbRender();
   renderGallery(lbProject);
+  // The page's figure under the viewer is now the new one; it stays hidden
+  // like the one opened, ready for the viewer to close into.
+  if (lbHidden) {
+    const s = leadMedia(lbProject);
+    if (s) { s.style.visibility = 'hidden'; lbHidden = s; }
+  }
 }
 
 // Only the backdrop closes. The frame itself used to close on any click, which
@@ -462,9 +505,56 @@ function lbBackdrop(e) {
   if (e.target === document.getElementById('lightbox')) closeLightbox();
 }
 
+// ── The viewer opens out of its figure ─────────────────
+// "Enlarge" used to fade the viewer in from the middle of the screen,
+// unconnected to the figure pressed. Now the figure itself grows from its
+// place on the page into the viewer while the backdrop darkens around it,
+// and shrinks back into its place on closing, so the reader keeps track of
+// which piece of evidence they opened. The viewer is laid out first, drawn
+// back over the figure, then let go (FLIP). Steps between figures stay
+// instant. Reduced motion keeps the plain fade.
+const LB_BG = 'rgba(14, 16, 17, 0.9)';
+let lbFlight = null;
+const lbChrome = () => ['lb-close', 'lb-prev', 'lb-next'].map(id => document.getElementById(id))
+  .concat([document.querySelector('.lb-caption-row')]).filter(Boolean);
+const leadMedia = (pi) => {
+  const area = document.getElementById(`lead-img-${pi}`);
+  return area && area.querySelector(':scope > img, :scope > video');
+};
+// The rectangle a picture covers inside an element that shows it whole
+// (object-fit: contain) within its padding, in viewport pixels.
+function shownRect(el, nat) {
+  const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+  const pl = parseFloat(cs.paddingLeft), pt = parseFloat(cs.paddingTop);
+  const bw = r.width - pl - parseFloat(cs.paddingRight), bh = r.height - pt - parseFloat(cs.paddingBottom);
+  const [nw, nh] = nat;
+  if (!nw || !nh || bw <= 0 || bh <= 0) return null;
+  const s = Math.min(bw / nw, bh / nh), w = nw * s, h = nh * s;
+  return { x: r.left + pl + (bw - w) / 2, y: r.top + pt + (bh - h) / 2, w, h, top: r.top, bottom: r.bottom };
+}
+// The transform (origin at the element's top-left) that lays the picture
+// shown in `el` over the rectangle `to`.
+function flipOnto(el, nat, to) {
+  const box = el.getBoundingClientRect();
+  const from = shownRect(el, nat);
+  if (!from || !to) return null;
+  const k = to.w / from.w;
+  return `translate(${to.x - box.left - k * (from.x - box.left)}px, ${to.y - box.top - k * (from.y - box.top)}px) scale(${k})`;
+}
+const onScreen = (r) => r && r.bottom > 0 && r.top < window.innerHeight;
+function lbLand() {
+  if (!lbFlight) return;
+  const f = lbFlight;
+  lbFlight = null;
+  f.anims.forEach(a => a.cancel());
+  if (f.src) f.src.style.visibility = '';
+  document.getElementById('lightbox').classList.remove('lb-flip');
+}
+
 function openLightbox(pi) {
+  lbLand();
+  if (lbHidden) { lbHidden.style.visibility = ''; lbHidden = null; }
   lbProject = pi;
-  const stage = document.getElementById('lightbox-media');
   // Sizing moved to .lb-media-el so the mobile stage can take a definite
   // height (panning needs somewhere to pan to) without touching the desktop
   // layout, where the container still hugs the image. eager, because this
@@ -473,23 +563,95 @@ function openLightbox(pi) {
   const lb = document.getElementById('lightbox');
   lbReturnFocus = document.activeElement;
   lb.inert = false;
-  lb.classList.add('open');
+  const src = leadMedia(pi);
+  const el = lbEl();
+  const nat = src ? [src.naturalWidth || src.videoWidth, src.naturalHeight || src.videoHeight] : [0, 0];
+  const start = src && !reducedMotion && el && el.animate ? shownRect(src, nat) : null;
+  if (onScreen(start)) {
+    lb.classList.add('lb-flip', 'open');
+    const from = flipOnto(el, nat, start);
+    if (from) {
+      src.style.visibility = 'hidden';
+      const anims = [
+        el.animate([{ transform: from }, { transform: 'none' }], { duration: 320, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' }),
+        lb.animate([{ backgroundColor: 'rgba(14, 16, 17, 0)' }, { backgroundColor: LB_BG }], { duration: 260, easing: 'ease' }),
+        ...lbChrome().map(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 160, easing: 'ease', fill: 'backwards' }))
+      ];
+      lbFlight = { anims, src: null };
+      anims[0].onfinish = () => { if (lbFlight && lbFlight.anims === anims) lbFlight = null; lb.classList.remove('lb-flip'); };
+    } else {
+      lb.classList.remove('lb-flip');
+    }
+  } else {
+    lb.classList.add('open');
+  }
+  // The figure on the page stays hidden while the viewer shows it, the way
+  // a photo leaves its place in a phone's library while it is open.
+  if (src && lb.classList.contains('lb-flip')) lbHidden = src;
   document.documentElement.classList.add('lb-open');
   lb.focus({ preventScroll: true });
   document.addEventListener('keydown', onLbKey);
 }
+let lbHidden = null;
 
 function closeLightbox() {
   const lb = document.getElementById('lightbox');
-  lb.classList.remove('open');
-  lb.classList.remove('is-zoomed');
-  lb.inert = true;
-  document.documentElement.classList.remove('lb-open');
-  lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
+  const pi = lbProject;
+  const el = lbEl();
+  const finish = () => {
+    lb.classList.remove('open');
+    lb.classList.remove('is-zoomed');
+    lb.inert = true;
+    document.documentElement.classList.remove('lb-open');
+    lbZoom.scale = 1; lbZoom.tx = 0; lbZoom.ty = 0;
+    lbDrag.x = 0; lbDrag.y = 0; lbDrag.axis = null;
+    lb.style.backgroundColor = '';
+    lbChrome().forEach(c => { c.style.opacity = ''; });
+    if (lbHidden) { lbHidden.style.visibility = ''; lbHidden = null; }
+  };
   document.removeEventListener('keydown', onLbKey);
   lbProject = null;
   if (lbReturnFocus && lbReturnFocus.focus) lbReturnFocus.focus({ preventScroll: true });
   lbReturnFocus = null;
+  // Back into its place on the page, from wherever it is now: mid-opening,
+  // or dragged down by a finger. Zoomed in, it simply fades.
+  const src = pi !== null ? leadMedia(pi) : null;
+  if (!reducedMotion && src && el && el.animate && lbZoom.scale <= 1.01) {
+    const nat = [src.naturalWidth || src.videoWidth, src.naturalHeight || src.videoHeight];
+    const now = getComputedStyle(el).transform;
+    const bg = getComputedStyle(lb).backgroundColor;
+    lbLand();
+    el.style.transform = 'none';
+    const home = shownRect(src, nat);
+    const to = onScreen(home) ? flipOnto(el, nat, home) : null;
+    if (to) {
+      lb.inert = true;
+      lb.classList.add('lb-flip');
+      if (lbHidden && lbHidden !== src) lbHidden.style.visibility = '';
+      lbHidden = src;
+      src.style.visibility = 'hidden';
+      const anims = [
+        el.animate([{ transform: now === 'none' ? 'none' : now }, { transform: to }], { duration: 260, easing: EASE_OUT, fill: 'forwards' }),
+        lb.animate([{ backgroundColor: bg }, { backgroundColor: 'rgba(14, 16, 17, 0)' }], { duration: 220, easing: 'ease', fill: 'forwards' }),
+        ...lbChrome().map(c => c.animate([{ opacity: getComputedStyle(c).opacity }, { opacity: 0 }], { duration: 120, fill: 'forwards' }))
+      ];
+      lbFlight = { anims, src: null };
+      anims[0].onfinish = () => {
+        if (!lbFlight || lbFlight.anims !== anims) return;
+        finish();
+        // Read the closed style while lb-flip still holds the transitions
+        // off; lifted in the same pass, the viewer would fade out for 150ms
+        // with the figure back at full size.
+        void getComputedStyle(lb).opacity;
+        lbLand();
+        el.style.transform = '';
+      };
+      return;
+    }
+    el.style.transform = '';
+  }
+  lbLand();
+  finish();
 }
 
 function onLbKey(e) {
@@ -575,7 +737,7 @@ function buildProjectGrid() {
   container.innerHTML = flagships.map((p, ci) => {
     const media = firstImage(p);
     const thumb = media
-      ? `<img class="ledger-thumb${contained(p, media) ? ' is-contain' : ''}" src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
+      ? `<img class="ledger-thumb${contained(p, media) ? ' is-contain' : ''}" src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" style="object-position:${p.gridFocus || 'center'};">`
       : '';
     return `
       <li><a class="ledger-row" href="${chapterPage}#${p.anchor}" data-i="${ci}">
@@ -596,7 +758,7 @@ function buildProjectGrid() {
     frame.innerHTML = flagships.map((p, ci) => {
       const media = firstImage(p);
       return media
-        ? `<img src="${media.src}" alt="" loading="lazy" class="${contained(p, media) ? 'is-contain' : ''}${ci === 0 ? ' is-on' : ''}" style="object-position:${p.gridFocus || 'center'};">`
+        ? `<img src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" class="${contained(p, media) ? 'is-contain' : ''}${ci === 0 ? ' is-on' : ''}" style="object-position:${p.gridFocus || 'center'};">`
         : '<span></span>';
     }).join('');
     const rows = [...container.querySelectorAll('.ledger-row')];
@@ -623,7 +785,7 @@ function buildProjectGrid() {
     built.innerHTML = PROJECTS.filter(p => p.group === 'built').map(p => {
       const media = firstImage(p);
       const thumb = media
-        ? `<img src="${media.src}" alt="" loading="lazy" style="object-position:${p.gridFocus || 'center'};">`
+        ? `<img src="${variant('cards', media.src)}" data-full="${media.src}" alt="" loading="lazy" decoding="async" style="object-position:${p.gridFocus || 'center'};">`
         : '<span></span>';
       return `
         <li><a class="built-row" href="${chapterPage}#${p.anchor}">
@@ -651,17 +813,33 @@ function buildProjectIndex() {
       return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
   }
-  const index = document.getElementById('proj-index');
-  if (index) {
+  // The 404 page shows the seven as pictures, each linking to its chapter
+  // from wherever the wrong address was. Its base is the bar's own Projects
+  // link, which the Pages mirror's build rewrites under /portfolio/.
+  const nf = document.getElementById('nf-index');
+  if (nf) {
+    const link = document.querySelector('.nav-scroll a[href$="projects"]');
+    const base = link ? link.getAttribute('href') : '/projects';
+    nf.innerHTML = PROJECTS.map((p, i) => {
+      const pic = p.gridThumb || (p.views.find(v => v.src) || {}).src || (p.views.find(v => v.poster) || {}).poster;
+      const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
+      const whole = /\.png$/i.test(pic) ? ' class="is-contain"' : '';
+      return `<li style="--i:${i}"><a href="${base}#${p.anchor}"><img src="${variant('cards', pic)}" data-full="${pic}" alt=""${whole} loading="lazy" decoding="async"><span class="nf-name">${p.short}</span><span class="k">${k}</span></a></li>`;
+    }).join('');
+  }
+  // The projects page's own index links within the page.
+  [['proj-index', '']].forEach(([id, page]) => {
+    const index = document.getElementById(id);
+    if (!index) return;
     let group = null;
     index.innerHTML = PROJECTS.map(p => {
       const head = p.group !== group
         ? `<li><p class="grp">${p.group === 'flagship' ? 'Analyses' : 'Built by hand'}</p></li>` : '';
       group = p.group;
       const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
-      return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
+      return head + `<li><a href="${page}#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
-  }
+  });
 }
 
 // The project chapter crossing the reading line (42% down the screen), or
@@ -950,6 +1128,7 @@ function setRevision(pi, id) {
   settle(note, false);
   document.querySelectorAll(`#rev-${pi} .rev-toggle button`).forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
+  placeThumb(document.querySelector(`#rev-${pi} .rev-toggle`));
   document.getElementById(`rev-${pi}`).classList.toggle('is-superseded', !!rel.superseded);
 }
 
@@ -987,6 +1166,156 @@ function initCalloutFigures() {
   });
 }
 
+// ── Segmented switches ─────────────────────────────────
+// The hero's reading switch and each revision record's toggle: one yellow
+// block behind the buttons slides to the one pressed, where a highlight
+// used to fade out on one button while another faded in. One object moving
+// reads as one control changing state. It is placed without motion at first
+// and on resize; the CSS transition carries a change, and retargets from
+// wherever the block is if the choice changes mid-slide. Until the script
+// places it, the pressed button keeps its own fill.
+function initSegmented(group) {
+  if (!group || group.querySelector('.seg-thumb')) return;
+  const thumb = document.createElement('span');
+  thumb.className = 'seg-thumb';
+  thumb.setAttribute('aria-hidden', 'true');
+  group.prepend(thumb);
+  group._place = (animate) => {
+    const on = group.querySelector('button[aria-pressed="true"]');
+    if (!on) return;
+    if (!animate) thumb.style.transition = 'none';
+    thumb.style.width = `${on.offsetWidth}px`;
+    thumb.style.transform = `translateX(${on.offsetLeft}px)`;
+    if (!animate) { thumb.getBoundingClientRect(); thumb.style.transition = ''; }
+  };
+  group._place(false);
+  group.classList.add('has-thumb');
+  if ('ResizeObserver' in window) new ResizeObserver(() => group._place(false)).observe(group);
+}
+const placeThumb = (group) => { if (group && group._place) group._place(true); };
+
+// ── A number that rolls ────────────────────────────────
+// The readout's figures roll to a new value column by column, the way a
+// counter does: up when the number grows, down when it shrinks, through the
+// digits between. Each column is 0–9 three times over, clipped to one
+// figure, so a roll can start from wherever an interrupted one left it. A
+// column the value does not need (the 4 of 42.70) closes to nothing, and
+// the box keeps the width of the widest value, so the label beside it never
+// moves. Screen readers get the value from a line of text kept beside it.
+function odometer(el, values, start) {
+  const split = (v) => { const [i, f = ''] = String(v).split('.'); return [i, f]; };
+  const intN = Math.max(...values.map(v => split(v)[0].length));
+  const fracN = Math.max(...values.map(v => split(v)[1].length));
+  const digits = (v) => {
+    const [i, f] = split(v);
+    return [...Array(intN - i.length).fill(null), ...i.split('').map(Number), ...f.padEnd(fracN, '0').split('').map(Number)];
+  };
+  // The figures are generated content, not text: selecting the readout
+  // would otherwise copy thirty digits a column, and anything reading the
+  // page's text would find them.
+  const cells = '0123456789'.repeat(3).split('').map(d => `<span data-d="${d}"></span>`).join('');
+  let cols = '';
+  for (let k = 0; k < intN + fracN; k++) {
+    if (k === intN && fracN) cols += '<span class="odo-dot">.</span>';
+    cols += `<span class="odo-col"><span class="odo-strip">${cells}</span></span>`;
+  }
+  el.innerHTML = `<span class="odo">${cols}<span class="rig-strike"></span></span>`;
+  el.setAttribute('aria-hidden', 'true');
+  const colEls = [...el.querySelectorAll('.odo-col')];
+  const strips = colEls.map(c => c.firstElementChild);
+  const fs = () => parseFloat(getComputedStyle(el).fontSize) || 16;
+  // One figure's width and the point's, in em, so the sizes follow the
+  // readout's fluid type; measured again once the web font is in.
+  const measure = () => {
+    const m = document.createElement('span');
+    m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;';
+    el.appendChild(m);
+    m.textContent = '0';
+    const dw = m.getBoundingClientRect().width / fs();
+    m.textContent = '.';
+    const dot = m.getBoundingClientRect().width / fs();
+    m.remove();
+    el.style.setProperty('--dw', `${dw.toFixed(4)}em`);
+    el.style.minWidth = `${((intN + fracN) * dw + (fracN ? dot : 0)).toFixed(4)}em`;
+  };
+  const at = (s, i) => { s.style.transform = `translateY(${-i}em)`; };
+  const now = (s) => -new DOMMatrixReadOnly(getComputedStyle(s).transform).m42 / fs();
+  const rest = (d) => 10 + (d === null ? 0 : d);
+  let cur = digits(start), value = Number(start);
+  strips.forEach((s, k) => { at(s, rest(cur[k])); colEls[k].classList.toggle('is-blank', cur[k] === null); });
+  measure();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  return {
+    to(v) {
+      const next = digits(v);
+      const up = Number(v) > value;
+      strips.forEach((s, k) => {
+        let from = now(s);
+        s.getAnimations().forEach(a => a.cancel());
+        if (from >= 20) from -= 10; else if (from < 10) from += 10;
+        const d = next[k] === null ? 0 : next[k];
+        const target = up ? d + 10 * Math.ceil((from - d) / 10 - 1e-6) : d + 10 * Math.floor((from - d) / 10 + 1e-6);
+        at(s, target);
+        if (!reducedMotion && Math.abs(target - from) > 0.001) {
+          const a = s.animate([{ transform: `translateY(${-from}em)` }, { transform: `translateY(${-target}em)` }],
+            { duration: 560, easing: EASE_OUT });
+          a.onfinish = () => at(s, rest(next[k]));
+        } else {
+          at(s, rest(next[k]));
+        }
+        colEls[k].classList.toggle('is-blank', next[k] === null);
+      });
+      cur = next;
+      value = Number(v);
+    }
+  };
+}
+
+// ── The reading travels ────────────────────────────────
+// Switching readings moves the chosen release's dot along the nozzle's
+// inner wall, from the reading it leaves to the one it takes, with its
+// leader drawn from the dot the whole way. It shows where each release read
+// the stress, as well as that the number changed. The wall is the path
+// traced on the plot (the view's `wall`), from the v2.0 reading to v1.0's.
+function wallTravel(layer, view) {
+  const svg = layer.querySelector('svg');
+  if (!svg || !view.wall || reducedMotion) return null;
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', view.wall);
+  path.setAttribute('fill', 'none');
+  svg.appendChild(path);
+  const len = path.getTotalLength();
+  const [w, h] = view.size;
+  const ease = (t) => t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
+  const put = (dot, line, x, y) => {
+    dot.style.left = `${(x / w * 100).toFixed(3)}%`;
+    dot.style.top = `${(y / h * 100).toFixed(3)}%`;
+    line.setAttribute('x1', x.toFixed(1));
+    line.setAttribute('y1', y.toFixed(1));
+  };
+  let raf = 0, home = null;
+  return (id) => {
+    // A second switch mid-way sends the first dot home before the next sets off.
+    if (home) { cancelAnimationFrame(raf); home(); home = null; }
+    const c = view.callouts.find(x => x.rev === id);
+    const dot = layer.querySelector(`.callout-dot[data-rev="${id}"]`);
+    const line = layer.querySelector(`line[data-rev="${id}"]`);
+    if (!c || !dot || !line) return;
+    const to = id === 'v1.0' ? 1 : 0, from = 1 - to;
+    home = () => put(dot, line, c.x, c.y);
+    let t0 = 0;
+    const frame = (t) => {
+      if (!t0) t0 = t;
+      const k = Math.min(1, (t - t0) / 560);
+      const p = path.getPointAtLength((from + (to - from) * ease(k)) * len);
+      put(dot, line, p.x, p.y);
+      if (k < 1) raf = requestAnimationFrame(frame);
+      else { home(); home = null; }
+    };
+    raf = requestAnimationFrame(frame);
+  };
+}
+
 // ── The revision switch ────────────────────────────────
 // The home page's figure is the nozzle as v2.0 reads it. The switch moves
 // the reading back to where v1.0 took it, the throat, and the readout and
@@ -1002,19 +1331,49 @@ function initRevisionSwitch() {
   const num = document.getElementById('rig-num');
   const unit = document.getElementById('rig-unit');
   const note = document.getElementById('rig-note');
+  const sw = rig.querySelector('.rig-switch');
   const buttons = [...rig.querySelectorAll('.rig-switch button')];
+  const fos = (rel) => (rel.values.find(v => v.k === 'Factor of safety') || {}).v || '';
+  const unitOf = (rel) => `factor of safety, ${rel.id}, ${rel.superseded ? 'withdrawn' : 'current'}`;
+  // The note for the release the page opens on is the page's own sentence,
+  // which names both readings for a reader who never touches the switch;
+  // the other release's is the revision record's.
+  const first = rig.dataset.rev;
+  const opening = note.textContent.trim();
+  const noteOf = (rel) => rel.id === first ? opening : rel.note;
+  // Both releases' label and note are laid in the same place, the one not
+  // shown transparent, so the readout keeps the height of the longer note
+  // and the sentence under it stays put.
+  const stack = (el, text) => {
+    el.innerHTML = r.releases.map(rel => `<span data-rev="${rel.id}"${rel.id === first ? ' class="is-on"' : ''}>${text(rel)}</span>`).join('');
+    el.setAttribute('aria-hidden', 'true');
+  };
+  stack(unit, unitOf);
+  stack(note, noteOf);
+  const said = document.createElement('p');
+  said.className = 'sr-only';
+  rig.querySelector('.rig-read').appendChild(said);
+  const say = (rel) => { said.textContent = `Factor of safety ${fos(rel)}, ${unitOf(rel).replace('factor of safety, ', '')}. ${noteOf(rel)}`; };
+  const firstRel = r.releases.find(x => x.id === first) || r.releases[0];
+  say(firstRel);
+  const odo = odometer(num, r.releases.map(fos), fos(firstRel));
+  num.classList.toggle('is-withdrawn', !!firstRel.superseded);
+  initSegmented(sw);
+  const layer = rig.querySelector('.callouts');
+  const view = nozzle.views.find(v => v.callouts);
+  const travel = layer && view ? wallTravel(layer, view) : null;
   const set = (id) => {
     const rel = r.releases.find(x => x.id === id);
     if (!rel || rig.dataset.rev === id) return;
     rig.dataset.rev = id;
     buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
-    const fos = rel.values.find(v => v.k === 'Factor of safety');
-    num.textContent = fos ? fos.v : '';
+    placeThumb(sw);
+    odo.to(fos(rel));
     num.classList.toggle('is-withdrawn', !!rel.superseded);
-    unit.textContent = `factor of safety, ${id}, ${rel.superseded ? 'withdrawn' : 'current'}`;
-    note.textContent = rel.note;
-    settle(num, true);
-    settle(note, false);
+    [unit, note].forEach(el => [...el.children].forEach(s => s.classList.toggle('is-on', s.dataset.rev === id)));
+    say(rel);
+    if (travel) travel(id);
+    if (reducedMotion) settle(num, false);
   };
   buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.rev)));
 }
@@ -1040,7 +1399,7 @@ function buildProjects() {
         ${p.views.map((v, i) => `
           <button type="button" class="thumb-btn" onclick="selectView(${pi},${i})">
             <div style="height:62px;display:grid;place-items:center;overflow:hidden;">
-              ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false })}
+              ${mediaTag(v, `width:100%;height:62px;opacity:${i === 0 ? 1 : 0.62};`, { autoplay: false, thumb: true })}
             </div>
             <span class="thumb-label">${v.label}</span>
           </button>`).join('')}
@@ -1068,7 +1427,7 @@ function buildProjects() {
           <p class="sec-lede">Three projects where the drawing became a thing on a bench: a foam-board UAV, a carved rotor and a servo-driven wing section.</p>
         </header>
         <nav class="col-side rv" style="--rv:1" aria-label="The three builds"><ul class="built-jump">${builds.map(q => `
-          <li><a href="#${q.anchor}"><img src="${pic(q)}" alt="" loading="lazy" style="object-position:${q.gridFocus || 'center'};"><span>${q.short}</span></a></li>`).join('')}
+          <li><a href="#${q.anchor}"><img src="${variant('cards', pic(q))}" data-full="${pic(q)}" alt="" loading="lazy" decoding="async" style="object-position:${q.gridFocus || 'center'};"><span>${q.short}</span></a></li>`).join('')}
         </ul></nav>
       </div>
     </div>` : '';
@@ -1163,6 +1522,8 @@ function buildProjects() {
     PROJECTS.forEach((_, pi) => ensure(pi));
   }
 
+  container.querySelectorAll('.rev-toggle').forEach(initSegmented);
+
   // A lead box letterboxes its figure, so callouts are re-laid whenever the
   // box changes size.
   PROJECTS.forEach((p, pi) => {
@@ -1202,7 +1563,8 @@ function buildProjects() {
     const btn = area && area.closest('.lead-btn');
     if (!btn) return;
     const step = (d) => selectView(pi, (viewIndex[pi] + d + p.views.length) % p.views.length);
-    attachSwipe(btn, () => step(-1), () => step(1));
+    attachSwipe(btn, () => step(-1), () => step(1),
+      () => [...area.querySelectorAll(':scope > img, :scope > video, :scope > .callouts')]);
   });
 }
 
@@ -1432,15 +1794,30 @@ function initNav() {
 // try. Distance OR velocity decides, so a quick flick does not have to cross
 // half the element. The axis is locked on the first 10px of travel and pan-y
 // leaves vertical scrolling to the browser, so the page never feels sticky.
-function attachSwipe(el, onPrev, onNext) {
+// The picture follows the finger the whole way (it used to change only on
+// release, with nothing moving underneath), then carries on out or springs
+// back.
+function attachSwipe(el, onPrev, onNext, follow) {
   if (!el) return;
   el.classList.add('swipe-x');
   let id = null, x0 = 0, y0 = 0, t0 = 0, axis = null, swiped = false;
+  // What follows the finger (from `follow`), how far it has been moved, and
+  // the spring taking it back, if one is running: a new touch stops it
+  // where it is and the drag carries on from there.
+  let moving = null, off = 0, from = 0, back = null, hist = [];
+  const put = (x) => { off = x; if (moving) moving.forEach(m => { m.style.transform = x ? `translateX(${x}px)` : ''; }); };
 
   el.addEventListener('pointerdown', (e) => {
     if (id !== null) return;                // a second finger mid-swipe would jump
     if (e.pointerType === 'mouse') return;  // a mouse has the arrows
     id = e.pointerId; x0 = e.clientX; y0 = e.clientY; t0 = e.timeStamp; axis = null;
+    // A touch swipe usually ends with no click at all, and the flag below
+    // then ate the next real tap (it took two to open the viewer after a
+    // swipe). A new touch means the swipe's click is not coming.
+    swiped = false;
+    if (back) { back.stop(); back = null; }
+    from = off;
+    hist = [{ t: e.timeStamp, x: e.clientX, y: 0 }];
   }, { passive: true });
 
   el.addEventListener('pointermove', (e) => {
@@ -1448,22 +1825,64 @@ function attachSwipe(el, onPrev, onNext) {
     const dx = e.clientX - x0, dy = e.clientY - y0;
     if (axis === null && Math.abs(dx) + Math.abs(dy) > 10) {
       axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-      if (axis === 'x') { try { el.setPointerCapture(id); } catch (_) {} }
+      if (axis === 'x') {
+        try { el.setPointerCapture(id); } catch (_) {}
+        if (follow && !reducedMotion && !moving) moving = follow();
+      }
     }
+    if (axis !== 'x') return;
+    hist.push({ t: e.timeStamp, x: e.clientX, y: 0 });
+    if (hist.length > 8) hist.shift();
+    put(from + dx);
   }, { passive: true });
 
   const end = (e) => {
     if (e.pointerId !== id) return;
     const dx = e.clientX - x0;
     const v = Math.abs(dx) / Math.max(1, e.timeStamp - t0);
+    const fling = recentVelocity(hist).x;
     if (axis === 'x' && (Math.abs(dx) > 45 || v > 0.11)) {
       swiped = true;
-      (dx < 0 ? onNext : onPrev)();
+      const go = dx < 0 ? onNext : onPrev;
+      if (moving) {
+        // On out at the finger's speed, then the next comes in from the
+        // other side: the one that leaves and the one that arrives move the
+        // same way.
+        const dir = dx < 0 ? 1 : -1;
+        const w = el.getBoundingClientRect().width;
+        const gone = moving;
+        const dur = Math.max(90, Math.min(170, (w * 0.5 - Math.abs(off)) / Math.max(Math.abs(fling), 1.2)));
+        let left = gone.length;
+        gone.forEach(m => {
+          const a = m.animate([{ transform: `translateX(${off}px)`, opacity: 1 }, { transform: `translateX(${-dir * w * 0.5}px)`, opacity: 0 }],
+            { duration: dur, easing: 'linear', fill: 'forwards' });
+          a.onfinish = () => {
+            if (--left) return;
+            go();
+            const next = follow();
+            next.forEach(n => n.animate([{ transform: `translateX(${dir * Math.min(80, w * 0.2)}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+              { duration: 240, easing: EASE_OUT }));
+            // Whatever stays in the page (a carousel's slide) drops its
+            // held pose once its own fade has hidden it.
+            setTimeout(() => gone.forEach(g => { g.style.transform = ''; g.getAnimations().forEach(x => x.cancel()); }), 340);
+          };
+        });
+        moving = null; off = 0;
+      } else {
+        go();
+      }
+    } else if (axis === 'x' && moving) {
+      const held = moving;
+      back = spring2({ x: off, y: 0 }, { x: 0, y: 0 }, { x: fling * 1000, y: 0 },
+        (p) => put(p.x), () => { back = null; put(0); if (moving === held) moving = null; });
     }
     id = null; axis = null;
   };
   el.addEventListener('pointerup', end);
-  el.addEventListener('pointercancel', () => { id = null; axis = null; });
+  el.addEventListener('pointercancel', () => {
+    id = null; axis = null;
+    if (moving && off) { const held = moving; back = spring2({ x: off, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, (p) => put(p.x), () => { back = null; put(0); if (moving === held) moving = null; }); }
+  });
 
   // A swipe that started on a button (the gallery lead opens the lightbox)
   // still ends in a click. Swallow exactly that one.
@@ -1525,8 +1944,53 @@ function lbResetZoom(settle) {
   lbApply(settle);
 }
 
+// ── Springs ────────────────────────────────────────────
+// A critically damped spring (no overshoot), for whatever a finger lets
+// go of: it starts at the finger's own speed, so there is no seam between
+// the drag and the motion, and settles on its target in about `response`
+// seconds. X and Y are two springs, since each axis has its own speed.
+// Grabbing again stops it where it is and the drag carries on from there.
+function spring2(from, to, v, onFrame, done, response = 0.36) {
+  const w = 2 * Math.PI / response;
+  const axis = (x0, v0) => ({ x0, v0, c: v0 + w * x0 });
+  const ax = axis(from.x - to.x, v.x), ay = axis(from.y - to.y, v.y);
+  const pos = (a, t) => (a.x0 + a.c * t) * Math.exp(-w * t);
+  const vel = (a, t) => (a.v0 - w * a.c * t) * Math.exp(-w * t);
+  let raf = 0, t0 = 0, stopped = false;
+  const frame = (now) => {
+    if (stopped) return;
+    if (!t0) t0 = now;
+    const t = (now - t0) / 1000;
+    const x = pos(ax, t), y = pos(ay, t);
+    const still = Math.abs(x) < 0.4 && Math.abs(y) < 0.4 && Math.abs(vel(ax, t)) < 20 && Math.abs(vel(ay, t)) < 20;
+    if (still || t > 1.5) { stopped = true; onFrame({ x: to.x, y: to.y }); if (done) done(); return; }
+    onFrame({ x: to.x + x, y: to.y + y });
+    raf = requestAnimationFrame(frame);
+  };
+  raf = requestAnimationFrame(frame);
+  return { stop() { stopped = true; cancelAnimationFrame(raf); } };
+}
+// Resistance past an edge: the further past, the less it follows (Apple's
+// rubber band, c = 0.55).
+const rubber = (over, dim) => (over * dim * 0.55) / (dim + 0.55 * over);
+// Velocity from the last ~90ms of a pointer's samples, in px/ms.
+function recentVelocity(hist) {
+  const last = hist[hist.length - 1];
+  if (!last) return { x: 0, y: 0 };
+  let i = hist.length - 1;
+  while (i > 0 && last.t - hist[i - 1].t <= 90) i--;
+  const first = hist[i === hist.length - 1 ? Math.max(0, i - 1) : i];
+  const dt = Math.max(1, last.t - first.t);
+  return { x: (last.x - first.x) / dt, y: (last.y - first.y) / dt };
+}
+
+// The unzoomed figure under a finger in the viewer: across steps to the
+// next figure, down closes the viewer.
+const lbDrag = { x: 0, y: 0, axis: null };
+
 function initLightboxZoom() {
   const stage = document.getElementById('lightbox-media');
+  const lb = document.getElementById('lightbox');
   const closeBtn = document.getElementById('lb-close');
   if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
   [['lb-prev', -1], ['lb-next', 1]].forEach(([id, d]) => {
@@ -1537,7 +2001,8 @@ function initLightboxZoom() {
 
   const coarse = window.matchMedia('(pointer: coarse)');
   const pts = new Map();
-  let base = null, lastTap = 0, dragged = false;
+  let base = null, lastTap = 0, dragged = false, hist = [], moving = null;
+  const stop = () => { if (moving) { moving.stop(); moving = null; } };
 
   const local = (e) => {
     const r = stage.getBoundingClientRect();
@@ -1554,41 +2019,136 @@ function initLightboxZoom() {
     const a = Array.from(pts.values());
     return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
   };
+  const many = () => lbProject !== null && PROJECTS[lbProject].views.length > 1;
+
+  // Draws the unzoomed drag. Across: the figure follows the finger (with
+  // resistance when there is no other figure to step to). Down: it follows
+  // freely and shrinks a little, the backdrop and the controls fading with
+  // the distance; up resists.
+  const showDrag = () => {
+    const m = lbEl();
+    if (!m) return;
+    m.classList.remove('settling');
+    if (lbDrag.axis === 'y') {
+      const down = Math.max(0, lbDrag.y);
+      const y = lbDrag.y >= 0 ? lbDrag.y : -rubber(-lbDrag.y, m.offsetHeight);
+      const s = 1 - Math.min(0.25, down / (window.innerHeight * 1.2));
+      m.style.transform = `translate(${lbDrag.x + (1 - s) * m.offsetWidth / 2}px, ${y + (1 - s) * m.offsetHeight / 2}px) scale(${s})`;
+      const k = Math.min(1, down / (window.innerHeight * 0.45));
+      lb.style.backgroundColor = `rgba(14, 16, 17, ${(0.9 * (1 - k)).toFixed(3)})`;
+      lbChrome().forEach(c => { c.style.opacity = String(1 - Math.min(1, down / 120)); });
+    } else {
+      const x = many() ? lbDrag.x : Math.sign(lbDrag.x) * rubber(Math.abs(lbDrag.x), m.offsetWidth);
+      m.style.transform = x ? `translateX(${x}px)` : '';
+    }
+  };
+  const clearDrag = () => {
+    const m = lbEl();
+    if (m) m.style.transform = '';
+    lb.style.backgroundColor = '';
+    lbChrome().forEach(c => { c.style.opacity = ''; });
+    lbDrag.x = 0; lbDrag.y = 0; lbDrag.axis = null;
+  };
+  // Zoomed in: the pan resists past the picture's edges instead of
+  // stopping dead, and on release coasts with the finger's speed to where
+  // that speed would carry it (Apple's projection, deceleration 0.996/ms),
+  // springing back inside the edges if it would have gone past them.
+  const bounds = () => {
+    const m = lbEl();
+    return m ? { x: m.offsetWidth * (1 - lbZoom.scale), y: m.offsetHeight * (1 - lbZoom.scale), w: m.offsetWidth, h: m.offsetHeight } : null;
+  };
+  const band = (v, lo, dim) => v > 0 ? rubber(v, dim) : v < lo ? lo - rubber(lo - v, dim) : v;
+  const panTo = (x, y) => {
+    const b = bounds();
+    if (!b) return;
+    lbZoom.tx = band(x, b.x, b.w);
+    lbZoom.ty = band(y, b.y, b.h);
+    lbApply(false);
+  };
+  const coast = (v) => {
+    const b = bounds();
+    if (!b) return;
+    const reach = 0.996 / (1 - 0.996);
+    const clamp = (p, lo) => Math.min(0, Math.max(lo, p));
+    const to = { x: clamp(lbZoom.tx + v.x * reach, b.x), y: clamp(lbZoom.ty + v.y * reach, b.y) };
+    moving = spring2({ x: lbZoom.tx, y: lbZoom.ty }, to, { x: v.x * 1000, y: v.y * 1000 },
+      (p) => { lbZoom.tx = p.x; lbZoom.ty = p.y; lbApply(false); }, () => { moving = null; }, 0.5);
+  };
+  // Released across: past 45px or flicked (the page's thresholds), the
+  // figure carries on out at the finger's speed and the next comes in from
+  // the other side; otherwise it springs back.
+  const releaseAcross = (avg, v) => {
+    const m = lbEl();
+    if (!m) return;
+    if (many() && (Math.abs(lbDrag.x) > 45 || avg > 0.11)) {
+      const dir = lbDrag.x < 0 ? 1 : -1;
+      const w = m.offsetWidth + 40;
+      const dur = Math.max(90, Math.min(180, (w - Math.abs(lbDrag.x)) / Math.max(Math.abs(v.x), 1.2)));
+      const out = m.animate([{ transform: `translateX(${lbDrag.x}px)` }, { transform: `translateX(${-dir * w}px)` }],
+        { duration: dur, easing: 'linear', fill: 'forwards' });
+      out.onfinish = () => {
+        clearDrag();
+        lbStep(dir);
+        const n = lbEl();
+        if (n) n.animate([{ transform: `translateX(${dir * Math.min(120, w * 0.25)}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+          { duration: 240, easing: EASE_OUT });
+      };
+      return;
+    }
+    moving = spring2({ x: lbDrag.x, y: 0 }, { x: 0, y: 0 }, { x: v.x * 1000, y: 0 },
+      (p) => { lbDrag.x = p.x; showDrag(); }, () => { moving = null; clearDrag(); });
+  };
+  // Released after a drag down: far enough, or flicked down, closes the
+  // viewer into the figure's place on the page; otherwise everything
+  // springs back.
+  const releaseDown = (v) => {
+    if (lbDrag.y > 110 || (v.y > 0.5 && lbDrag.y > 30)) { closeLightbox(); return; }
+    moving = spring2({ x: lbDrag.x, y: lbDrag.y }, { x: 0, y: 0 }, { x: v.x * 1000, y: v.y * 1000 },
+      (p) => { lbDrag.x = p.x; lbDrag.y = p.y; showDrag(); }, () => { moving = null; clearDrag(); });
+  };
 
   stage.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse') return;
+    stop();
     pts.set(e.pointerId, local(e));
     dragged = false;
+    hist = [{ t: e.timeStamp, ...local(e) }];
     try { stage.setPointerCapture(e.pointerId); } catch (_) {}
     base = (pts.size === 2)
       ? { d: spread(), s: lbZoom.scale, pinch: true }
-      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e), t: e.timeStamp };
+      : { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: local(e), t: e.timeStamp, ox: lbDrag.x, oy: lbDrag.y };
   });
 
   stage.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !base) return;
-    pts.set(e.pointerId, local(e));
+    const q = local(e);
+    pts.set(e.pointerId, q);
+    hist.push({ t: e.timeStamp, ...q });
+    if (hist.length > 8) hist.shift();
     if (pts.size >= 2 && base.pinch) {
       const c = centroid();
       lbSetScale(base.s * (spread() / base.d), c.x, c.y);
       dragged = true;
-    } else if (pts.size === 1 && lbZoom.scale > 1.01) {
-      const q = local(e);
-      lbZoom.tx = base.tx + (q.x - base.p.x);
-      lbZoom.ty = base.ty + (q.y - base.p.y);
-      lbClamp();
-      if (Math.abs(q.x - base.p.x) + Math.abs(q.y - base.p.y) > 6) dragged = true;
-    } else if (pts.size === 1) {
-      // Not zoomed: the same drag means "next figure" rather than "pan".
-      // Tracked here only so the release knows it was a drag and not a tap;
-      // nothing moves under the finger, because the step itself is instant.
-      const q = local(e);
-      if (Math.abs(q.x - base.p.x) > 10) dragged = true;
-      return;
-    } else {
+      lbApply(false);
       return;
     }
-    lbApply(false);
+    if (pts.size !== 1 || base.pinch) return;
+    const dx = q.x - base.p.x, dy = q.y - base.p.y;
+    if (base.s > 1.01) {
+      if (Math.abs(dx) + Math.abs(dy) > 6) dragged = true;
+      panTo(base.tx + dx, base.ty + dy);
+      return;
+    }
+    // Unzoomed. The direction is settled on the first 10px of travel.
+    if (!lbDrag.axis) {
+      if (Math.abs(dx) + Math.abs(dy) < 10) return;
+      lbDrag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    dragged = true;
+    if (reducedMotion) return;
+    lbDrag.x = base.ox + dx;
+    lbDrag.y = lbDrag.axis === 'y' ? base.oy + dy : 0;
+    showDrag();
   });
 
   const lift = (e) => {
@@ -1596,21 +2156,32 @@ function initLightboxZoom() {
     pts.delete(e.pointerId);
     if (pts.size === 1) {
       // Second finger lifted mid-pinch — re-anchor rather than let it jump.
-      const only = Array.from(pts.keys())[0];
-      base = { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: pts.get(only) };
+      const only = Array.from(pts.values())[0];
+      base = { s: lbZoom.scale, tx: lbZoom.tx, ty: lbZoom.ty, p: only, t: e.timeStamp, ox: lbDrag.x, oy: lbDrag.y };
+      hist = [{ t: e.timeStamp, ...only }];
       return;
     }
     if (pts.size) return;
     const start = base;
     base = null;
-    if (lbZoom.scale < 1.02) lbResetZoom(true);
+    const v = recentVelocity(hist);
+    if (start && !start.pinch && start.s > 1.01 && dragged) { coast(v); return; }
+    // A pinch let go just above 1x snaps back to it.
+    if (lbZoom.scale !== 1 && lbZoom.scale < 1.02) lbResetZoom(true);
 
-    // Same thresholds as attachSwipe elsewhere on the page: distance OR
-    // velocity, so a flick does not have to cross the whole figure.
-    if (dragged && start && start.p && lbZoom.scale < 1.02) {
-      const dx = local(e).x - start.p.x;
-      const v = Math.abs(dx) / Math.max(1, e.timeStamp - (start.t || e.timeStamp));
-      if (Math.abs(dx) > 45 || v > 0.11) { lbStep(dx < 0 ? 1 : -1); return; }
+    if (dragged && start && !start.pinch && lbDrag.axis) {
+      if (reducedMotion) {
+        // No travel: a swipe across steps, a swipe down closes.
+        const dx = local(e).x - start.p.x, dy = local(e).y - start.p.y;
+        const axis = lbDrag.axis;
+        clearDrag();
+        if (axis === 'x' && Math.abs(dx) > 45) lbStep(dx < 0 ? 1 : -1);
+        else if (axis === 'y' && dy > 110) closeLightbox();
+        return;
+      }
+      const avg = Math.abs(lbDrag.x - start.ox) / Math.max(1, e.timeStamp - start.t);
+      if (lbDrag.axis === 'x') releaseAcross(avg, v); else releaseDown(v);
+      return;
     }
 
     if (!dragged) {
@@ -2139,6 +2710,10 @@ function initHobbyGraph() {
 // autoplay at a varied interval, paused on hover and keyboard focus, arrows,
 // dots, swipe, and a play/pause button for touch visitors, who have no hover
 // to pause on. Reduced motion starts it paused on the first slide.
+// It only runs while at least half of it is on screen and the tab is in
+// front. It used to start its timer at page load, so it turned over while
+// the visitor was still reading the top of the page (and in background
+// tabs), and they scrolled down to whichever photo it had reached.
 function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   const track = document.getElementById(`${prefix}-track`);
   if (!track) return;
@@ -2149,8 +2724,10 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   let current = 0;
   let timer = null;
   let isPaused = reducedMotion;
+  let inView = !('IntersectionObserver' in window);
+  const showing = () => inView && !document.hidden;
 
-  const videoIn = (s) => { const v = s.querySelector('video'); if (v) { v.currentTime = 0; v.play().catch(() => {}); } };
+  const videoIn = (s) => { const v = s.querySelector('video'); if (v && showing()) { v.currentTime = 0; v.play().catch(() => {}); } };
   const videoOut = (s) => { const v = s.querySelector('video'); if (v) v.pause(); };
 
   function goTo(n) {
@@ -2166,7 +2743,7 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   }
   function scheduleNext() {
     clearTimeout(timer);
-    if (isPaused) return;
+    if (isPaused || !showing()) return;
     timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, minDelay + Math.random() * spread);
   }
   const step = (d) => { clearTimeout(timer); goTo(current + d); scheduleNext(); };
@@ -2176,6 +2753,22 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   scheduleNext();
 
   const carousel = document.getElementById(`${prefix}-carousel`);
+  // Coming into view (or back to the tab) starts the clock and resumes the
+  // current clip where it was; leaving stops both.
+  const wake = () => {
+    const v = slides[current].querySelector('video');
+    if (showing()) { if (v) v.play().catch(() => {}); scheduleNext(); }
+    else { clearTimeout(timer); if (v) v.pause(); }
+  };
+  if (!inView) {
+    new IntersectionObserver((entries) => entries.forEach(e => {
+      const now = e.intersectionRatio >= 0.5;
+      if (now === inView) return;
+      inView = now;
+      wake();
+    }), { threshold: [0, 0.5] }).observe(carousel);
+  }
+  document.addEventListener('visibilitychange', wake);
   carousel.addEventListener('mouseenter', () => clearTimeout(timer));
   carousel.addEventListener('mouseleave', () => scheduleNext());
   carousel.addEventListener('focusin', () => clearTimeout(timer));
@@ -2186,7 +2779,9 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   const nextBtn = document.getElementById(`${prefix}-next`);
   if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
   if (nextBtn) nextBtn.addEventListener('click', () => step(1));
-  attachSwipe(carousel, () => step(-1), () => step(1));
+  attachSwipe(carousel, () => step(-1), () => step(1), () => [...slides[current].children]);
+  carousel.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') clearTimeout(timer); });
+  carousel.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') scheduleNext(); });
 
   const playPauseBtn = document.getElementById(`${prefix}-playpause`);
   if (playPauseBtn) {
@@ -2266,6 +2861,60 @@ function initTheme() {
   });
 }
 
+// ── Printing ───────────────────────────────────────────
+// Figures are built, and sections revealed, as the reader scrolls to
+// them; a reader who prints straight away would get empty frames and blank
+// sections. Before printing, everything is drawn and shown.
+function initPrint() {
+  window.addEventListener('beforeprint', () => {
+    if (window.ensureLeadsBetween) window.ensureLeadsBetween(-Infinity, Infinity);
+    document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; });
+    document.querySelectorAll('.section-reveal').forEach(s => s.classList.add('visible'));
+  });
+}
+
+// ── Copy the address ───────────────────────────────────
+// "Email me" opens a mail app, which on a computer without one set up does
+// nothing a visitor can see, and many people would rather paste an address
+// into their own mail or tracking tool. The button beside the address
+// copies it and says so where the eye already is.
+function initCopy() {
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    const text = btn.dataset.copy;
+    const status = document.createElement('span');
+    status.className = 'sr-only';
+    status.setAttribute('role', 'status');
+    btn.after(status);
+    let timer = 0;
+    const copied = () => {
+      btn.classList.add('is-done');
+      status.textContent = 'Email address copied';
+      clearTimeout(timer);
+      timer = setTimeout(() => { btn.classList.remove('is-done'); status.textContent = ''; }, 1600);
+    };
+    const byHand = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+      return ok;
+    };
+    btn.addEventListener('click', () => {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(copied, () => { if (byHand()) copied(); });
+      } else if (byHand()) {
+        copied();
+      }
+    });
+    btn.hidden = false;
+  });
+}
+
 // A clip in the page (not in a carousel) plays only while it is on screen,
 // and not at all under reduced motion, where its poster frame stands in.
 function initInViewVideos() {
@@ -2278,13 +2927,104 @@ function initInViewVideos() {
   vids.forEach(v => { v.preload = 'metadata'; io.observe(v); });
 }
 
+// ── Projects: built before the first paint ─────────────
+// On the projects page this script sits straight after the chapters'
+// container, and the page's head holds its first paint until the band after
+// it has been read in (<link rel="expect" blocking="render">). So the
+// chapters are built here, while the page is still loading, and a #chapter
+// address is landed on before anything is drawn: the page appears whole and
+// already at the chapter. It used to paint the yellow band halfway down the
+// first screen and then push it away when the chapters arrived (a layout
+// shift of 0.55), and a result clicked on Home showed the page's top for a
+// few frames before jumping 2,212px to its chapter.
+const pageYOf = (n) => { let y = 0; for (; n; n = n.offsetParent) y += n.offsetTop; return y; };
+const builtEarly = document.readyState === 'loading' && !!document.getElementById('projects-container');
+if (builtEarly) {
+  buildProjectIndex();
+  buildProjects();
+  const vh = window.innerHeight;
+  const id = decodeURIComponent(location.hash.slice(1));
+  const target = id && document.getElementById(id);
+  let landY = window.scrollY;
+  if (target) {
+    landY = Math.max(0, pageYOf(target) - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0));
+    // Instant, stated: the page's scroll-behavior is smooth, and a bare
+    // scrollTo here would start a glide that the first paint catches at 0.
+    window.scrollTo({ top: landY, behavior: 'instant' });
+    if (window.ensureLeadsBetween) window.ensureLeadsBetween(landY - vh, landY + vh * 1.5);
+  }
+  // Whatever will be on screen is shown at once: its parts would otherwise
+  // sit at opacity 0 until initReveal runs, after the rest of the page is in.
+  document.querySelectorAll('.section-reveal').forEach(s => {
+    const top = pageYOf(s) - landY;
+    if (top < vh && top + s.offsetHeight > 0) s.classList.add('visible', 'reveal-instant');
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    document.querySelectorAll('.reveal-instant').forEach(s => s.classList.remove('reveal-instant'))));
+}
+
+// ── The plot carried across ────────────────────────────
+// The home page's nozzle plot links to the nozzle chapter, where the same
+// plot is the chapter's figure. Followed from the plot, the change of page
+// carries it: the plot flies from the hero to its place in the chapter
+// while the pages crossfade around it, so the claim and its evidence join
+// up. Only on that link, once per click; browsers without cross-page view
+// transitions, and reduced motion, get the ordinary change of page.
+// On the home page the plot is named for the transition as it is clicked.
+function initPlotFlight() {
+  const fig = document.querySelector('.rig-fig');
+  const img = fig && fig.querySelector('img');
+  if (!img || reducedMotion) return;
+  fig.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    img.style.viewTransitionName = 'nozzle-plot';
+    try { sessionStorage.setItem('plot-flight', String(Date.now())); } catch (_) {}
+  });
+  // Back on this page (from the cache), the name is dropped again.
+  window.addEventListener('pageshow', () => { img.style.viewTransitionName = ''; });
+}
+// On the projects page, just before the first frame: a copy of the plot is
+// laid exactly over the chapter's figure and given the same name, the
+// figure and its callouts are hidden under it, and all of it is put back
+// once the plot has landed. The copy matters because the figure shows the
+// plot inside a padded frame; the copy is the plot alone, the same shape as
+// the one that left.
+if (builtEarly) {
+  window.addEventListener('pagereveal', (e) => {
+    let t = 0;
+    try { t = +sessionStorage.getItem('plot-flight') || 0; sessionStorage.removeItem('plot-flight'); } catch (_) {}
+    if (!e.viewTransition || reducedMotion || Date.now() - t > 5000 || location.hash !== '#p-nozzle') return;
+    const real = leadMedia(PROJECTS.findIndex(p => p.anchor === 'p-nozzle'));
+    if (!real) return;
+    const view = PROJECTS.find(p => p.anchor === 'p-nozzle').views[0];
+    const r = shownRect(real, view.size);
+    if (!r) return;
+    const copy = document.createElement('img');
+    copy.src = real.getAttribute('src');
+    copy.alt = '';
+    copy.setAttribute('aria-hidden', 'true');
+    copy.style.cssText = `position:fixed;left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;z-index:30;pointer-events:none;view-transition-name:nozzle-plot;`;
+    document.body.appendChild(copy);
+    const layer = real.parentElement.querySelector('.callouts');
+    real.style.visibility = 'hidden';
+    if (layer) layer.style.visibility = 'hidden';
+    const land = () => {
+      copy.remove();
+      real.style.visibility = '';
+      if (layer) { layer.style.visibility = ''; layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease' }); }
+    };
+    e.viewTransition.finished.then(land, land);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildProjectGrid();
-  buildProjectIndex();
+  if (!builtEarly) buildProjectIndex();
   initJumpMenu();
-  buildProjects();
+  if (!builtEarly) buildProjects();
   initCalloutFigures();
   initRevisionSwitch();
+  initPlotFlight();
   buildSoftware();
   initNav();
   initReveal();
@@ -2298,5 +3038,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel({ prefix: 'hobby', slide: 'hobby-slide', dot: 'hobby-dot', minDelay: 2800, spread: 2400 });
   initCarousel({ prefix: 'dornier', slide: 'internship-slide', dot: 'internship-dot', minDelay: 3200, spread: 2200 });
   initInViewVideos();
+  initCopy();
+  initPrint();
   initTheme();
 });

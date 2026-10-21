@@ -28,7 +28,7 @@ import { dirname, join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const PAGES = ['portfolio-light.html', 'projects.html', 'internships.html', 'about.html'];
+const PAGES = ['portfolio-light.html', 'projects.html', 'internships.html', 'about.html', '404.html'];
 if (!process.argv[2]) {
   let status = 0;
   for (const page of PAGES) {
@@ -48,7 +48,9 @@ const expand = (html, base) => html
     const css = local(href, base);
     return css === null ? m : `<style${id ? ` id="${id}"` : ''}>${css}</style>`;
   })
-  .replace(/<script src="(site[^"]*\.js)"><\/script>/g, (m, href) => {
+  // The 404 page links its files from the site root ("/site.js"), since it
+  // is served at any depth; both forms resolve against the page's folder.
+  .replace(/<script src="\/?(site[^"]*\.js)"><\/script>/g, (m, href) => {
     const js = local(href, base);
     return js === null ? m : `<script>${js}</script>`;
   });

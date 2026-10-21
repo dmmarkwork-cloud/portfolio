@@ -46,6 +46,21 @@
       this.appendChild(holder);
       this.appendChild(legend);
 
+      // three.js (169 KB) is fetched only once the turntable is within 600px
+      // of the screen; the home page used to load it with everything else.
+      // A reboot (the theme switch) starts a new boot, and the one still
+      // waiting here then bows out.
+      const token = this._token = {};
+      if ('IntersectionObserver' in window) {
+        await new Promise((resolve) => {
+          const io = new IntersectionObserver((es) => {
+            if (es.some((e) => e.isIntersecting)) { io.disconnect(); resolve(); }
+          }, { rootMargin: '600px 0px' });
+          io.observe(this);
+        });
+      }
+      if (this._token !== token || this._stop) return;
+
       let THREE;
       try { THREE = await import(THREE_URL); }
       catch (e) {
