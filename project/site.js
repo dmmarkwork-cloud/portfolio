@@ -813,12 +813,22 @@ function buildProjectIndex() {
       return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
   }
-  // The projects page's own index links within the page; the 404 page's
-  // links into it from wherever the wrong address was.
-  // Its base is the bar's own Projects link, which the Pages mirror's build
-  // rewrites under /portfolio/ along with every other path on that page.
-  const projectsLink = document.querySelector('.nav-scroll a[href$="projects"]');
-  [['proj-index', ''], ['nf-index', projectsLink ? projectsLink.getAttribute('href') : '/projects']].forEach(([id, page]) => {
+  // The 404 page shows the seven as pictures, each linking to its chapter
+  // from wherever the wrong address was. Its base is the bar's own Projects
+  // link, which the Pages mirror's build rewrites under /portfolio/.
+  const nf = document.getElementById('nf-index');
+  if (nf) {
+    const link = document.querySelector('.nav-scroll a[href$="projects"]');
+    const base = link ? link.getAttribute('href') : '/projects';
+    nf.innerHTML = PROJECTS.map((p, i) => {
+      const pic = p.gridThumb || (p.views.find(v => v.src) || {}).src || (p.views.find(v => v.poster) || {}).poster;
+      const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
+      const whole = /\.png$/i.test(pic) ? ' class="is-contain"' : '';
+      return `<li style="--i:${i}"><a href="${base}#${p.anchor}"><img src="${variant('cards', pic)}" data-full="${pic}" alt=""${whole} loading="lazy" decoding="async"><span class="nf-name">${p.short}</span><span class="k">${k}</span></a></li>`;
+    }).join('');
+  }
+  // The projects page's own index links within the page.
+  [['proj-index', '']].forEach(([id, page]) => {
     const index = document.getElementById(id);
     if (!index) return;
     let group = null;
@@ -1200,7 +1210,10 @@ function odometer(el, values, start) {
     const [i, f] = split(v);
     return [...Array(intN - i.length).fill(null), ...i.split('').map(Number), ...f.padEnd(fracN, '0').split('').map(Number)];
   };
-  const cells = '0123456789'.repeat(3).split('').map(d => `<span>${d}</span>`).join('');
+  // The figures are generated content, not text: selecting the readout
+  // would otherwise copy thirty digits a column, and anything reading the
+  // page's text would find them.
+  const cells = '0123456789'.repeat(3).split('').map(d => `<span data-d="${d}"></span>`).join('');
   let cols = '';
   for (let k = 0; k < intN + fracN; k++) {
     if (k === intN && fracN) cols += '<span class="odo-dot">.</span>';

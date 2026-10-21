@@ -501,6 +501,7 @@ nav.bar.is-stuck { background: var(--surface); }
 .odo-col.is-blank { width: 0; opacity: 0; }
 .odo-strip { display: flex; flex-direction: column; }
 .odo-strip > span { display: block; height: 1em; text-align: center; }
+.odo-strip > span::before { content: attr(data-d); }
 /* Withdrawn, the struck line draws across the number once its figures have
    landed, and goes back the way it came at once when the number changes
    again. */
@@ -829,6 +830,25 @@ holo-bay:defined .holo-fallback { display: none; }
 .proj-index.page-index { margin-top: clamp(32px, 4vw, 56px); max-width: 36rem; }
 .page-statement { margin-top: clamp(16px, 1.8vw, 24px); max-width: 30ch; font-size: var(--step-lead); line-height: 1.35; color: var(--muted); }
 .nf-action { margin-top: clamp(24px, 2.8vw, 36px); }
+/* The 404 page: the seven projects as pictures, two to a row, each with its
+   number, so a wrong address still lands among the work. */
+.nf-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px var(--gutter); }
+.nf-grid a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--step-small);
+  transition: transform 120ms var(--ease-out);
+}
+.nf-grid a:active { transform: scale(0.98); }
+.nf-grid img { grid-column: 1 / -1; display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface); }
+.nf-grid img.is-contain { object-fit: contain; padding: 10px; }
+.nf-grid .k { color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) {
+  .nf-grid a:hover .nf-name { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.2em; }
+}
 
 /* ── Projects: the index ──────────────────────────────── */
 .proj-index { list-style: none; margin: 0; padding: 0; display: grid; }
@@ -1331,6 +1351,8 @@ html:not(.intro-seen) .page-head .facts > div,
 html:not(.intro-seen) .page-photo,
 html:not(.intro-seen) .proj-index li { animation: part-in 420ms var(--ease-out) backwards; }
 html:not(.intro-seen) .page-photo { animation-delay: 140ms; }
+/* The 404 page's seven pictures arrive one after another, 45ms apart. */
+html:not(.intro-seen) .nf-grid li { animation: part-in 420ms var(--ease-out) backwards; animation-delay: calc(140ms + var(--i, 0) * 45ms); }
 html:not(.intro-seen) .page-head .facts > div { animation-delay: 200ms; }
 html:not(.intro-seen) .page-index li:nth-child(1), html:not(.intro-seen) .proj-index li:nth-child(-n+3) { animation-delay: 180ms; }
 html:not(.intro-seen) .page-index li:nth-child(2), html:not(.intro-seen) .proj-index li:nth-child(n+4) { animation-delay: 230ms; }
@@ -1408,7 +1430,7 @@ nav.bar { view-transition-name: site-bar; }
   html:not(.intro-seen) .hero-rig > *, html:not(.intro-seen) .page-title, html:not(.intro-seen) .page-lede,
   html:not(.intro-seen) .page-statement, html:not(.intro-seen) .page-index li,
   html:not(.intro-seen) .page-head .facts > div, html:not(.intro-seen) .page-photo,
-  html:not(.intro-seen) .proj-index li { animation-name: part-in-still; animation-duration: 200ms; }
+  html:not(.intro-seen) .proj-index li, html:not(.intro-seen) .nf-grid li { animation-name: part-in-still; animation-duration: 200ms; }
   .btn .icon-down { transform: none !important; }
   .ledger-frame { transition: none; }
   .jump-menu { transition: opacity 160ms ease; }
