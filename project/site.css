@@ -693,21 +693,26 @@ holo-bay:defined .holo-fallback { display: none; }
 }
 
 .site-foot { padding: 26px 0 30px; color: var(--muted); font-size: var(--step-small); }
+/* Three things on one baseline: the pages at the left margin, the motto
+   centred whatever the two ends measure, the copyright at the right. */
 .foot-line {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: baseline;
   gap: 12px 24px;
 }
+.foot-quote { color: var(--ink); text-align: center; }
+.foot-copy { justify-self: end; }
 .foot-links { display: flex; flex-wrap: wrap; gap: 6px 24px; }
 .foot-links a { color: var(--ink); text-decoration: none; }
 @media (hover: hover) and (pointer: fine) {
   .foot-links a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
   .band-links a:hover { text-decoration-thickness: 0.12em; }
 }
-@media (max-width: 759.98px) {
-  .foot-line { flex-direction: column; gap: 10px; }
+@media (max-width: 899.98px) {
+  .foot-line { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .foot-quote { text-align: left; }
+  .foot-copy { justify-self: start; }
 }
 
 /* ── Inner pages: the head ─────────────────────────────── */
