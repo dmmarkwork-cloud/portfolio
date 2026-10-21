@@ -756,6 +756,36 @@ holo-bay:defined .holo-fallback { display: none; }
   text-underline-offset: 0.2em;
   overflow-wrap: anywhere;
 }
+/* Copy, beside the address: a quiet tone step on the yellow whose label
+   turns into "Copied" for a moment, the two labels crossfading through a
+   2px blur so they read as one label changing. Both share one cell, so the
+   button keeps its width. Shown only once the script can copy. */
+.band-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.copy-btn {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  background: rgb(0 0 0 / 0.1);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--step-small);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 120ms var(--ease-out);
+}
+.copy-btn[hidden] { display: none; }
+.copy-btn::after { content: ''; position: absolute; inset: -7px -4px; }
+.copy-btn:active { transform: scale(0.97); }
+.copy-btn > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 6px; transition: opacity 200ms ease, filter 200ms ease; }
+.copy-btn svg { width: 14px; height: 14px; flex: none; }
+.copy-btn .copy-done, .copy-btn.is-done .copy-idle { opacity: 0; filter: blur(2px); }
+.copy-btn.is-done .copy-done { opacity: 1; filter: blur(0); }
+@media (hover: hover) and (pointer: fine) {
+  .copy-btn:hover { background: rgb(0 0 0 / 0.16); }
+}
 .band-bases { display: grid; gap: 14px; font-size: var(--step-small); line-height: 1.5; }
 .band-bases span { display: block; }
 /* On the yellow the button is the band's own dark ink in both themes. */

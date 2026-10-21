@@ -2814,6 +2814,48 @@ function initTheme() {
   });
 }
 
+// ── Copy the address ───────────────────────────────────
+// "Email me" opens a mail app, which on a computer without one set up does
+// nothing a visitor can see, and many people would rather paste an address
+// into their own mail or tracking tool. The button beside the address
+// copies it and says so where the eye already is.
+function initCopy() {
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    const text = btn.dataset.copy;
+    const status = document.createElement('span');
+    status.className = 'sr-only';
+    status.setAttribute('role', 'status');
+    btn.after(status);
+    let timer = 0;
+    const copied = () => {
+      btn.classList.add('is-done');
+      status.textContent = 'Email address copied';
+      clearTimeout(timer);
+      timer = setTimeout(() => { btn.classList.remove('is-done'); status.textContent = ''; }, 1600);
+    };
+    const byHand = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+      return ok;
+    };
+    btn.addEventListener('click', () => {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(copied, () => { if (byHand()) copied(); });
+      } else if (byHand()) {
+        copied();
+      }
+    });
+    btn.hidden = false;
+  });
+}
+
 // A clip in the page (not in a carousel) plays only while it is on screen,
 // and not at all under reduced motion, where its poster frame stands in.
 function initInViewVideos() {
@@ -2882,5 +2924,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel({ prefix: 'hobby', slide: 'hobby-slide', dot: 'hobby-dot', minDelay: 2800, spread: 2400 });
   initCarousel({ prefix: 'dornier', slide: 'internship-slide', dot: 'internship-dot', minDelay: 3200, spread: 2200 });
   initInViewVideos();
+  initCopy();
   initTheme();
 });
