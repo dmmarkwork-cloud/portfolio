@@ -398,11 +398,11 @@ function renderGallery(pi) {
 // Content swapped in place (a figure, its caption, a release's numbers)
 // arrives at once and settles from 0.6 opacity over 150ms on the page's
 // ease-out curve, with a 2px blur to bridge a picture. Nothing waits for an
-// exit, and reduced motion skips it.
+// exit. Reduced motion keeps the fade, which says something changed.
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 function settle(el, blur) {
-  if (!el || reducedMotion || !el.animate) return;
-  el.animate(blur
+  if (!el || !el.animate) return;
+  el.animate(blur && !reducedMotion
     ? [{ opacity: 0.6, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0)' }]
     : [{ opacity: 0.6 }, { opacity: 1 }], { duration: 150, easing: EASE_OUT });
 }
@@ -651,17 +651,23 @@ function buildProjectIndex() {
       return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
   }
-  const index = document.getElementById('proj-index');
-  if (index) {
+  // The projects page's own index links within the page; the 404 page's
+  // links into it from wherever the wrong address was.
+  // Its base is the bar's own Projects link, which the Pages mirror's build
+  // rewrites under /portfolio/ along with every other path on that page.
+  const projectsLink = document.querySelector('.nav-scroll a[href$="projects"]');
+  [['proj-index', ''], ['nf-index', projectsLink ? projectsLink.getAttribute('href') : '/projects']].forEach(([id, page]) => {
+    const index = document.getElementById(id);
+    if (!index) return;
     let group = null;
     index.innerHTML = PROJECTS.map(p => {
       const head = p.group !== group
         ? `<li><p class="grp">${p.group === 'flagship' ? 'Analyses' : 'Built by hand'}</p></li>` : '';
       group = p.group;
       const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
-      return head + `<li><a href="#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
+      return head + `<li><a href="${page}#${p.anchor}"><span>${p.title}</span><span class="k">${k}</span></a></li>`;
     }).join('');
-  }
+  });
 }
 
 // The project chapter crossing the reading line (42% down the screen), or
@@ -2139,6 +2145,10 @@ function initHobbyGraph() {
 // autoplay at a varied interval, paused on hover and keyboard focus, arrows,
 // dots, swipe, and a play/pause button for touch visitors, who have no hover
 // to pause on. Reduced motion starts it paused on the first slide.
+// It only runs while at least half of it is on screen and the tab is in
+// front. It used to start its timer at page load, so it turned over while
+// the visitor was still reading the top of the page (and in background
+// tabs), and they scrolled down to whichever photo it had reached.
 function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   const track = document.getElementById(`${prefix}-track`);
   if (!track) return;
@@ -2149,8 +2159,10 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   let current = 0;
   let timer = null;
   let isPaused = reducedMotion;
+  let inView = !('IntersectionObserver' in window);
+  const showing = () => inView && !document.hidden;
 
-  const videoIn = (s) => { const v = s.querySelector('video'); if (v) { v.currentTime = 0; v.play().catch(() => {}); } };
+  const videoIn = (s) => { const v = s.querySelector('video'); if (v && showing()) { v.currentTime = 0; v.play().catch(() => {}); } };
   const videoOut = (s) => { const v = s.querySelector('video'); if (v) v.pause(); };
 
   function goTo(n) {
@@ -2166,7 +2178,7 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   }
   function scheduleNext() {
     clearTimeout(timer);
-    if (isPaused) return;
+    if (isPaused || !showing()) return;
     timer = setTimeout(() => { goTo(current + 1); scheduleNext(); }, minDelay + Math.random() * spread);
   }
   const step = (d) => { clearTimeout(timer); goTo(current + d); scheduleNext(); };
@@ -2176,6 +2188,22 @@ function initCarousel({ prefix, slide, dot, minDelay, spread }) {
   scheduleNext();
 
   const carousel = document.getElementById(`${prefix}-carousel`);
+  // Coming into view (or back to the tab) starts the clock and resumes the
+  // current clip where it was; leaving stops both.
+  const wake = () => {
+    const v = slides[current].querySelector('video');
+    if (showing()) { if (v) v.play().catch(() => {}); scheduleNext(); }
+    else { clearTimeout(timer); if (v) v.pause(); }
+  };
+  if (!inView) {
+    new IntersectionObserver((entries) => entries.forEach(e => {
+      const now = e.intersectionRatio >= 0.5;
+      if (now === inView) return;
+      inView = now;
+      wake();
+    }), { threshold: [0, 0.5] }).observe(carousel);
+  }
+  document.addEventListener('visibilitychange', wake);
   carousel.addEventListener('mouseenter', () => clearTimeout(timer));
   carousel.addEventListener('mouseleave', () => scheduleNext());
   carousel.addEventListener('focusin', () => clearTimeout(timer));

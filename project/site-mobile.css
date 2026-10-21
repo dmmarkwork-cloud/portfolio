@@ -79,10 +79,11 @@
   @starting-style {
     nav.nav-collapsed.nav-open .nav-scroll .nav-link { opacity: 0; transform: translateY(6px); }
   }
-  /* The global reduced-motion rule shortens durations but not delays, so
-     the rows would still appear one after another; here they open at once. */
+  /* Reduced motion: the sheet and its rows fade in together, without the
+     drop or the row-by-row rise. */
   @media (prefers-reduced-motion: reduce) {
-    nav.nav-collapsed .nav-scroll .nav-link { transition-delay: 0s; transform: none; }
+    nav.nav-collapsed .nav-scroll { transition: opacity 200ms ease; }
+    nav.nav-collapsed .nav-scroll .nav-link { transition: color 150ms ease, opacity 200ms ease; transform: none; }
   }
   html.menu-open { overflow: hidden; }
 }
@@ -105,6 +106,24 @@
   .hero-title { font-size: clamp(40px, 11.4vw, 56px); }
   .rig-switch { align-self: stretch; }
   .rig-switch button { flex: 1 1 0; justify-content: center; min-height: 44px; padding: 0 8px; }
+}
+
+/* ── Page heads on a phone ───────────────────────────────
+   The index beside the title (Projects, the 404 page) drops under it in one
+   column; it needs a section's breath above it, or its first group label
+   reads as the last line of the sentence before. */
+@media (max-width: 759.98px) {
+  .page-head nav.col-side { margin-top: 40px; }
+}
+
+/* ── Tools on a phone: two groups to a row ───────────────
+   In one column the nineteen names ran about a screen and a half; side by
+   side the four groups fit in about one, and still read by their heads. */
+@media (max-width: 640px) {
+  .tools-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; }
+  .tool-item { align-items: flex-start; gap: 8px; font-size: 15px; }
+  .tool-icon { width: 24px; height: 20px; }
+  .tool-icon img { max-width: 24px; max-height: 18px; }
 }
 
 /* ── Touch targets ───────────────────────────────────────

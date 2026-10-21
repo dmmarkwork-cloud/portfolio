@@ -48,6 +48,11 @@ jobs:
       # committed, which is what makes it safe to send traffic off-site:
       # portfolio-light.html itself is shared with Vercel, and a redirect
       # inside that file would make the custom domain redirect to itself.
+      # The 404 page is served at any depth, so its paths are root-absolute;
+      # on this mirror the root is /portfolio/.
+      - name: Point the 404 page at the mirror's root
+        run: sed -i -E 's#(href|src)="/#\1="/portfolio/#g' dist/404.html
+
       - name: Generate Pages redirect stub
         run: |
           cat > dist/index.html <<'HTML'
