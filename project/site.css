@@ -448,6 +448,27 @@ nav.bar.is-stuck { background: var(--surface); }
 .rig-switch button:active { transform: scale(0.97); }
 .rig-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .rig-switch .callout-balloon { position: static; margin: 0; width: 24px; height: 24px; }
+
+/* ── Segmented switches: one block that travels ───────────
+   The yellow block behind the hero switch and the revision toggles slides
+   to the button pressed, at the page's ease-in-out for things moving on
+   screen. Until the script has placed it (has-thumb), the pressed button
+   keeps its own fill, so the first paint already shows the state. */
+.rig-switch, .rev-toggle { position: relative; }
+.rig-switch button, .rev-toggle button { position: relative; z-index: 1; }
+.seg-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  background: var(--accent);
+  pointer-events: none;
+  transition: transform 240ms var(--ease-in-out), width 240ms var(--ease-in-out);
+}
+.rig-switch.has-thumb button[aria-pressed="true"],
+.rev-toggle.has-thumb button[aria-pressed="true"] { background: transparent; }
+
 .rig-read { display: grid; gap: 8px; }
 .rig-readout {
   display: flex;
@@ -456,19 +477,61 @@ nav.bar.is-stuck { background: var(--surface); }
   gap: 4px 14px;
 }
 .rig-num {
+  position: relative;
   font-size: var(--step-head);
   font-weight: 580;
   letter-spacing: -0.02em;
   line-height: 1;
   font-variant-numeric: tabular-nums lining-nums;
+  transition: color 200ms ease;
 }
-.rig-num.is-withdrawn {
-  color: var(--muted);
-  text-decoration: line-through;
-  text-decoration-thickness: 0.06em;
+.rig-num.is-withdrawn { color: var(--muted); }
+/* The rolling figures (odometer() in site.js): each column one figure wide
+   and one tall, its strip of digits moved under the opening. clip-path,
+   not overflow, so the column keeps its digits' baseline. */
+.odo { position: relative; display: inline-flex; align-items: baseline; }
+.odo-col {
+  display: inline-flex;
+  flex-direction: column;
+  width: var(--dw, 0.6em);
+  height: 1em;
+  clip-path: inset(0);
+  transition: width 560ms var(--ease-out), opacity 300ms ease;
 }
+.odo-col.is-blank { width: 0; opacity: 0; }
+.odo-strip { display: flex; flex-direction: column; }
+.odo-strip > span { display: block; height: 1em; text-align: center; }
+/* Withdrawn, the struck line draws across the number once its figures have
+   landed, and goes back the way it came at once when the number changes
+   again. */
+.rig-strike {
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  top: 0.45em;
+  height: 0.06em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 140ms var(--ease-out);
+}
+.rig-num.is-withdrawn .rig-strike { transform: scaleX(1); transition: transform 220ms var(--ease-out) 440ms; }
 .rig-unit { color: var(--muted); font-size: var(--step-small); }
 .rig-note { max-width: 52ch; color: var(--muted); font-size: var(--step-small); line-height: 1.5; }
+/* Both releases' label and note share one cell; the one shown fades in
+   after the other has started out. */
+.rig-unit:has(> span), .rig-note:has(> span) { display: grid; }
+.rig-unit > span, .rig-note > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 140ms ease, visibility 0s linear 140ms;
+}
+.rig-unit > span.is-on, .rig-note > span.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease 100ms, visibility 0s;
+}
 .rig-cap { max-width: 46ch; font-size: var(--step-body); line-height: 1.5; text-wrap: pretty; }
 /* With no script the switch would do nothing, so it is only shown once the
    script has taken the figure over. Both callouts stay drawn either way. */
@@ -1315,4 +1378,7 @@ nav.bar { view-transition-name: site-bar; }
   [data-theme="dark"] .theme-toggle .icon-sun { transform: none; transition: opacity 200ms ease; }
   #lightbox-inner, #lightbox.open #lightbox-inner { transform: none; }
   .lb-media-el.settling { transition: none; }
+  .seg-thumb { transition: none; }
+  .odo-col { transition: opacity 200ms ease; }
+  .rig-strike, .rig-num.is-withdrawn .rig-strike { transition: none; }
 }

@@ -49,6 +49,10 @@ const PROJECTS = [
     },
     views: [
       { label: 'FEA · von Mises', src: 'fea/mesh3/von-mises-global.png', size: [1632, 582],
+        // The inner wall from the junction reading to the throat reading,
+        // traced on this plot: the straight converging run, then the fillet
+        // into the throat. The hero's switch moves the reading along it.
+        wall: 'M843 113 L1000 282 Q1044 329 1121 329',
         caption: 'Governing stress at the chamber-to-converging junction: 29.6\u00a0MPa membrane plus bending on mesh J3. The 82.3\u00a0MPa peak at the sharp corner is singular and excluded.',
         callouts: [
           { x: 843, y: 113, bx: 700, by: 34, rev: 'v2.0', key: 'Chamber-to-converging junction. v2.0 reads it here: <span class="data">7.12</span>' },
@@ -956,6 +960,7 @@ function setRevision(pi, id) {
   settle(note, false);
   document.querySelectorAll(`#rev-${pi} .rev-toggle button`).forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
+  placeThumb(document.querySelector(`#rev-${pi} .rev-toggle`));
   document.getElementById(`rev-${pi}`).classList.toggle('is-superseded', !!rel.superseded);
 }
 
@@ -993,6 +998,153 @@ function initCalloutFigures() {
   });
 }
 
+// ── Segmented switches ─────────────────────────────────
+// The hero's reading switch and each revision record's toggle: one yellow
+// block behind the buttons slides to the one pressed, where a highlight
+// used to fade out on one button while another faded in. One object moving
+// reads as one control changing state. It is placed without motion at first
+// and on resize; the CSS transition carries a change, and retargets from
+// wherever the block is if the choice changes mid-slide. Until the script
+// places it, the pressed button keeps its own fill.
+function initSegmented(group) {
+  if (!group || group.querySelector('.seg-thumb')) return;
+  const thumb = document.createElement('span');
+  thumb.className = 'seg-thumb';
+  thumb.setAttribute('aria-hidden', 'true');
+  group.prepend(thumb);
+  group._place = (animate) => {
+    const on = group.querySelector('button[aria-pressed="true"]');
+    if (!on) return;
+    if (!animate) thumb.style.transition = 'none';
+    thumb.style.width = `${on.offsetWidth}px`;
+    thumb.style.transform = `translateX(${on.offsetLeft}px)`;
+    if (!animate) { thumb.getBoundingClientRect(); thumb.style.transition = ''; }
+  };
+  group._place(false);
+  group.classList.add('has-thumb');
+  if ('ResizeObserver' in window) new ResizeObserver(() => group._place(false)).observe(group);
+}
+const placeThumb = (group) => { if (group && group._place) group._place(true); };
+
+// ── A number that rolls ────────────────────────────────
+// The readout's figures roll to a new value column by column, the way a
+// counter does: up when the number grows, down when it shrinks, through the
+// digits between. Each column is 0–9 three times over, clipped to one
+// figure, so a roll can start from wherever an interrupted one left it. A
+// column the value does not need (the 4 of 42.70) closes to nothing, and
+// the box keeps the width of the widest value, so the label beside it never
+// moves. Screen readers get the value from a line of text kept beside it.
+function odometer(el, values, start) {
+  const split = (v) => { const [i, f = ''] = String(v).split('.'); return [i, f]; };
+  const intN = Math.max(...values.map(v => split(v)[0].length));
+  const fracN = Math.max(...values.map(v => split(v)[1].length));
+  const digits = (v) => {
+    const [i, f] = split(v);
+    return [...Array(intN - i.length).fill(null), ...i.split('').map(Number), ...f.padEnd(fracN, '0').split('').map(Number)];
+  };
+  const cells = '0123456789'.repeat(3).split('').map(d => `<span>${d}</span>`).join('');
+  let cols = '';
+  for (let k = 0; k < intN + fracN; k++) {
+    if (k === intN && fracN) cols += '<span class="odo-dot">.</span>';
+    cols += `<span class="odo-col"><span class="odo-strip">${cells}</span></span>`;
+  }
+  el.innerHTML = `<span class="odo">${cols}<span class="rig-strike"></span></span>`;
+  el.setAttribute('aria-hidden', 'true');
+  const colEls = [...el.querySelectorAll('.odo-col')];
+  const strips = colEls.map(c => c.firstElementChild);
+  const fs = () => parseFloat(getComputedStyle(el).fontSize) || 16;
+  // One figure's width and the point's, in em, so the sizes follow the
+  // readout's fluid type; measured again once the web font is in.
+  const measure = () => {
+    const m = document.createElement('span');
+    m.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;';
+    el.appendChild(m);
+    m.textContent = '0';
+    const dw = m.getBoundingClientRect().width / fs();
+    m.textContent = '.';
+    const dot = m.getBoundingClientRect().width / fs();
+    m.remove();
+    el.style.setProperty('--dw', `${dw.toFixed(4)}em`);
+    el.style.minWidth = `${((intN + fracN) * dw + (fracN ? dot : 0)).toFixed(4)}em`;
+  };
+  const at = (s, i) => { s.style.transform = `translateY(${-i}em)`; };
+  const now = (s) => -new DOMMatrixReadOnly(getComputedStyle(s).transform).m42 / fs();
+  const rest = (d) => 10 + (d === null ? 0 : d);
+  let cur = digits(start), value = Number(start);
+  strips.forEach((s, k) => { at(s, rest(cur[k])); colEls[k].classList.toggle('is-blank', cur[k] === null); });
+  measure();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  return {
+    to(v) {
+      const next = digits(v);
+      const up = Number(v) > value;
+      strips.forEach((s, k) => {
+        let from = now(s);
+        s.getAnimations().forEach(a => a.cancel());
+        if (from >= 20) from -= 10; else if (from < 10) from += 10;
+        const d = next[k] === null ? 0 : next[k];
+        const target = up ? d + 10 * Math.ceil((from - d) / 10 - 1e-6) : d + 10 * Math.floor((from - d) / 10 + 1e-6);
+        at(s, target);
+        if (!reducedMotion && Math.abs(target - from) > 0.001) {
+          const a = s.animate([{ transform: `translateY(${-from}em)` }, { transform: `translateY(${-target}em)` }],
+            { duration: 560, easing: EASE_OUT });
+          a.onfinish = () => at(s, rest(next[k]));
+        } else {
+          at(s, rest(next[k]));
+        }
+        colEls[k].classList.toggle('is-blank', next[k] === null);
+      });
+      cur = next;
+      value = Number(v);
+    }
+  };
+}
+
+// ── The reading travels ────────────────────────────────
+// Switching readings moves the chosen release's dot along the nozzle's
+// inner wall, from the reading it leaves to the one it takes, with its
+// leader drawn from the dot the whole way. It shows where each release read
+// the stress, as well as that the number changed. The wall is the path
+// traced on the plot (the view's `wall`), from the v2.0 reading to v1.0's.
+function wallTravel(layer, view) {
+  const svg = layer.querySelector('svg');
+  if (!svg || !view.wall || reducedMotion) return null;
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', view.wall);
+  path.setAttribute('fill', 'none');
+  svg.appendChild(path);
+  const len = path.getTotalLength();
+  const [w, h] = view.size;
+  const ease = (t) => t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
+  const put = (dot, line, x, y) => {
+    dot.style.left = `${(x / w * 100).toFixed(3)}%`;
+    dot.style.top = `${(y / h * 100).toFixed(3)}%`;
+    line.setAttribute('x1', x.toFixed(1));
+    line.setAttribute('y1', y.toFixed(1));
+  };
+  let raf = 0, home = null;
+  return (id) => {
+    // A second switch mid-way sends the first dot home before the next sets off.
+    if (home) { cancelAnimationFrame(raf); home(); home = null; }
+    const c = view.callouts.find(x => x.rev === id);
+    const dot = layer.querySelector(`.callout-dot[data-rev="${id}"]`);
+    const line = layer.querySelector(`line[data-rev="${id}"]`);
+    if (!c || !dot || !line) return;
+    const to = id === 'v1.0' ? 1 : 0, from = 1 - to;
+    home = () => put(dot, line, c.x, c.y);
+    let t0 = 0;
+    const frame = (t) => {
+      if (!t0) t0 = t;
+      const k = Math.min(1, (t - t0) / 560);
+      const p = path.getPointAtLength((from + (to - from) * ease(k)) * len);
+      put(dot, line, p.x, p.y);
+      if (k < 1) raf = requestAnimationFrame(frame);
+      else { home(); home = null; }
+    };
+    raf = requestAnimationFrame(frame);
+  };
+}
+
 // ── The revision switch ────────────────────────────────
 // The home page's figure is the nozzle as v2.0 reads it. The switch moves
 // the reading back to where v1.0 took it, the throat, and the readout and
@@ -1008,19 +1160,49 @@ function initRevisionSwitch() {
   const num = document.getElementById('rig-num');
   const unit = document.getElementById('rig-unit');
   const note = document.getElementById('rig-note');
+  const sw = rig.querySelector('.rig-switch');
   const buttons = [...rig.querySelectorAll('.rig-switch button')];
+  const fos = (rel) => (rel.values.find(v => v.k === 'Factor of safety') || {}).v || '';
+  const unitOf = (rel) => `factor of safety, ${rel.id}, ${rel.superseded ? 'withdrawn' : 'current'}`;
+  // The note for the release the page opens on is the page's own sentence,
+  // which names both readings for a reader who never touches the switch;
+  // the other release's is the revision record's.
+  const first = rig.dataset.rev;
+  const opening = note.textContent.trim();
+  const noteOf = (rel) => rel.id === first ? opening : rel.note;
+  // Both releases' label and note are laid in the same place, the one not
+  // shown transparent, so the readout keeps the height of the longer note
+  // and the sentence under it stays put.
+  const stack = (el, text) => {
+    el.innerHTML = r.releases.map(rel => `<span data-rev="${rel.id}"${rel.id === first ? ' class="is-on"' : ''}>${text(rel)}</span>`).join('');
+    el.setAttribute('aria-hidden', 'true');
+  };
+  stack(unit, unitOf);
+  stack(note, noteOf);
+  const said = document.createElement('p');
+  said.className = 'sr-only';
+  rig.querySelector('.rig-read').appendChild(said);
+  const say = (rel) => { said.textContent = `Factor of safety ${fos(rel)}, ${unitOf(rel).replace('factor of safety, ', '')}. ${noteOf(rel)}`; };
+  const firstRel = r.releases.find(x => x.id === first) || r.releases[0];
+  say(firstRel);
+  const odo = odometer(num, r.releases.map(fos), fos(firstRel));
+  num.classList.toggle('is-withdrawn', !!firstRel.superseded);
+  initSegmented(sw);
+  const layer = rig.querySelector('.callouts');
+  const view = nozzle.views.find(v => v.callouts);
+  const travel = layer && view ? wallTravel(layer, view) : null;
   const set = (id) => {
     const rel = r.releases.find(x => x.id === id);
     if (!rel || rig.dataset.rev === id) return;
     rig.dataset.rev = id;
     buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.rev === id ? 'true' : 'false'));
-    const fos = rel.values.find(v => v.k === 'Factor of safety');
-    num.textContent = fos ? fos.v : '';
+    placeThumb(sw);
+    odo.to(fos(rel));
     num.classList.toggle('is-withdrawn', !!rel.superseded);
-    unit.textContent = `factor of safety, ${id}, ${rel.superseded ? 'withdrawn' : 'current'}`;
-    note.textContent = rel.note;
-    settle(num, true);
-    settle(note, false);
+    [unit, note].forEach(el => [...el.children].forEach(s => s.classList.toggle('is-on', s.dataset.rev === id)));
+    say(rel);
+    if (travel) travel(id);
+    if (reducedMotion) settle(num, false);
   };
   buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.rev)));
 }
@@ -1168,6 +1350,8 @@ function buildProjects() {
   } else {
     PROJECTS.forEach((_, pi) => ensure(pi));
   }
+
+  container.querySelectorAll('.rev-toggle').forEach(initSegmented);
 
   // A lead box letterboxes its figure, so callouts are re-laid whenever the
   // box changes size.
