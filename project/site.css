@@ -199,12 +199,15 @@ nav.bar.is-stuck { background: var(--surface); }
   white-space: nowrap;
   transition: color 150ms ease;
 }
-.nav-link[aria-current="page"] {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 8px;
-  text-decoration-color: var(--accent-deep);
+.nav-link[aria-current="page"] { color: var(--ink); }
+.nav-mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 2px;
+  background: var(--accent-deep);
+  pointer-events: none;
 }
 /* The chapter you are reading, after the page name on the Projects page. */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -1245,7 +1248,35 @@ html:not(.intro-seen) .page-statement { animation-delay: 90ms; }
    The whole page changes as one object: a view transition crossfades a
    snapshot, and per-element colour transitions are held off underneath. */
 .theme-swap *, .theme-swap *::before, .theme-swap *::after { transition: none !important; }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; animation-timing-function: ease; }
+/* ── Moving between pages ─────────────────────────────────
+   A cross-document view transition. The bar is its own layer and holds
+   still, the yellow mark under the current page slides to the page you
+   chose, and the page under the bar fades out fast while the new one
+   fades in and settles 10px, all inside 300ms. Browsers without cross-page
+   view transitions load the page as before. */
+@view-transition { navigation: auto; }
+nav.bar { view-transition-name: site-bar; }
+.nav-mark { view-transition-name: nav-mark; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+::view-transition-old(root) { animation: 120ms var(--ease-out) both vt-out; }
+::view-transition-new(root) { animation: 280ms var(--ease-out) 40ms both vt-in; }
+/* The bar is near enough the same on every page that it swaps in one
+   frame; crossfading it ghosted the links that shift on Projects. */
+::view-transition-old(site-bar) { animation: none; opacity: 0; }
+::view-transition-new(site-bar) { animation: none; }
+::view-transition-group(nav-mark) { animation-duration: 300ms; animation-timing-function: var(--ease-in-out); }
+/* The theme switch keeps its plain crossfade of the whole page. */
+.theme-swap::view-transition-old(root) { animation: 220ms ease both vt-out; }
+.theme-swap::view-transition-new(root) { animation: 220ms ease both vt-fade-in; }
+.theme-swap::view-transition-old(site-bar) { opacity: 1; animation: 220ms ease both vt-out; }
+.theme-swap::view-transition-new(site-bar) { animation: 220ms ease both vt-fade-in; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root) { animation: 120ms ease both vt-out; }
+  ::view-transition-new(root) { animation: 160ms ease both vt-fade-in; }
+  ::view-transition-group(*) { animation-duration: 0s; }
+}
 .theme-swap-fallback *, .theme-swap-fallback *::before, .theme-swap-fallback *::after {
   transition: background-color 220ms ease, color 220ms ease, fill 220ms ease !important;
 }

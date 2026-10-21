@@ -65,7 +65,13 @@
                 opacity 200ms var(--ease-out) var(--d, 0ms),
                 transform 200ms var(--ease-out) var(--d, 0ms);
   }
-  nav.nav-collapsed .nav-scroll .nav-link[aria-current="page"] { text-underline-offset: 10px; }
+  nav.nav-collapsed .nav-scroll .nav-link[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 10px;
+    text-decoration-color: var(--accent-deep);
+  }
+  nav.nav-collapsed .nav-mark { display: none; }
   nav.nav-collapsed .nav-scroll .nav-chapter { display: flex; min-height: 48px; font-size: var(--step-body); color: var(--muted); padding-left: 16px; }
   nav.nav-collapsed .nav-scroll > :nth-child(2) { --d: 30ms; }
   nav.nav-collapsed .nav-scroll > :nth-child(3) { --d: 60ms; }

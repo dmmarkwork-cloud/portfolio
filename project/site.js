@@ -1120,15 +1120,47 @@ function buildProjects() {
   // when its section comes within 800px of the viewport. They are not lazy
   // <img>s because Safari can skip the load of a lazy image inserted by script.
   const leads = PROJECTS.map((_, pi) => document.getElementById(`lead-img-${pi}`));
+  const built = new Set();
+  let seen = null;
+  const ensure = (pi) => {
+    if (built.has(pi) || !leads[pi]) return;
+    built.add(pi);
+    renderGallery(pi);
+    if (seen) seen.unobserve(leads[pi]);
+  };
+  // An in-page jump builds the figures it is about to land among before it
+  // moves, so nothing is built while the page is in motion.
+  // Returns the images of the figures it had to build, so the jump can let
+  // them decode before it moves.
+  window.ensureLeadsBetween = (y0, y1) => {
+    const fresh = [];
+    leads.forEach((el, pi) => {
+      if (!el || built.has(pi)) return;
+      let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+      if (y + el.offsetHeight > y0 && y < y1) { ensure(pi); fresh.push(...el.querySelectorAll('img')); }
+    });
+    return fresh;
+  };
   if ('IntersectionObserver' in window) {
-    const seen = new IntersectionObserver((entries) => entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      renderGallery(+e.target.dataset.pi);
-      seen.unobserve(e.target);
+    seen = new IntersectionObserver((entries) => entries.forEach(e => {
+      if (e.isIntersecting) ensure(+e.target.dataset.pi);
     }), { rootMargin: '800px 0px' });
     leads.forEach((el, pi) => { if (el) { el.dataset.pi = pi; seen.observe(el); } });
+    // Once the page has loaded, the rest are built in idle time, one per
+    // idle period, so a jump deep into the page finds them already drawn.
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 250));
+    window.addEventListener('load', () => {
+      let i = 0;
+      const next = () => {
+        while (i < leads.length && built.has(i)) i++;
+        if (i >= leads.length) return;
+        ensure(i++);
+        idle(next, { timeout: 2000 });
+      };
+      idle(next, { timeout: 2000 });
+    }, { once: true });
   } else {
-    PROJECTS.forEach((_, pi) => renderGallery(pi));
+    PROJECTS.forEach((_, pi) => ensure(pi));
   }
 
   // A lead box letterboxes its figure, so callouts are re-laid whenever the
@@ -1634,9 +1666,10 @@ function initAnchorScroll() {
   let run = 0;
   // ease-out, not ease-in-out. The in half of a cubic holds the page still
   // through the opening frames, which is exactly when the eye is on it.
-  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const ease = (t) => 1 - Math.pow(1 - t, 4);
   const stop = () => { run++; };
   ['wheel', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, stop, { passive: true }));
+  const pageY = (n) => { let y = 0; for (; n; n = n.offsetParent) y += n.offsetTop; return y; };
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || reducedMotion) return;
@@ -1647,31 +1680,58 @@ function initAnchorScroll() {
     e.preventDefault();
     history.pushState(null, '', href);
     // Layout position from the offsetTop chain, not getBoundingClientRect:
-    // sections slide up 10px as they reveal, and a rect taken mid-slide
-    // landed the page 10px short once the slide finished.
+    // parts slide up as they reveal, and a rect taken mid-slide lands short.
     const targetY = () => {
-      let y = 0;
-      for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
       const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
       const max = document.scrollingElement.scrollHeight - window.innerHeight;
-      return Math.max(0, Math.min(max, y - margin));
+      return Math.max(0, Math.min(max, pageY(el) - margin));
     };
-    const from = window.scrollY;
-    // Was min(900, 300 + dist * 0.06), which put About 856ms away and made
-    // the furthest targets the slowest to arrive — backwards, since those are
-    // the ones a lost visitor reaches for. Navigation is the most repeated
-    // action on the page, so it stays inside the 300ms-ish band and the
-    // distance term only breaks the tie between a short hop and a long one.
-    const dur = Math.min(400, 240 + Math.abs(targetY() - from) * 0.02);
+    const vh = window.innerHeight;
+    // Arrive to a finished page: the sections around the target are shown at
+    // once rather than fading in after the scroll has stopped, and any
+    // project figure there is built now, before the glide, not during it.
+    const y = targetY();
+    document.querySelectorAll('.section-reveal:not(.visible)').forEach(s => {
+      const top = pageY(s);
+      if (top < y + vh * 1.5 && top + s.offsetHeight > y - vh) s.classList.add('visible', 'reveal-instant');
+    });
+    const fresh = window.ensureLeadsBetween ? window.ensureLeadsBetween(y - vh, y + vh * 1.5) : [];
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      document.querySelectorAll('.reveal-instant').forEach(s => s.classList.remove('reveal-instant'))));
+    // A long jump used to race past every chapter in between in 400ms: a
+    // blur of half-drawn figures, each built as it flashed by, and the
+    // frames dropped while they were. Now the page goes straight to half a
+    // screen short of the target and glides only that last stretch, so the
+    // motion shows the arrival, which is the part that carries meaning.
+    let from = window.scrollY;
+    const far = Math.abs(y - from) > vh * 1.5;
+    if (far) {
+      from = y - Math.sign(y - from) * vh * 0.5;
+      window.scrollTo({ top: from, behavior: 'instant' });
+    }
     const id = ++run;
-    const t0 = performance.now();
+    let t0 = 0, to = 0, dur = 0;
+    // The target is measured once, when the glide starts, and corrected on
+    // the last frame. Measuring it every frame forced a layout of the whole
+    // page inside the animation, which was most of the stutter.
     const frame = (now) => {
       if (id !== run) return;
+      if (!t0) { t0 = now; to = targetY(); dur = Math.min(380, 220 + Math.abs(to - from) * 0.12); }
       const k = Math.min(1, (now - t0) / dur);
-      window.scrollTo({ top: from + (targetY() - from) * ease(k), behavior: 'instant' });
+      window.scrollTo({ top: k < 1 ? from + (to - from) * ease(k) : targetY(), behavior: 'instant' });
       if (k < 1) requestAnimationFrame(frame);
     };
-    requestAnimationFrame(frame);
+    // After a jump, or with a figure built just now (decoded first, at most
+    // 120ms), one frame is painted at the landing spot before the glide, so
+    // the first paint of that region happens while the page is still.
+    const start = () => requestAnimationFrame(() => requestAnimationFrame(frame));
+    if (fresh.length && fresh[0].decode) {
+      Promise.race([Promise.all(fresh.map(i => i.decode().catch(() => {}))), new Promise(r => setTimeout(r, 120))]).then(start);
+    } else if (far) {
+      start();
+    } else {
+      requestAnimationFrame(frame);
+    }
   });
 }
 
