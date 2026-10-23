@@ -1,22 +1,44 @@
-# CODING AGENTS: READ THIS FIRST
+# mlyamanaka.com
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+The portfolio site of Mark Lorenz Yamanaka, PRC Professional Aeronautical
+Engineer: four stress and CFD analyses, three hand builds, two internships.
+Plain HTML, CSS and JavaScript, with no build step.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+Live at **https://www.mlyamanaka.com** (Vercel, from `master`). The GitHub
+Pages copy at dmmarkwork-cloud.github.io/portfolio redirects there.
 
-## What you should do — IMPORTANT
+## Where things are
 
-**Read `portfolio-presentation-request/project/Portfolio Light.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+| Path | What it is |
+|---|---|
+| `project/` | The site. Everything in it is published. |
+| `project/portfolio-light.html` | Home (served at `/`) |
+| `project/projects.html`, `internships.html`, `about.html` | The other pages (served at `/projects` etc.) |
+| `project/404.html` | The page for any address the site does not have |
+| `project/site.css`, `site-mobile.css`, `site.js` | Shared by every page. Project data (`PROJECTS`) lives in `site.js`. `site-mobile.css` must stay the last stylesheet. |
+| `project/holo-bay.js`, `vendor/` | The home page's 3D turntable and the three.js it loads |
+| `project/figures/<project>/` | Pictures, one folder per project. A few older ones sit in `fea/`, `dfm/`, `images/` and `analysis/`. |
+| `project/thumbs/`, `project/cards/` | Small copies made by `tools/make-images.py` |
+| `project/vercel.json` | Clean URLs, redirects and the security headers (CSP and others) |
+| `sources/` | Camera originals behind the `-1800.jpg` photo copies. Not published. |
+| `tools/` | `check-mobile.mjs` (mobile guardrails), `make-images.py` (photo copies), `mobile-harness.html` |
+| `.github/workflows/` | GitHub Pages deploy, and the mobile checks on every push to `master` |
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Changing the site
 
-## About the design files
+1. Edit the files in `project/`. Preview with `python -m http.server` in
+   `project/` and open the `.html` files directly (the local server has no
+   clean URLs).
+2. Added or replaced a photo? Run `python tools/make-images.py`; its header
+   says how to point the page at the new copy and where the original goes.
+3. Run `node tools/check-mobile.mjs`.
+4. Push to `master`. Vercel and GitHub Pages both redeploy in about a minute.
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+Released versions are tagged `live/…` (for example `live/v3.1-polish`); each
+tag message holds the deployment it was served from.
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## Never commit
 
-## Bundle contents
-
-- `portfolio-presentation-request/README.md` — this file
-- `portfolio-presentation-request/project/` — the `Portfolio presentation request` project files (HTML prototypes, assets, components)
+Anything from the Obsidian vault's `artifacts\` folder. The repository is
+public, and its history was rewritten on 2026-10-17 to purge photos that
+carried GPS data.

@@ -27,21 +27,7 @@ jobs:
       - name: Stage published site
         run: |
           mkdir -p dist
-          rsync -a project/ dist/ \
-            --exclude 'figures/about/_unused/' \
-            --exclude 'uploads/' \
-            --exclude '*.dc.html' \
-            --exclude 'cad/' \
-            --exclude 'cfd/' \
-            --exclude 'docs/' \
-            --exclude 'drawings/' \
-            --exclude 'screenshots/' \
-            --exclude 'deck-stage.js' \
-            --exclude 'support.js' \
-            --exclude 'github.md' \
-            --exclude '.thumbnail'
-          mkdir -p dist/uploads
-          cp "project/uploads/Mark-Yamanaka-Resume.pdf" dist/uploads/
+          rsync -a project/ dist/ --exclude '*.dc.html'
 
       # Pages has no server-side redirects, so this stub is the only lever at
       # the /portfolio/ entry point. It is generated into dist/ and never

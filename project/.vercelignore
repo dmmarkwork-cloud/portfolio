@@ -1,16 +1,6 @@
-# Keep the Vercel deployment to what portfolio-light.html actually loads.
-# Mirrors the rsync excludes in .github/workflows/deploy-pages.yml, so both
-# live copies publish the same set of files. Without this, Vercel serves
-# everything in project/, including design prototypes and unused assets
-# that anyone could fetch by guessing the path.
-figures/about/_unused/
+# Everything in project/ is the site. Design prototypes and the camera
+# originals behind the photo copies live outside it (sources/ beside it,
+# and Git history), so they are not published. This line is a guard in case
+# a prototype is exported into project/ again; the GitHub Pages build
+# (.github/workflows/deploy-pages.yml) excludes the same pattern.
 *.dc.html
-cad/
-cfd/
-docs/
-drawings/
-screenshots/
-deck-stage.js
-support.js
-github.md
-.thumbnail
