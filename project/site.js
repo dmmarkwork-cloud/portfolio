@@ -820,11 +820,14 @@ function buildProjectIndex() {
   if (nf) {
     const link = document.querySelector('.nav-scroll a[href$="projects"]');
     const base = link ? link.getAttribute('href') : '/projects';
+    // Pictures from the site's root too: the page is served at any depth
+    // (/no/such/page), where a relative path would look under /no/such/.
+    const root = base.replace(/projects$/, '');
     nf.innerHTML = PROJECTS.map((p, i) => {
       const pic = p.gridThumb || (p.views.find(v => v.src) || {}).src || (p.views.find(v => v.poster) || {}).poster;
       const k = p.group === 'flagship' ? (p.wip ? 'In progress' : dataValue(p.key.v)) : '';
       const whole = /\.png$/i.test(pic) ? ' class="is-contain"' : '';
-      return `<li style="--i:${i}"><a href="${base}#${p.anchor}"><img src="${variant('cards', pic)}" data-full="${pic}" alt=""${whole} loading="lazy" decoding="async"><span class="nf-name">${p.short}</span><span class="k">${k}</span></a></li>`;
+      return `<li style="--i:${i}"><a href="${base}#${p.anchor}"><img src="${root}${variant('cards', pic)}" data-full="${root}${pic}" alt=""${whole} loading="lazy" decoding="async"><span class="nf-name">${p.short}</span><span class="k">${k}</span></a></li>`;
     }).join('');
   }
   // The projects page's own index links within the page.
