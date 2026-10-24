@@ -1124,6 +1124,27 @@ holo-bay:defined .holo-fallback { display: none; }
 .intern-photos figure { margin: 0; }
 .intern-photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface); }
 .intern-photos img.is-contain { object-fit: contain; }
+/* A portrait photo in the 4:3 frame sits on a blurred, cover-fit copy of
+   itself, as the project figures do, in place of the bare bands that
+   contain leaves either side. The copy is the same file, so it costs no
+   second download; it overhangs the frame so the blur's soft edge is
+   clipped away instead of showing as a pale rim. */
+.intern-frame { position: relative; overflow: hidden; background: var(--surface); }
+.intern-photos .intern-backdrop {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  max-width: none;
+  aspect-ratio: auto;
+  filter: blur(36px) brightness(0.8);
+}
+.intern-frame img.is-contain {
+  position: relative;
+  background: none;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28)); /* taste-skill-ignore: lifts the photo off its blurred copy, as in the project viewer */
+}
 .intern-photos figcaption { padding-top: 8px; color: var(--muted); font-size: var(--step-small); }
 
 /* ── Carousels (internships, about) ─────────────────────── */
@@ -1479,6 +1500,8 @@ nav.bar { view-transition-name: site-bar; }
   /* The page-head photographs (the hangar door, the portrait) at a size
      that leaves the page for its text. */
   .page-photo img { width: auto; max-width: 100%; max-height: 95mm; }
+  .intern-backdrop { display: none !important; }
+  .intern-frame img { filter: none !important; }
 
   .js-reveal .section-reveal .rv, .section-reveal .rv { opacity: 1 !important; transform: none !important; }
   .hero { min-height: 0; }
